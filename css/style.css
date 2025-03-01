@@ -1,0 +1,50 @@
+/* style.css */
+
+/* Base styling using the Montserrat font for a modern, elegant look */
+body {
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+    background-color: #fff;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Navbar styling */
+  .navbar {
+    background-color: #fff;
+  }
+  
+  .navbar-brand {
+    font-size: 1.5rem;
+  }
+  
+  /* Hero Section styling */
+  .hero-section {
+    min-height: 100vh;
+    background: #f7f7f7; /* A light monochrome background */
+    color: #000;
+    padding: 100px 0;
+  }
+  
+  .hero-section h1 {
+    font-size: 3rem;
+  }
+  
+  .hero-section p.lead {
+    font-size: 1.25rem;
+    color: #555;
+  }
+  
+  /* Footer styling */
+  footer {
+    background-color: #fff;
+    color: #777;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .hero-section h1 {
+      font-size: 2.5rem;
+    }
+  }
+  
