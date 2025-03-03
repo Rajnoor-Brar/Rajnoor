@@ -1,0 +1,63 @@
+/* Reset default margins/padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    height: 100%;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Container split into two halves */
+  #container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+  }
+  
+  /* Left half: image area */
+  #image-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+  }
+  
+  #image-section img {
+    max-width: 90%;
+    max-height: 90%;
+  }
+  
+  /* Right half: options area */
+  #options-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+  }
+  
+  #options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 80%;
+  }
+  
+  /* Style for the option buttons */
+  .option-btn {
+    padding: 15px;
+    font-size: 1.2rem;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .option-btn:hover {
+    background-color: #f5f5f5;
+  }
+  
