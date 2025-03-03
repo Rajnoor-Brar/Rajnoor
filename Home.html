@@ -16,30 +16,33 @@
 <body>
   
   <!-- Navbar with three columns -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-    <div class="container">
-      <div class="row w-100 align-items-center">
-        <!-- Left: RAJNOOR title -->
-        <div class="col-4 d-flex align-items-center">
-          <a class="navbar-brand fw-bold" href="#">RAJNOOR</a>
-        </div>
-        <!-- Center: Logo placeholder (using emoji ✨ as a stand-in) -->
-        <div class="col-4 d-flex justify-content-center align-items-center">
-          <a class="navbar-brand" href="#">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom" id="navPanel">
+    <div class="container-fluid">
+        
+        <!-- Logo -->
+        <a class="navbar-brand" href="#" id="navLogo">
             <span class="logo" style="font-size: 2rem;">✨</span>
-          </a>
+        </a>
+
+        <img src="your-image.jpg" alt="Desktop Only Image" class="d-none d-lg-block">
+
+        <!-- Mobile Menu Button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navLinks" if="navToggle">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar Links (Will Collapse on Small Screens) -->
+        <div class="collapse navbar-collapse justify-content-end" id="navLinks">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Projects</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Color Namer</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+            </ul>
         </div>
-        <!-- Right: Home navigation link -->
-        <div class="col-4 d-flex justify-content-end align-items-center">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link active" href="#">Home</a>
-            </li>
-          </ul>
-        </div>
-      </div>
+
     </div>
-  </nav>
+</nav>
   
   <!-- Hero Section -->
   <header class="hero-section d-flex align-items-center text-center">
