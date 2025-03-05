@@ -21,7 +21,7 @@ body {
   /* Hero Section styling */
   .hero-section {
     min-height: 50vh;
-    background: #f9f9f9; /* A light monochrome background */
+    background: #fbfbfb; /* A light monochrome background */
     color: #000;
     padding: 100px 0;
   }
