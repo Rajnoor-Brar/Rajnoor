@@ -45,8 +45,8 @@ function parseCSV(text) {
 function newQuestion() {
   
   let h = Math.floor(Math.random() * 120) * 3;   
-  let s = Math.floor(Math.pow(Math.random(),0.7) * 11) * 10;    
-  let v = Math.floor(Math.pow(Math.random(),0.4) * 11) * 10;    
+  let s = Math.floor(Math.pow(Math.random(),0.8) * 11) * 10;    
+  let v = Math.floor(Math.pow(Math.random(),0.5) * 11) * 10;    
   let b = Math.random() < 0.5 ? "00" : "99";      
   
   
@@ -60,18 +60,22 @@ function newQuestion() {
   // Update the image element
   let img = document.getElementById("color-block");
   img.src = path;
-  img.alt = filename.replace(".png", "");
-  
+  // Assign custom dataset attributes
+  img.dataset.imageName = `${hPad}${sPad}${vPad}${b}`;
+  img.dataset.H = h.toString();
+  img.dataset.S = s.toString();
+  img.dataset.V = v.toString();
+  img.dataset.B = b.toString();
   
   if (window.colorData && window.colorData.length > 0) {
     let closest = getClosestColors(h, s, v, window.colorData);
-    
-    closest = shuffleArray(closest);
+    closest = closest.slice(0, 6);   // Select the six closest options first
+    closest = shuffleArray(closest);   // Then shuffle these six options
     
     while (closest.length < 6) {
       closest.push({ "Color Name": "Unknown", "Hex Code": "#000000", "Serial": "N/A" });
     }
-    assignOptions(closest.slice(0, 6));
+    assignOptions(closest);
   } else {
     let defaultOptions = [
       { "Color Name": "White", "Hex Code": "#ffffff", "Serial": "1" },
@@ -100,7 +104,7 @@ function getClosestColors(h, s, v, colors) {
     let dV = Math.abs(v - v0);
     
     let distance = Math.sqrt(
-      Math.pow(7*(v / 100) * (s / 100),0.2) * Math.pow(dH, 2) +
+      Math.pow(1*(v / 100) * (s / 100),0.2) * Math.pow(dH, 2) +
       3 * (v / 100) * Math.pow(dS, 2) +
       5 * Math.pow(dV, 2) +
       h0 * (1 - Math.pow(s / 100, 2)) * (1 - Math.pow(v / 100, 2))
@@ -111,7 +115,6 @@ function getClosestColors(h, s, v, colors) {
   results.sort((a, b) => a.distance - b.distance);
   return results;
 }
-
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -132,7 +135,7 @@ function assignOptions(options) {
     btn.textContent = colorName;
     btn.dataset.colorName = colorName;
     btn.dataset.hexCode = opt["Hex Code"];
-    btn.dataset.serial = opt["Serial"];
+    btn.dataset.serial = opt["Serial"].toString();
   });
 }
 
@@ -141,16 +144,52 @@ function optionClicked(e) {
   let colorName = btn.dataset.colorName;
   let hexCode = btn.dataset.hexCode;
   let serial = btn.dataset.serial;
-  let imageName = document.getElementById("color-block").alt + ".png";
+  
+  // Retrieve data from the image element's dataset
+  let img = document.getElementById("color-block");
+  let imageName = img.dataset.imageName;
+  let H = img.dataset.H;
+  let S = img.dataset.S;
+  let V = img.dataset.V;
+  let B = img.dataset.B;
   
   let responseData = {
-    imageName: imageName,
+    imageName: imageName.toString(),
+    H: H.toString(),
+    S: S.toString(),
+    V: V.toString(),
+    B: B.toString(),
     colorName: colorName,
     hexCode: hexCode,
-    serial: serial,
+    serial: serial.toString(),
     timestamp: new Date().toISOString()
   };
   
   console.log("Saving response:", responseData);
+  
+
+  console.log("Saving response:", responseData);
+
+  // Replace with your actual Apps Script web app URL.
+  const scriptURL = 'https://script.google.com/macros/s/AKfycby8ahPN-LqfLu3n7e7lFCuQHiS26JZCYCduHGmmtoFMdUWfr-armecfLW7FAz9IOaW-/exec';
+
+  // Send the data via a POST request.
+  fetch(scriptURL, {
+    method: 'POST',
+    mode: 'no-cors',  // Use 'no-cors' if you face CORS issues.
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(responseData)
+  })
+  .then(response => {
+    console.log("Response saved");
+    // Optionally, you can parse and use the response if mode is not no-cors.
+  })
+  .catch(err => {
+    console.error("Error saving response:", err);
+  });
+  
   setTimeout(newQuestion, 100);
 }
+
