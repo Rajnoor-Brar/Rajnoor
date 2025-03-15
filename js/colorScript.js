@@ -61,7 +61,7 @@ function newQuestion() {
   let img = document.getElementById("color-block");
   img.src = path;
   // Assign custom dataset attributes
-  img.dataset.imageName = `${hPad}${sPad}${vPad}${b}`;
+  img.dataset.imageName = `#${hPad}${sPad}${vPad}${b}`;
   img.dataset.H = h.toString();
   img.dataset.S = s.toString();
   img.dataset.V = v.toString();
