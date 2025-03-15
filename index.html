@@ -25,13 +25,9 @@
       </div>
   
       <!-- Added position: relative to the parent container -->
-      <div class="order-3 col-5 col-lg-6 justify-content-end align-items-center" style="position: relative;">
-        <button class="p-0 py-2 navbar-toggler w-25" type="button" data-bs-toggle="collapse" data-bs-target="#navLinks" id="navToggle">
-          <i class="bi bi-list w-100"></i>
-        </button>
-  
+      <div class="order-3 d-flex col-5 col-lg-6 justify-content-end align-items-center" style="position: relative;">  
         <!-- Inline styles to make the collapse element an absolute popup overlay -->
-        <div class="order-2 collapse navbar-collapse align-items-end justify-content-end rounded" id="navLinks" style="position: absolute; top: 135%; right: 0; left: auto; background: #fff; z-index: 1000;">
+        <div class="order-1 collapse navbar-collapse align-items-end justify-content-end rounded" id="navLinks" style="position: absolute; top: 135%; right: 0; left: auto; background: #fff; z-index: 1000;">
           <ul class="px-2 py-2 navbar-nav" style="font-size: 1rem;">
             <li class="nav-item"><a class="nav-link active px-3" href="#">Home</a></li>
             <li class="nav-item"><a class="nav-link px-3" href="#">Projects</a></li>
@@ -39,6 +35,10 @@
             <li class="nav-item"><a class="nav-link px-3" href="#">About</a></li>
           </ul>
         </div>
+
+        <button class="p-0 py-2 order-2 navbar-toggler w-25" type="button" data-bs-toggle="collapse" data-bs-target="#navLinks" id="navToggle" >
+          <i class="bi bi-list w-100"></i>
+        </button>
 
       </div>
     </div>
