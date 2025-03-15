@@ -41,6 +41,8 @@ body {
     color: #777;
   }
   
+
+  
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .hero-section h1 {
@@ -54,3 +56,27 @@ body {
     }
   }
   
+  @media (max-width: 768px) {
+    .w-navLinks {
+      max-width: 150% !important;
+    }
+  }
+
+  /* @media (min-width: 769px) {
+    .w-navLinks {
+      max-width: 50% !important;
+    }
+  } */
+  @media (max-width: 992px){
+   #headSignature{
+    max-width:15vh !important;
+   }
+  }
+  @media (max-width: 992px) {
+    .border-md {
+      border: 1px solid #22222222;
+    }
+  }
+  .active{
+    un;
+  }

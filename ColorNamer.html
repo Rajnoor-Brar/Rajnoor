@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/colorStyle.css">
   <!-- Favicon (if available) -->
   <link rel="icon" href="favicon.ico">
 </head>
@@ -29,9 +30,9 @@
         <!-- Inline styles to make the collapse element an absolute popup overlay -->
         <div class="order-1 collapse border-md navbar-collapse align-items-end justify-content-end rounded" id="navLinks" style="position: absolute; top: 135%; right: 0; left: auto; background: #fff; z-index: 1000;">
           <ul class="p-2 navbar-nav  w-navLinks" style="font-size: 1rem;">
-            <li class="nav-item"><a class="nav-link active px-3" href="#">Home</a></li>
+            <li class="nav-item"><a class="nav-link px-3" href="./index.html">Home</a></li>
             <li class="nav-item"><a class="nav-link px-3" href="#">Projects</a></li>
-            <li class="nav-item"><a class="nav-link px-3" href="./ColorNamer.html">Color Namer</a></li>
+            <li class="nav-item"><a class="nav-link active px-3" href="./ColorNamer.html">Color Namer</a></li>
             <li class="nav-item"><a class="nav-link px-3" href="#">About</a></li>
           </ul>
         </div>
@@ -45,32 +46,31 @@
   </nav>
   
 
- <div class="container-fluid d-flex hero-section align-items-center justify-content-center text-center">
-  <h1 class="align-items-center h-100">Gettings Things Done</h1>
- </div>
-
-
-  <header class="d-flex align-items-center text-center">
-    <div class="container">
-      <h1 class="display-4 fw-bold">This is RAJNOOR</h1>
-      <p class="lead">Exploring the depths of Physics, Mathematics, and Computer Science</p>
-      <p class="small">Final Year Ungraduate in BSc Physics – In-depth knowledge &amp; innovative thinking</p>
-      <a href="#about" class="btn btn-outline-dark mt-4">Website under Construction.<br> Please dont mind :D</a>
+  <div class="container-fluid d-flex row justify-content-between py-5 m-0">
+    <div class="container col-12 d-flex-column justify-content-center text-center">
+      <span style="font-size: clamp(2rem, 4vw, 4rem);">Color Namer</span>
+      <br>
+      <span>click the name that best describes the color</span>
     </div>
-  </header>
-  
-  <!-- About Section -->
-  <section id="about" class="py-5">
-    <div class="container">
-      <h2 class="h3 fw-bold text-center mb-4">About RAJNOOR</h2>
-      <div class="row justify-content-center">
-        <div class="col-md-8">
-          <p class="text-center">I am a dedicated learner with a passion for unraveling the mysteries of physics, mathematics, 
-          and computer science. My work is driven by a relentless pursuit of knowledge and a commitment to innovative thinking.</p>
-        </div>
+    <div class="container-fluid col-lg-6 col-12 d-flex justify-content-center align-items-center rounded p-5" id="image-section">
+      <div class="col-12 col-lg-10">
+        <img id="color-block" src="SVH/00/000/100/000000100000.png" alt="000000100000" class="img-fluid shadow-lg rounded-5">
       </div>
     </div>
-  </section>
+
+    <div class="col-12 col-lg-1" style="height:5vh;"></div>
+
+    <div id="options" class="col-lg-5 col-12 text-center d-flex justify-content-center align-items-center">
+      <div class="d-flex-column justify-content-center col-8 col-lg-12">
+        <button class="option-btn btn my-3 p-3 col-12 col-lg-7 " id="option-1">White</button>
+        <button class="option-btn btn my-3 p-3 col-12 col-lg-7 " id="option-2">Still White</button>
+        <button class="option-btn btn my-3 p-3 col-12 col-lg-7 " id="option-3">White again!!</button>
+        <button class="option-btn btn my-3 p-3 col-12 col-lg-7 " id="option-4">White</button>
+        <button class="option-btn btn my-3 p-3 col-12 col-lg-7 " id="option-5">White</button>
+        <button class="option-btn btn my-3 p-3 col-12 col-lg-7 " id="option-6">White</button>
+      </div>
+    </div>
+  </div>
   
   <!-- Footer -->
   <footer class="py-4 border-top">
@@ -104,6 +104,6 @@
   <!-- Bootstrap 5 JS Bundle (includes Popper) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Custom JavaScript -->
-  <script src="js/scripts.js"></script>
+  <script src="js/colorScript.js"></script>
 </body>
 </html>
