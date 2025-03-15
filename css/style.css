@@ -78,5 +78,5 @@ body {
     }
   }
   .active{
-    un;
+    border-bottom: #000 1px solid;
   }
