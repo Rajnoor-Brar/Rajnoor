@@ -13,7 +13,7 @@ html[data-bs-theme="dark"] {
   --bs-body-bg: #181818;
   --bs-body-color: #fbfbfb;
   --my-white: #111; 
-  --my-black: #f9f9f9;
+  --my-black: #fff;
   --my-gray-1: #ccc;
   --my-gray-2: #bbb;
   --my-gray-3: #aaa;
@@ -27,13 +27,18 @@ body {
   padding: 0;
 }
 
-#navLinks{
-  position: absolute;
-  top: 135%;
-  right: 0;
-  left: auto;
-  background: var(--my-white);
-  z-index: 1000;
+button {
+  touch-action: manipulation;
+}
+
+@media (hover: none) {
+  /* Override hover styles on non-hover devices */
+  button:hover,.btn:hover,button:focus,.btn:focus {
+      background-color: inherit !important;
+      color: inherit !important;
+      border: inherit !important;
+      box-shadow: none !important;
+  }
 }
 
 #themeIcon {
@@ -84,6 +89,16 @@ footer {
     font-size: 2.5rem;
   }
 }
+
+#navLinks{
+  position: absolute;
+  top: clamp(10px, 13vw, 6vh);
+  right: 0;
+  left: auto;
+  background: var(--my-white);
+  z-index: 1000;
+}
+
 @media (min-width: 992px) {
   #navLinks {
     position: static !important;
@@ -119,4 +134,7 @@ footer {
 }
 .active{
   border-bottom: var(--my-black) 1px solid;
+}
+.invert{
+  filter:invert();
 }
