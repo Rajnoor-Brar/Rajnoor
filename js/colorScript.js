@@ -1,7 +1,8 @@
+setActiveNav("#color-nav")
 
 document.addEventListener("DOMContentLoaded", function() {
   
-  fetch('./SVH/ColorData.csv')
+  fetch('/SVH/ColorData.csv')
     .then(response => response.text())
     .then(text => {
       window.colorData = parseCSV(text);
@@ -55,7 +56,7 @@ function newQuestion() {
   let vPad = v.toString().padStart(3, '0');
   
   let filename = `${hPad}${sPad}${vPad}${b}.png`;
-  let path = `SVH/${b}/${sPad}/${vPad}/${filename}`;
+  let path = `/SVH/${b}/${sPad}/${vPad}/${filename}`;
   
   // Update the image element
   let img = document.getElementById("color-block");

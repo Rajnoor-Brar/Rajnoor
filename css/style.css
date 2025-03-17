@@ -1,79 +1,81 @@
 /* style.css */
+body {
+  font-family: 'Montserrat', sans-serif;
+  color: #333;
+  background-color: #fff;
+  margin: 0;
+  padding: 0;
+}
 
 
-  .nav-link{
-    font-family: "Spectral", serif;
-    font-optical-sizing: auto
-  }
-  
-  /* Navbar styling */
-  .navbar {
-    background-color: #fff;
-  }
-  
-  .navbar-brand {
-    font-size: 1.5rem;
-  }
-  
-  /* Hero Section styling */
-  .hero-section {
-    min-height: 50vh;
-    background: #fbfbfb; /* A light monochrome background */
-    color: #000;
-    padding: 100px 0;
-  }
-  
+.navbar {
+  background-color: #fff;
+}
+
+/* Hero Section styling */
+.hero-section {
+  min-height: 50vh;
+  background: #fbfbfb; /* A light monochrome background */
+  color: #000;
+  padding: 100px 0;
+}
+
+.hero-section h1 {
+  font-size: 3rem;
+}
+
+.hero-section p.lead {
+  font-size: 1.25rem;
+  color: #555;
+}
+
+/* Footer styling */
+footer {
+  background-color: #fff;
+  color: #777;
+}
+
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
   .hero-section h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
   }
-  
-  .hero-section p.lead {
-    font-size: 1.25rem;
-    color: #555;
+}
+@media (min-width: 992px) {
+  #navLinks {
+    position: static !important;
+    background: transparent !important;
   }
-  
-  /* Footer styling */
-  footer {
-    background-color: #fff;
-    color: #777;
-  }
-  
-
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .hero-section h1 {
-      font-size: 2.5rem;
-    }
-  }
-  @media (min-width: 992px) {
-    #navLinks {
-      position: static !important;
-      background: transparent !important;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .w-navLinks {
-      max-width: 150% !important;
-    }
+  .nav-link{
+    font-size: 1.15rem;
+    font-optical-sizing: auto;
   }
 
-  /* @media (min-width: 769px) {
-    .w-navLinks {
-      max-width: 50% !important;
-    }
-  } */
-  @media (max-width: 992px){
-   #headSignature{
-    max-width:15vh !important;
-   }
+}
+
+@media (max-width: 768px) {
+  .w-navLinks {
+    max-width: 150% !important;
   }
-  @media (max-width: 992px) {
-    .border-md {
-      border: 1px solid #22222222;
-    }
+}
+
+/* @media (min-width: 769px) {
+  .w-navLinks {
+    max-width: 50% !important;
   }
-  .active{
-    border-bottom: #000 1px solid;
+} */
+@media (max-width: 992px){
+  #headSignature{
+  max-width:15vh !important;
   }
+  .border-md {
+    border: 1px solid #22222222;
+  }
+}
+@media (max-width: 992px) {
+}
+.active{
+  border-bottom: #000 1px solid;
+}
