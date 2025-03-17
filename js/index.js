@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     // Load the nav panel
-    fetch("modules/nav-panel.html")
+    fetch("resources/nav-panel.html")
         .then(response => response.text())
         .then(html => {
             document.body.insertAdjacentHTML("afterbegin", html);
