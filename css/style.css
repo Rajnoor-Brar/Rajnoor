@@ -1,22 +1,63 @@
-/* style.css */
+:root{
+  --bs-body-bg: #fbfbfb;
+  --bs-body-color: #222;
+  --my-white:#fff;
+  --my-black: #111;
+  --my-gray-1:#777;
+  --my-gray-2:#555;
+  --my-gray-3:#333;
+  --my-border-color:#22222222;
+}
+
+html[data-bs-theme="dark"] {
+  --bs-body-bg: #181818;
+  --bs-body-color: #fbfbfb;
+  --my-white: #111; 
+  --my-black: #f9f9f9;
+  --my-gray-1: #ccc;
+  --my-gray-2: #bbb;
+  --my-gray-3: #aaa;
+  --my-border-color: #fbfbfb22;
+}
+
+
 body {
   font-family: 'Montserrat', sans-serif;
-  color: #333;
-  background-color: #fff;
   margin: 0;
   padding: 0;
 }
 
+#navLinks{
+  position: absolute;
+  top: 135%;
+  right: 0;
+  left: auto;
+  background: var(--my-white);
+  z-index: 1000;
+}
+
+#themeIcon {
+  transition: transform 0.3s ease;
+}
+
+/* Keyframe animation for a full rotation */
+@keyframes rotateAnim {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 .navbar {
-  background-color: #fff;
+  background-color: var(--my-white);
 }
 
 /* Hero Section styling */
 .hero-section {
   min-height: 50vh;
-  background: #fbfbfb; /* A light monochrome background */
-  color: #000;
+  color: var(--my-black);
   padding: 100px 0;
 }
 
@@ -26,13 +67,13 @@ body {
 
 .hero-section p.lead {
   font-size: 1.25rem;
-  color: #555;
+  color: var(--my-gray-2);
 }
 
 /* Footer styling */
 footer {
-  background-color: #fff;
-  color: #777;
+  background-color: var(--my-white);
+  color: var(--my-gray-1);
 }
 
 
@@ -71,11 +112,11 @@ footer {
   max-width:15vh !important;
   }
   .border-md {
-    border: 1px solid #22222222;
+    border: 1px solid var(--my-border-color);
   }
 }
 @media (max-width: 992px) {
 }
 .active{
-  border-bottom: #000 1px solid;
+  border-bottom: var(--my-black) 1px solid;
 }

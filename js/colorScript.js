@@ -1,5 +1,3 @@
-setActiveNav("#color-nav")
-
 document.addEventListener("DOMContentLoaded", function() {
   
   fetch('/SVH/ColorData.csv')
