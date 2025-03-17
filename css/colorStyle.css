@@ -1,13 +1,14 @@
 
 .option-btn {
   font-size:  clamp(0.75rem, 1.5vw, 1rem);
-  border: 2px solid #ddd;
-  background-color: var(--bs-white);
+  color: var(--my-black);
+  border: 2px solid var(--my-silver-1);
+  background-color: var(--bs-body-bg);
   cursor: pointer;
   transition: background-color 0.3s, border 0.1s;
 }
 
 .option-btn:hover {
-  background-color: #f5f5f5;
-  border: 2px solid var(--bs-white);
+  background-color: var(--my-silver-2);
+  border: 2px solid var(--bs-body-bg);
 }
