@@ -1,4 +1,5 @@
 :root{
+  --bb-color-mode: 99;
   --bs-body-bg: #fbfbfb;
   --bs-body-color: #222;
   --my-white:#fff;
@@ -12,6 +13,7 @@
 }
 
 html[data-bs-theme="dark"] {
+  --bb-color-mode: 00;
   --bs-body-bg: #181818;
   --bs-body-color: #fbfbfb;
   --my-white: #111; 
@@ -29,6 +31,7 @@ body {
   font-family: 'Montserrat', sans-serif;
   margin: 0;
   padding: 0;
+  transition: background-color 0.4s ease, color 0.3s ease-out 0.3s;
 }
 
 button {
@@ -45,11 +48,26 @@ button {
   }
 }
 
-#themeIcon {
-  transition: transform 0.3s ease;
+#navToggle {
+  border:none;
 }
 
-/* Keyframe animation for a full rotation */
+#themeIcon {
+  font-size:1rem; 
+  display: inline-flex; /* Makes it behave like an image */
+  align-items: center;
+  aspect-ratio: 1/1;
+  justify-content: center;
+  vertical-align: middle; /* Centers within text */
+  line-height: 1; /* Remove extra spacing */
+  transition: transform 0.3s ease-in, color 0.2s ease-out 0.1s;
+}
+#themeToggle:hover{
+  background-color: var(--my-silver-1);
+}
+#themeToggle:hover #themeIcon {
+  transition: color 0.05s;
+}
 @keyframes rotateAnim {
   from {
     transform: rotate(0deg);
@@ -57,6 +75,11 @@ button {
   to {
     transform: rotate(360deg);
   }
+}
+
+.rotate{
+  display: inline-block;
+  animation: rotateAnim 1s ease;
 }
 
 .navbar {
@@ -133,6 +156,11 @@ footer {
   }
   .border-md {
     border: 1px solid var(--my-border-color);
+  }
+}
+@media (min-width: 992px){
+  #headSignature{
+  max-width:12vh !important;
   }
 }
 @media (max-width: 992px) {

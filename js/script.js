@@ -1,5 +1,12 @@
+
 document.addEventListener("DOMContentLoaded", function () {
-    
+
+    if (localStorage.getItem("theme") === "dark") {    
+        document.querySelectorAll(".signatures").forEach(el => {
+            el.classList.add("invert");
+        });
+    }
+
     document.querySelectorAll("button").forEach(button => {
         button.addEventListener("click", function() {
             this.blur(); // Removes focus after click
@@ -10,42 +17,59 @@ document.addEventListener("DOMContentLoaded", function () {
     const themeIcon = document.getElementById("themeIcon");
   
     themeToggleBtn.addEventListener("click", function () {
-      // Add the rotate class for animation
-      themeIcon.classList.add("rotate");
-  
-      // After the animation duration (0.3s), toggle the theme and update the icon
-      setTimeout(() => {
-        let currentTheme = document.documentElement.getAttribute("data-bs-theme");
-        let metaThemeColor = document.querySelector("meta[name=theme-color]");
-        let black = getComputedStyle(document.documentElement).getPropertyValue('--my-black').trim();
 
-        if (currentTheme === "dark") {
-            document.documentElement.setAttribute("data-bs-theme", "light");
-            themeIcon.classList.remove("bi-moon-fill");
-            themeIcon.classList.add("bi-sun-fill");
-            themeToggleBtn.classList.remove("btn-outline-light");
-            themeToggleBtn.classList.add("btn-outline-dark");
-            metaThemeColor.setAttribute("content", black);
+        themeIcon.classList.add("rotate");
+        setTimeout(() => {
+            let currentTheme = document.documentElement.getAttribute("data-bs-theme");
+            let metaThemeColor = document.querySelector("meta[name=theme-color]");
+            let black = getComputedStyle(document.documentElement).getPropertyValue('--my-black').trim();
 
-            document.querySelectorAll(".signatures").forEach(el => {
-                el.classList.remove("invert");
-            });
-        } 
-        else {
-            document.documentElement.setAttribute("data-bs-theme", "dark");
-            themeIcon.classList.remove("bi-sun-fill");
-            themeIcon.classList.add("bi-moon-fill");
-            themeToggleBtn.classList.remove("btn-outline-dark");
-            themeToggleBtn.classList.add("btn-outline-light");
-            metaThemeColor.setAttribute("content", black);
+            if (currentTheme === "dark") {
+                document.documentElement.setAttribute("data-bs-theme", "light");
+                localStorage.setItem("theme", "light");
+            
+                // Animate out
+                themeIcon.style.opacity = "0";
+                themeIcon.style.transform = "rotate(180deg) scale(0.8)";
+            
+                setTimeout(() => {
+                    themeIcon.innerText = "light_mode";
+                    themeIcon.style.opacity = "1";
+                    themeIcon.style.transform = "rotate(0) scale(1)";
+                }, 200);
+            
+                themeToggleBtn.classList.remove("btn-outline-light");
+                themeToggleBtn.classList.add("btn-outline-dark");
+                metaThemeColor.setAttribute("content", black);
+            
+                document.querySelectorAll(".signatures").forEach(el => {
+                    el.classList.remove("invert");
+                });
+            } else {
+                document.documentElement.setAttribute("data-bs-theme", "dark");
+                localStorage.setItem("theme", "dark");
+            
+                // Animate out
+                themeIcon.style.opacity = "0";
+                themeIcon.style.transform = "rotate(180deg) scale(0.8)";
+            
+                setTimeout(() => {
+                    themeIcon.innerText = "dark_mode";
+                    themeIcon.style.opacity = "1";
+                    themeIcon.style.transform = "rotate(0) scale(1)";
+                }, 200);
+            
+                themeToggleBtn.classList.remove("btn-outline-dark");
+                themeToggleBtn.classList.add("btn-outline-light");
+                metaThemeColor.setAttribute("content", black);         
 
-            document.querySelectorAll(".signatures").forEach(el => {
-                el.classList.add("invert");
-            });
-        }
-        // Remove the rotation class so it can animate again next time
-        themeIcon.classList.remove("rotate");
-      }, 300);
+                document.querySelectorAll(".signatures").forEach(el => {
+                    el.classList.add("invert");
+                });
+            }
+            setTimeout(() => themeIcon.classList.remove("rotate"), 700);
+            
+        }, 300);
     });
-  });
+});
   

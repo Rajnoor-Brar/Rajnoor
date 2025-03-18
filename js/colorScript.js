@@ -43,11 +43,14 @@ function parseCSV(text) {
 
 function newQuestion() {
   
-  let h = Math.floor(Math.random() * 120) * 3;   
+  let rootStyles = getComputedStyle(document.documentElement);
+  
+  let h = Math.floor(Math.random() * 120) * 3;
   let s = Math.floor(Math.pow(Math.random(),0.8) * 11) * 10;    
   let v = Math.floor(Math.pow(Math.random(),0.5) * 11) * 10;    
-  let b = Math.random() < 0.5 ? "00" : "99";      
-  
+  // let b = Math.random() < 0.5 ? "00" : "99"; 
+  let b = rootStyles.getPropertyValue('--bb-color-mode').trim().toString().padStart(2, '0');
+  console.log(b);
   
   let hPad = h.toString().padStart(3, '0');
   let sPad = s.toString().padStart(3, '0');
