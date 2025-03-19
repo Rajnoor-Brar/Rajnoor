@@ -1,3 +1,9 @@
 baseURL = 'https://rajnoor.info/'
 languageCode = 'en-us'
 title = 'Rajnoor'
+disableKinds = ["taxonomy", "term"]
+[outputs]
+  home = ["html"]
+  section = ["html"]
+  page = ["html"]
+

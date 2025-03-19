@@ -3,11 +3,11 @@ name: Deploy Hugo site to GitHub Pages
 on:
   push:
     branches:
-      - main  # Or your default branch
+      - main
+  workflow_dispatch:
 
 permissions:
-  contents: write  # Grants GitHub Actions write access to the repository
-
+  contents: write
 
 jobs:
   deploy:
@@ -15,14 +15,33 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: 'latest'
 
+      # Restore Hugo generated resources cache to speed up build time.
+      - name: Restore Hugo Cache
+        id: hugo-cache-restore
+        uses: actions/cache@v3
+        with:
+          path: resources/_gen  # Hugo stores generated resources here
+          key: ${{ runner.os }}-hugo-resources-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-hugo-resources-
+
       - name: Build the site
         run: hugo --minify
+
+      # Save Hugo resources cache
+      - name: Save Hugo Cache
+        uses: actions/cache@v3
+        with:
+          path: resources/_gen
+          key: ${{ runner.os }}-hugo-resources-${{ github.sha }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -30,3 +49,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
           publish_branch: live-site
+          keep_files: true          # Prevent overwriting unchanged files
