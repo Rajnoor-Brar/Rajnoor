@@ -1,0 +1,25 @@
+<nav class="py-0 navbar navbar-expand-lg navbar-light bg-white border-bottom" id="navPanel">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      <div class="order-1 p-2 justify-content-center align-items-center col-6 col-md-4 col-lg-2">
+        <img src="resources/signature.svg" width="65%" oncontextmenu="return false;" id="headSignature">
+      </div>
+  
+      <!-- Added position: relative to the parent container -->
+      <div class="order-3 d-flex col-5 col-md-8 col-lg-6 justify-content-end align-items-center p-0" style="position: relative;">  
+        <!-- Inline styles to make the collapse element an absolute popup overlay -->
+        <div class="order-1 collapse border-md navbar-collapse align-items-end justify-content-end rounded" id="navLinks" style="position: absolute; top: 135%; right: 0; left: auto; background: #fff; z-index: 1000;">
+          <ul class="p-2 navbar-nav  w-navLinks" style="font-size: 1rem;">
+            <li class="nav-item"><a class="nav-link px-0 mx-3" id="home-nav" href=".index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link px-0 mx-3" id="project-nav" href="#">Projects</a></li>
+            <li class="nav-item"><a class="nav-link px-0 mx-3" id="color-nav" href="./ColorNamer.html">Color Namer</a></li>
+            <li class="nav-item"><a class="nav-link px-0 mx-3" id="contact-nav" href="#">Contact</a></li>
+          </ul>
+        </div>
+
+        <button class="p-2 order-2 navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navLinks" id="navToggle" >
+          <i class="bi bi-list w-100"></i>
+        </button>
+
+      </div>
+    </div>
+</nav>
