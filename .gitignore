@@ -3,3 +3,14 @@ _site
 .jekyll-cache
 .jekyll-metadata
 vendor
+public
+i18n
+archetypes
+themes
+data
+assets
+static
+layouts
+content
+hugo.toml
+.hugo_build.lock
