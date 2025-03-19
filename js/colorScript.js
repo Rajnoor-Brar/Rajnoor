@@ -57,7 +57,7 @@ function newQuestion() {
   let vPad = v.toString().padStart(3, '0');
   
   let filename = `${hPad}${sPad}${vPad}${b}.png`;
-  let path = `https://raw.githubusercontent.com/Rajnoor-Brar/Color-Namer/tree/main/SVH/${b}/${sPad}/${vPad}/${filename}`;
+  let path = `/SVH/${b}/${sPad}/${vPad}/${filename}`;
   
   // Update the image element
   let img = document.getElementById("color-block");
