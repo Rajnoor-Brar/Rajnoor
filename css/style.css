@@ -1,6 +1,6 @@
 :root{
   --bb-color-mode: 99;
-  --bs-body-bg: #fbfbfb;
+  --bs-body-bg: #f9f9f9;
   --bs-body-color: #222;
   --my-white:#fff;
   --my-black: #111;
@@ -32,7 +32,11 @@ body {
   margin: 0;
   padding: 0;
   transition: background-color 0.4s ease, color 0.3s ease-out 0.3s;
+  overflow-y: auto;
+  scrollbar-gutter: stable both-edges;
 }
+
+
 
 button {
   touch-action: manipulation;
@@ -145,4 +149,26 @@ footer {
 }
 .invert{
   filter:invert();
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  position: absolute;
+}
+
+/* Scrollbar Track (Background) */
+::-webkit-scrollbar-track {
+  background: transparent;
+  margin-right: 10px;
+}
+
+/* Scrollbar Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.6);
+  border-radius: 4px;
+}
+
+/* Scrollbar Handle on Hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 100, 0.9);
 }
