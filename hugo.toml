@@ -7,3 +7,11 @@ disableKinds = ["taxonomy", "term"]
   section = ["html"]
   page = ["html"]
 
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true  # Needed to allow raw HTML inside Markdown
+
+[params]
+  math = true  # Enables math rendering

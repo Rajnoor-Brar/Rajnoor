@@ -1,0 +1,31 @@
+
+<div class="container-fluid justify-content-center d-flex">
+  <div class="col-12 col-lg-6 d-flex mx-0 px-1 px-lg-3 py-4 my-2">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb align-items-center d-flex">
+        {{ $crumbs := split .Params.navNest " / " }}
+        {{ $baseURL := .Get "url" | default "/" | relURL }}
+        {{ $accumulatedPath := "" }}
+        {{ $lastIndex := sub (len $crumbs) 1 }}
+
+        {{ range $index, $crumb := $crumbs }}
+          {{ if ne $crumb "" }}  <!-- Ignore empty crumbs -->
+            {{ if eq $index 0 }}
+              {{ $accumulatedPath = $baseURL }}  <!-- Start with base URL -->
+            {{ else }}
+              {{ $accumulatedPath = printf "%s/%s" $accumulatedPath (lower $crumb) | relURL }}
+            {{ end }}
+
+            <li class="breadcrumb-item d-flex align-items-center">
+              {{ if eq $index $lastIndex }}
+                <a class="btn page-nav active">{{ $crumb }}</a>
+              {{ else }}
+                <a class="btn page-nav" href="{{ $accumulatedPath }}">{{ $crumb }}</a>
+              {{ end }}
+            </li>
+          {{ end }}
+        {{ end }}
+      </ol>
+    </nav>
+  </div>
+</div>

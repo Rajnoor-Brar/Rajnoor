@@ -1,0 +1,28 @@
+pre{
+    background-color: var(--my-white);
+}
+
+.btn.page-nav{
+    color:var(--my-gray-1);
+    background-color: var(--bs-body-bg);
+}
+.btn.page-nav:hover{
+    color:var(--my-black);
+}
+
+.btn.page-nav.active{
+    background-color: var(--my-white);
+    border:none;
+}
+
+.btn.page-nav.active:hover{
+    color:var(--my-gray-1);
+}
+
+.btn.page-list{
+    background-color: var(--my-white);
+    border:none
+}
+.btn.page-list:hover{
+    font-weight: bolder;
+}

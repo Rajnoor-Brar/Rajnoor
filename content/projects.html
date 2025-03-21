@@ -1,0 +1,39 @@
+---
+layout: default
+active_nav: "#project-nav"
+pageScript: "/js/projectScript.js"
+pageStyle : "/css/projectStyle.css"
+title: "Rajnoor | Projects"
+url : "/projects"
+description: 'Gallery of Goodwork'
+---
+
+{{<projectNav navNest=" / Projects " url="/projects">}}
+
+<div class="container-fluid p-0 m-0 d-flex justify-content-center">
+  <div class="conatiner col-12 col-md-8 col-lg-6 d-flex flex-wrap justify-content-evenly justify-content-lg-between">
+    
+    {{<projectCards 
+      cardImage="/resources/YaEWYntB.jpg"
+      cardLink="/projects/ellipsoidal-channel"
+      cardTitle="Ellipsoidal Channel"
+      cardText="Plotting a channel of ellipsoidal profile wrapped about two directrices in 3D space via MATLAB"
+    >}}
+
+    {{<projectCards 
+      cardImage="/resources/YaEWYntB.jpg"
+      cardLink="/projects/color-namer"
+      cardTitle="Color Namer"
+      cardText="Collect training data for 'Color Maker' model. A colored block is shown and prompt is given for name of the color. Responses are stored"
+    >}}
+
+    {{<projectCards 
+      cardImage="/resources/YaEWYntB.jpg"
+      cardLink="/projects/color-maker"
+      cardTitle="Color Maker - Not Live"
+      cardText="Machine Learning model trained on data from Color-Namer. User provides name or description of color and model provides RGB|HSV values"
+    >}}
+    
+
+  </div>
+</div>
