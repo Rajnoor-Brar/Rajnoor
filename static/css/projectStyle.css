@@ -1,3 +1,22 @@
+:root{
+    --page-color: #f9f9f9;
+    --page-boder: #22222222;
+    --code-color: #fbfbf9;
+    --punctuation:#1d70dd;
+    --string:#009b00;
+    --keyword:#b400b4;
+    --function:#ff0099;
+    --number:#ff9900;
+    --operation:#eb791c;
+    --comment:#999999;
+}
+
+html[data-bs-theme="dark"] {
+    --page-color: #252525;
+    --page-border: #fbfbfb22;
+    --code-color: #181818;
+}
+
 pre{
     background-color: var(--my-white);
 }
@@ -25,4 +44,268 @@ pre{
 }
 .btn.page-list:hover{
     font-weight: bolder;
+}
+
+.page {
+    position: relative;
+    font-size: 1.1rem;
+    display: flex;
+    width: 90vw;
+    flex-direction: column;
+    max-width: 98vw;
+    justify-content: center;
+    align-items: center;
+    padding: 2em 1em;
+}
+
+.katex-display {
+    overflow-x: auto;
+    font-size: 1.15em;
+    overflow-y: hidden;
+    max-width: 100%;
+    display: block;
+    text-align: center;
+}
+
+.katex {
+    font-size: 0.9em;
+    white-space: normal !important;
+}
+
+.header {
+    text-align: center;
+    max-width: 80%;
+    margin-bottom: 1em;
+}
+
+.header .title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: bold;
+}
+
+.header .subtitle {
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    color: var(--subtitle-color);
+}
+
+.header .author {
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
+    font-weight: 500;
+}
+
+.article {
+    font-family: "Spectral", serif;
+    text-align: justify;
+    color:var(--my-black);
+    overflow-x: auto;
+    word-wrap: break-word;
+    white-space: normal;
+    background-color: var(--page-color);
+    background-clip: border-box;
+    border: 1px solid var(--my-border-color);
+    border-radius: 0.25em;
+    padding: 2em;
+    margin: 4px;
+    max-width: 85%;
+}
+
+.abstract {
+    font-size: 1em;
+    padding: 2em;
+    background: var(--abstract-bg);
+    border-radius: 0.5rem;
+}
+
+.abstract > .title {
+    width: 100%;
+    text-align: center;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: bold;
+    border-bottom: 2px solid var(--my-border-color);
+    padding-bottom: 0.5rem;
+}
+
+.section {
+    margin-block: 2em;
+    padding: 1.5em;
+}
+
+.section > .title {
+    width: 100%;
+    text-align: left;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: bold;
+    border-bottom: 2px solid var(--my-border-color);
+    padding-bottom: 0.4em;
+    margin-bottom: 1em;
+}
+
+.sub-section > .title {
+    width: 100%;
+    text-align: left;
+    font-size: clamp(1.5rem, 2.5vw, 1.75rem);
+    font-weight: bold;
+    margin-top: 1em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px groove var(--my-border-color);
+}
+
+.figure {
+    width: calc(100% + 2rem);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    align-items: center;
+    padding: 12px 12px;
+    margin-left: -1em;
+    margin-right: -1em;
+    margin-block: 2em;
+    border: 1px solid var(--my-border-color);
+    border-radius: 0.45em;
+}
+
+.figure img {
+    justify-items: center;
+    align-items: center;
+    max-width: 96%;
+    height: auto;
+    border-radius: 0.25rem;
+}
+
+.figure p {
+    width:100%;
+    font-size: 0.9em;
+    text-align: center;
+    margin-top: 0.25em;
+    padding:none;
+    margin-bottom:-6px;
+    color: var(--text-muted);
+}
+
+ul,td{
+    text-align: left;
+}
+td{
+    padding-inline: 8px;
+    border: 1px dashed var(--my-border-color);
+}
+
+pre.code-block {
+    background-color: var(--code-color);
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    font-size: 0.9em;
+    text-shadow: none;
+}
+code[class*="language-"], :not(pre)>code[class*="language-"]{
+    padding-inline: 4px;
+    background-color: var(--code-color);
+    color:var(--my-black);
+}
+
+.token{
+    text-shadow: none;
+}
+
+.token.string {
+    color: var(--string);
+}
+
+.token.keyword {
+    color: var(--keyword);
+    font-weight: bold;
+}
+
+.token.function {
+    color: var(--function);
+}
+
+.token.number {
+    color: var(--number);
+}
+
+.token.operator {
+    color: var(--operation);
+}
+
+.token.comment {
+    color: var(--comment);
+    font-style: italic;
+}
+
+.token.punctuation {
+    color: var(--punctuation);
+}
+
+
+/* Responsive Tweaks */
+@media (max-width: 992px) {
+    .header {
+        max-width: 95%;
+    }
+
+    .article {
+        max-width: 95%;
+    }
+
+    .abstract {
+        padding: 1.5rem;
+    }
+
+    .figure img {
+        max-width: 95%;
+    }
+}
+
+@media (max-width: 768px) {
+    .article {
+        padding: 1.5rem;
+    }
+
+    .abstract {
+        padding: 1rem;
+    }
+
+    .section {
+        padding: 1rem;
+    }
+
+    .figure img {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .page {
+        font-size: 0.7rem;
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .article {
+        max-width: 100%;
+        padding: 1rem;
+    }
+
+    .header{
+        width:100%
+    }
+
+    .header .title {
+        font-size: 1.25rem;
+    }
+
+    .header .subtitle {
+        font-size: 1rem;
+    }
+
+    .header .author {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .figure img {
+        max-width: 100%;
+    }
 }

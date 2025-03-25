@@ -1,0 +1,570 @@
+---
+layout: default
+title: "Rajnoor | Ellipsoidal Channel"
+active_nav: "#project-nav"
+pageScript: "/js/projectScript.js"
+pageStyle : "/css/projectStyle.css"
+url : "/projects/ellipsoidal-channel"
+description: "Plot an ellipsoidal channel in MATLAB"
+---
+{{<projectNav navNest=" / Projects / Ellipsoidal Channel" url="/projects/ellipsoidal-channel">}}
+
+<div class="page language-matlab line-numbers">
+
+    <!-- Header Section -->
+    <div class="header col-7">
+        <div class="title">Ellipsoidal Channel Analysis</div>
+        <div class="subtitle">A Detailed Computational Study</div>
+        <div class="author">Rajnoor Brar</div>
+    </div>
+    
+    <!-- Article Content -->
+    <div class="article col-lg-8 col-12">
+    
+        <!-- Section: Introduction -->
+        <div class="section">
+            <div class="title">Introduction</div>
+        
+            <div class="figure">
+                <img src="/resources/Ellipsoidal_Channel/Channel_Construction.png" class="col-11 col-lg-6" alt="Channel as a sweep of sphere">
+                <p>Channel as a sweep of sphere</p>
+            </div>
+        
+            <p>
+                A channel is a surface formed as the envelope of a family of spheres, each with its center on a space curve called the directrix. We’ll generalize this definition to ellipsoids for our specific case. Channel surfaces in topology are formed by sweeping a sphere along a directrix. The directrix determines whether the channel surface is open or closed.
+            </p>
+        
+            <ul class="list-unstyled">
+                <li><strong>Right circular cylinder:</strong> When the directrix is a straight line and the radii are constant.</li>
+                <li><strong>Torus:</strong> When the directrix is a circle and the radii are constant.</li>
+                <li><strong>Right circular cone:</strong> When the directrix is a straight line and the radii decrease to zero.</li>
+            </ul>
+        
+            <p>
+                We aim to plot a channel in MATLAB using two directrices as focal points of rotational ellipsoids. We assume that the two axes other than the focal axis are equal (<span>\(b = c\)</span>), which we will refer to as the minor axis or axes. We are provided with a list of discrete position coordinates for the two directrices and the corresponding lengths of either the semi-major or the semi-minor axis.
+            </p>
+        
+            <p>
+                <span>\[F_{1} = \left\{ \left( p_{i} , q_{i} , r_{i} \right) \right\}\]</span>
+                <span>\[F_{2} = \left\{ \left( u_{i} , v_{i} , w_{i} \right) \right\}\]</span>
+                <span>\[A = \left\{ a_{i} \right\} ,or, B = \left\{ b_{i} \right\}\]</span>
+            </p>
+        
+            <!-- Sub-section: Matlab Code -->
+            <div class="sub-section">
+                <div class="title">Matlab Code</div>
+                <p>
+                Data is stored in a MATLAB readable text file in seven rows for <em>p, q, r, u, v, w, a or b</em>.
+                </p>
+                <p>
+                To plot a surface in MATLAB, we use <code>surf(x,y,z)</code> where <span>\(x, y, z\)</span> are matrices of second order and dimensions <span>\(m \times n\)</span>.
+                </p>
+                <span>\[\begin{bmatrix}
+                \left( x_{11} ,  y_{11} ,  z_{11}  \right) & \cdots & \cdots & \left( x_{1n} ,  y_{1n} ,  z_{1n}  \right) \\
+                \vdots & \ddots & \ddots & \vdots \\
+                \vdots & \ddots & \ddots & \vdots \\
+                \left( x_{m1} , y_{m1} ,  z_{m1}  \right) & \cdots & \cdots & \left( x_{mn} , y_{mn} , z_{mn}  \right) \\
+                \end{bmatrix}\]</span>
+                <div class="figure">
+                <img src="/resources/Ellipsoidal_Channel/Sphere_Mesh_Gray.png" class="col-12 col-lg-10" alt="Sphere as mesh of various densities">
+                <p>Sphere as mesh of various densities</p>
+                </div>
+                <p>
+                A “sheet” of points, used by MATLAB to create a mesh of a surface for plotting, consists of columns and rows that form intersecting curves which create a net that MATLAB fills.
+                </p>
+                <p>
+                If the data is stored in MATLAB-readable format in a text file, such as <code>curves.txt</code>, we can use the <code>load()</code> function to extract all the data into a variable and then distribute it among various variables.
+                </p>
+                <pre class="code-block"><code>
+impdata = load("curves.txt", "~ascii");
+p      = impdata(1,:);
+q      = impdata(2,:);
+r      = impdata(3,:);
+u      = impdata(4,:);
+v      = impdata(5,:);
+w      = impdata(6,:);
+minor  = impdata(7,:);
+clear impdata;
+                </code></pre>
+            </div>
+        
+            <!-- Sub-section: The Channel and The Cylinder -->
+            <div class="sub-section">
+                <div class="title">The Channel and The Cylinder</div>
+                <p>
+                    To simplify the mathematics of a channel, we will make an analogy to one of its special cases, a right cylindrical surface.
+                </p>
+                <p>
+                    A right cylindrical surface is a channel formed by a series of spheres, with their directrix being a line. Alternatively, a solid cylinder can be thought of as the result of integrating circular discs oriented perpendicular to the directrix. A cylindrical surface, on the other hand, is the result of integrating circles or the perimeters of the discs.
+                </p>
+                <div class="figure">
+                    <img src="/resources/Ellipsoidal_Channel/Cylinder_Stack_Left.png" class="col-10 col-lg-5" alt="Cylinder as Integration of Circular Sheets">
+                    <img src="/resources/Ellipsoidal_Channel/Cylinder_Stack_Right.png" class="col-10 col-lg-5" alt="Cylinder as Integration of Circular Sheets">
+                    <p class="text-muted">Cylinder as Integration of Circular Sheets</p>
+                </div>
+                <p>
+                    We can visualize a channel as a cylinder with varying cross-sectional radii. This allows us to calculate the position of points on elliptical cross-sections to create a mesh of the channel.
+                </p>
+            </div>        
+        </div>
+    
+        <!-- Section: The Tangents -->
+        <div class="section">
+            <div class="title">The Tangents</div>
+            <p>
+                After calculating the Directrix,
+            </p>
+            <p><span>\[D = \frac{F_{1} + F_{2}}{2}\]</span></p>
+            <p>
+                We are provided with a minor axis length as well, so we will also determine focal length &amp; Directrix coordinates, and calculate major axis length.
+            </p>
+            <pre class="code-block"><code>
+focal = sqrt( (p-u).^2 + (q-v).^2 + (r-w).^2) / 2;
+major = sqrt(focal.^2 + minor.^2);
+
+x = (p+u)/2;
+y = (q+v)/2;
+z = (r+w)/2;
+            </code></pre>
+            <p>
+                By default, MATLAB attempts to perform matrix operations on arrays; that is, using multiplication and squaring results in matrix multiplication. Therefore, operations are modified with a period (<code>.</code>) to make them element-wise. For example, <code>.^2</code> squares each element individually, and <code>sqrt()</code> applies element-wise.
+            </p>
+            <p>
+                We have one more necessary parameter to determine: the tangents of the directrix. Since we are dealing with a set of discrete points, there are a few techniques that we can use for calculating tangents.
+            </p>
+            <p>
+                <span>\[\vec{R}  =  \left(\, x(t)\, ,\, y(t) \, ,\, z(t)\, \right)\]</span>
+            </p>
+            <p>
+                A one dimensional object, like a line or a curve, suspended in a three dimensional space can be represented as each coordinate being a function of some independent parameter <code>t</code>.
+            </p>
+            <p>
+                Slope is given by: <span>\[\vec{M}  =  \left(\, \frac{\partial x}{\partial t} \, ,\, \frac{\partial y}{\partial t}\, ,\, \frac{\partial z}{\partial t}\, \right)\]</span>
+            </p>
+            <p>
+                If \(t := x\), then:
+            </p>
+            <p>
+                <span>\[\vec{R}  =  \left( \,x\, ,\, y(x) \, ,\, z(x) \,\right)\]</span>
+                <span>\[\vec{M}  =  \left( \,1 \, ,\, \frac{\partial y}{\partial x}  \, ,\, \frac{\partial z}{\partial x}\, \right)\]</span>
+            </p>
+        
+            <!-- Section: Global Polynomial Fit -->
+            <div class="sub-section">
+                <div class="title">Global Polynomial Fit</div>
+                <p>
+                    Global polynomial fitting involves approximating a dataset using a single polynomial equation of degree <em>k</em> that best represents the data. Once fitted, the polynomial can be differentiated to compute derivatives (e.g., slopes) at any given data point.
+                </p>
+                <p>
+                    Calculating the slope of a curve can be quite tedious to code. First, we need to determine the coefficients of the fitted polynomial and then use these coefficients to calculate the derivative of the polynomial at each point. MATLAB’s built-in functions <code>polyfit(x,y,k)</code>, <code>polyder(func)</code>, and <code>polyval(func,val)</code> simplify this process.
+                </p>
+                <pre class="code-block"><code>
+% Degree of the polynomial fit
+polynomial_order = 3;  % Choose based on the complexity of the data
+
+% Number of points in the dataset
+count = size(x, 2);
+
+% Fit polynomials globally for y and z
+p_y = polyfit(x, y, polynomial_order);  % Polynomial coefficients for y
+p_z = polyfit(x, z, polynomial_order);  % Polynomial coefficients for z
+
+% Compute the derivative coefficients
+dp_y = polyder(p_y);  % Derivative coefficients for y
+dp_z = polyder(p_z);  % Derivative coefficients for z
+
+% Initialize arrays to store tangents (derivatives) at each point
+tangent_y = zeros(1, count);
+tangent_z = zeros(1, count);
+
+% Evaluate the derivative polynomials at each point in x
+for n = 1:count
+tangent_y(n) = polyval(dp_y, x(n));  % Derivative of y at x(n)
+tangent_z(n) = polyval(dp_z, x(n));  % Derivative of z at x(n)
+end
+                </code></pre>
+                <p><strong>Operational Complexity:</strong></p>
+                <ul class="list-unstyled">
+                    <li><strong>Polynomial Fitting (<code>polyfit</code>):</strong> \( O(n \cdot k + k^3) \) where \( n \) is the number of points and \( k \) is the degree.</li>
+                    <li><strong>Derivative Computation (<code>polyder</code>):</strong> \( O(k) \) for each polynomial.</li>
+                    <li><strong>Polynomial Evaluation (<code>polyval</code>):</strong> \( O(n \cdot k) \).</li>
+                </ul>
+                <p><strong>Total Complexity:</strong> \(O(n \cdot k + k^3)\)</p>
+                <p>
+                    <strong>Key Observations:</strong>
+                </p>
+                <ul class="list-unstyled">
+                    <li>For large \( n \), the term \( O(n \cdot k) \) dominates.</li>
+                    <li>For large \( k \), the cubic cost \( O(k^3) \) dominates.</li>
+                    <li>The code is efficient for small \( k \) but becomes computationally expensive for high-degree polynomials.</li>
+                </ul>
+                <p>
+                    <strong>Limitations:</strong> Overestimation or underestimation may occur if the proper degree is not used.
+                </p>
+            </div>
+        
+            <!-- Section: Spline Interpolation -->
+            <div class="sub-section">
+                <div class="title">Spline Interpolation</div>
+                <p>
+                    Spline interpolation is a piecewise polynomial method used to approximate a dataset by constructing smooth polynomials between consecutive points. It avoids overfitting and instabilities seen in global polynomial fitting.
+                </p>
+                <pre class="code-block"><code>
+    window_size = 5;    % Number of points in the fitting window
+    max_order   = 3;    % Maximum degree of the polynomial fit
+    count       = size(x, 2); % Total number of points
+
+    tangent_y = zeros(1, count);
+    tangent_z = zeros(1, count);
+
+    for n = 1:count
+    % Determine the indices for the fitting window
+    half_window = floor(window_size / 2);
+    start_idx = max(1, n - half_window);
+    end_idx = min(count, n + half_window);
+
+    x_window = x(start_idx:end_idx);
+    y_window = y(start_idx:end_idx);
+    z_window = z(start_idx:end_idx);
+
+    % Determine the polynomial order based on the window size
+    current_order = min(max_order, length(x_window) - 1);
+
+    p_y = polyfit(x_window, y_window, current_order);
+    p_z = polyfit(x_window, z_window, current_order);
+
+    dp_y = polyder(p_y);
+    dp_z = polyder(p_z);
+
+    tangent_y(n) = polyval(dp_y, x(n));
+    tangent_z(n) = polyval(dp_z, x(n));
+    end
+                </code></pre>
+                <p><strong>Operational Complexity:</strong></p>
+                <ul class="list-unstyled">
+                    <li><strong>Polynomial Fitting (<code>polyfit</code>):</strong> \( O(m \cdot k^2 + k^3) \) where \( m \) is the window size and \( k \) is the degree.</li>
+                    <li><strong>Derivative Computation (<code>polyder</code>):</strong> \( O(k) \).</li>
+                    <li><strong>Polynomial Evaluation (<code>polyval</code>):</strong> \( O(k) \).</li>
+                </ul>
+                <p><strong>Total Complexity per iteration:</strong> \(O(m \cdot k^2 + k^3)\)</p>
+                <p>
+                    <strong>Limitations:</strong> MATLAB’s <code>polyfit</code> may error if consecutive data points are too close (e.g., differences less than \(0.01\)).
+                </p>
+            </div>
+        
+            <!-- Section: Central Finite Difference -->
+            <div class="sub-secsection">
+                <div class="title">Central Finite Difference</div>
+                <div class="figure">
+                    <img src="/resources/Ellipsoidal_Channel/Mean Value Tangent.png" class="col-6" alt="Line connecting two points approximates the slope">
+                    <p>Line connecting two points is the slope at some point between them</p>
+                </div>
+                <p>
+                    This method is based on Lagrange's mean value theorem which states that in any interval <span>\(\lbrack a,b\rbrack\)</span>, there is some \(c\) for which:
+                </p>
+                <p>
+                    <span>\[f^{'}(c) = \frac{f(b) - f(a)}{b - a}\]</span>
+                </p>
+                <p>
+                    We assume that \(c\) is close enough to our point that we can approximate its tangent as being equal to our point.
+                </p>
+                <pre class="code-block"><code>
+count = size(x, 2);
+
+tangent_y = zeros(1, count);
+tangent_z = zeros(1, count);
+
+tangent_y(1) = (y(2) - y(1)) / (x(2) - x(1));
+tangent_z(1) = (z(2) - z(1)) / (x(2) - x(1));
+
+tangent_y(end) = (y(end) - y(end-1)) / (x(end) - x(end-1));
+tangent_z(end) = (z(end) - z(end-1)) / (x(end) - x(end-1));
+
+for n = 2:count-1
+tangent_y(n) = (y(n+1) - y(n-1)) / (x(n+1) - x(n-1));
+tangent_z(n) = (z(n+1) - z(n-1)) / (x(n+1) - x(n-1));
+end
+                </code></pre>
+                <p>
+                    Spline interpolation excels where finite difference fails, and vice versa.
+                </p>
+            </div>
+        
+            <!-- Section: Comparison of Methods -->
+            <div class="sub-section">
+                <div class="title">Comparison of Methods</div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Global Fitting</th>
+                        <th>Spline Fitting</th>
+                        <th>Finite Difference</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><strong>Process</strong></td>
+                        <td>Fit a single \( k \)-th degree polynomial to all data points, then differentiate.</td>
+                        <td>Fit \( n \) piecewise \( k \)-th degree polynomials, then differentiate each segment.</td>
+                        <td>Use finite differences between neighboring points to estimate derivatives.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Strengths</strong></td>
+                        <td>Smooth, continuous data; small to medium datasets.</td>
+                        <td>Handles sharp transitions, non-uniform spacing, or local trends.</td>
+                        <td>Efficient for smooth, evenly spaced data.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Weaknesses</strong></td>
+                        <td>Risk of overfitting or instability with high-degree polynomials.</td>
+                        <td>Higher computational cost and potential errors with very dense data.</td>
+                        <td>Highly sensitive to noise and unsuitable for uneven spacing.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Complexity</strong></td>
+                        <td>\( O(nk^2 + k^3) \)</td>
+                        <td>\( O(nk^2 + nk) \)</td>
+                        <td>\( O(n) \)</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p>
+                    Data that we use as test data is very dense and smooth. Therefore, we will use the Central Finite Difference.
+                </p>
+            </div>
+        
+        </div>
+    
+        <!-- Section: The Ellipses -->
+        <div class="section">
+            <div class="title">The Ellipses</div>
+            <div class="figure">
+                <img src="/resources/Ellipsoidal_Channel/Ellipse.png" class="col-11 col-lg-6" alt="Special points and parameters of an ellipse">
+                <p>Special points and parameters of an ellipse</p>
+            </div>
+            <p>
+                An ellipse is a locus of points in a plane whose distances from two focal points have a constant sum. Let the focal points be \(C_{1}\) and \(C_{2}\), with \(O\) as their midpoint (the ellipse's center). For any point \(P\) on the ellipse, \(C_{1}P + C_{2}P = k\).
+            </p>
+            <p>
+                The line passing through the focal points is the Major Axis, and the line perpendicular to it (passing through the center) is the Minor Axis.
+            </p>
+            <p>
+                Let \(OA = a\) be the semi-major axis, \(OB = b\) be the semi-minor axis, and \(OC = c\) be the focal distance from the center. Useful relations include:
+            </p>
+            <p>
+                <span>\(a = \frac{k}{2}\)</span><br>
+                <span>\(a^{2} = b^{2} + c^{2}\)</span>
+            </p>
+            <p>
+                The vector equation of an ellipse is given by:
+            </p>
+            <p>
+                <span>\(\vec{r} = a \cdot \cos(\theta)\ \hat{i} + b \cdot \sin(\theta)\ \hat{j} + \vec{O}\)</span>
+            </p>
+            <p>
+                More generally, using any pair of mutually perpendicular unit vectors:
+            </p>
+            <p>
+                <span>\(\vec{r} = a \cdot \cos(\theta)\ \hat{a} + b \cdot \sin(\theta)\ \hat{b} + \vec{O}\)</span>
+            </p>
+            <p>
+                Representing a point \(x\hat{i} + y \hat{j} + z\hat{k}\) as a matrix:
+            </p>
+            <p>
+                <span>\(\begin{bmatrix}r_{x} & r_{y} & r_{z}\end{bmatrix} = a\begin{bmatrix}\cos(\theta)a_{x} & \cos(\theta)a_{y} & \cos(\theta)a_{z}\end{bmatrix} + b\begin{bmatrix}\sin(\theta)b_{x} & \sin(\theta)b_{y} & \sin(\theta)b_{z}\end{bmatrix}\)</span>
+            </p>
+    
+        <!-- Section: The Compromise -->
+            <div class="sub-section">
+                <div class="title">The Compromise</div>
+                <p>
+                    Channel Directrix is the curve that passes through the centers of all ellipses.
+                </p>
+                <p>
+                    <span>\(D = \frac{F_{1} + F_{2}}{2}\)</span>
+                </p>
+                <p>
+                    Each ellipse must satisfy:
+                </p>
+                <ul class="list-unstyled">
+                    <li><strong>Major Axis</strong> must pass through the Focal Points.</li>
+                    <li>Ellipses must be perpendicular to the Directrix; that is, the normal vector of the ellipse is tangential to the directrix.</li>
+                    <li>Major and Minor Axes must be mutually perpendicular.</li>
+                </ul>
+                <p>
+                    In practice, it is challenging to satisfy all conditions. Therefore, we choose to enforce that the <strong>Major Axis always passes through the Focal Points</strong>.
+                </p>
+                <p>
+                    Let <span>\(\hat{n}\)</span> be a unit tangent vector to the Directrix. Then:
+                </p>
+                <p>
+                    <span>\(\hat{a} = \frac{1}{2}\frac{\begin{bmatrix} F_{x}^{2} - F_{x}^{1} & F_{y}^{2} - F_{y}^{1} & F_{z}^{2} - F_{z}^{1} \end{bmatrix}}{\sqrt{(F_{x}^{2} - F_{x}^{1})^{2} + (F_{y}^{2} - F_{y}^{1})^{2} + (F_{z}^{2} - F_{z}^{1})^{2}}}\)</span>
+                </p>
+                <p>
+                    <span>\(\hat{b} = \hat{n} \times \hat{a}\)</span><br>
+                    <span>\(\hat{a} = \hat{b} \times \hat{n}\)</span>
+                </p>
+                <p>
+                    Thus, the minor axis is always perpendicular to the tangent of the directrix.
+                </p>
+            </div>
+
+            <div class="sub-section">
+                <div class="title">The Cross-Sections</div>
+                <p>
+                    To generate each elliptical cross-section, MATLAB computes the major and minor axes for each ellipse, then shifts the points by the ellipse’s center coordinates.
+                </p>
+                <pre class="code-block"><code>
+t      = 0:0.01:2*pi+0.1;
+cyl_x  = zeros(size(t'*x));  % Container matrices for coordinates
+cyl_y  = cyl_x;
+cyl_z  = cyl_x;
+
+for n = 1:size(x,2)
+norm_vec  = [1 tangent_y(n) tangent_z(n)];
+norm_vec  = norm_vec / norm(norm_vec);  % Unit vector
+focal_vec = [(p(n)-u(n))/2 (q(n)-v(n))/2 (r(n)-w(n))/2];
+minor_vec = cross(norm_vec, focal_vec);
+minor_vec = minor_vec / norm(minor_vec);
+major_vec = focal_vec / norm(focal_vec);
+point_vec = (major(n) * (cos(t)' * major_vec) + minor(n) * (sin(t)' * minor_vec));
+
+% Each column corresponds to one elliptical cross-section
+cyl_x(:,n) = point_vec(:,1);
+cyl_y(:,n) = point_vec(:,2);
+cyl_z(:,n) = point_vec(:,3);
+end
+
+k       = ones(size(t));
+shift_x = k' * x;
+shift_y = k' * y;
+shift_z = k' * z;
+cyl_x   = cyl_x + shift_x;
+cyl_y   = cyl_y + shift_y;
+cyl_z   = cyl_z + shift_z;
+                </code></pre>
+            </div>
+        </div>
+    
+        <!-- Section: The Rendering -->
+        <div class="section">
+        <div class="title">The Rendering</div>
+        <p>
+            All the code described above is compiled into one <code>.m</code> file and executed in MATLAB. The <code>surf()</code> function is used to plot the surface. The resultant surface object has several modifiable properties:
+        </p>
+        <ul class="list-unstyled">
+            <li><strong>EdgeAlpha (0–1):</strong> Opacity of mesh edges (set to 0 to avoid darkening).</li>
+            <li><strong>FaceColor:</strong> Surface color (using "interp" for gradient shading based on z-value).</li>
+            <li><strong>FaceLighting:</strong> Defines the light source for the surface.</li>
+            <li><strong>SpecularStrength (0–1):</strong> Controls surface glossiness.</li>
+            <li><strong>AmbientStrength (0–1):</strong> Controls ambient light intensity.</li>
+        </ul>
+        <pre class="code-block"><code>
+g_cyl = surf(cyl_x, cyl_y, cyl_z);
+g_cyl.EdgeAlpha        = 0;
+g_cyl.FaceColor        = "interp";
+g_cyl.FaceAlpha        = 1;
+g_cyl.FaceLighting     = "gouraud";
+g_cyl.AmbientStrength  = 0.6;
+g_cyl.SpecularStrength = 0.2;
+
+axis equal;
+axis auto;
+xlabel("x-axis");
+ylabel("y-axis");
+zlabel("z-axis");
+grid on;
+        </code></pre>
+        <p>
+            Following code generates test data for all subsequent figures:
+        </p>
+        <pre class="code-block"><code>
+helix_rad     = 6;
+helix_stretch = 10;
+x             = 0:0.1:50;
+a             = helix_rad * cos(1*x/helix_stretch - pi/4);
+b             = helix_rad * sin(1*x/helix_stretch - pi/4);
+rad           = (sin(pi*sin(x/8).^2) + cos(3*pi/2*sin(x/7)) + exp((x-5)/35)) + 1;
+c             = -1 * helix_rad * cos(1.2*x/helix_stretch - pi/4);
+d             = -1 * helix_rad * sin(1.1*x/helix_stretch - pi/4);
+save("curves.txt", "x", "a", "b", "x", "c", "d", "rad", "-ascii");
+        </code></pre>
+        <div class="figure">
+            <img src="/resources/Ellipsoidal_Channel/Uncharted_Tunnel.png" class="col-11" alt="Rendering of Calculated Mesh">
+            <p>Rendering of Calculated Mesh</p>
+        </div>
+        </div>
+    
+        <!-- Sub-section: Cross-sections Plot -->
+        <div class="sub-section">
+        <div class="title">Cross-sections</div>
+        <p>
+            To enhance the plot, boundaries around a few cross-sections are added by plotting only selected columns.
+        </p>
+        <pre class="code-block"><code>
+hold on
+cross_density = 15;
+g_cross = plot3(cyl_x(:, 1:1+cross_density:end), ...
+            cyl_y(:, 1:1+cross_density:end), ...
+            cyl_z(:, 1:1+cross_density:end), ...
+            'LineWidth', 1);
+        </code></pre>
+        <div class="figure">
+            <img src="/resources/Ellipsoidal_Channel/Skeleton.png" class="col-11" alt="Plots of Cross-sections only">
+            <p>Plots of Cross-sections only</p>
+        </div>
+        <p>
+            <code>plot3</code> plots each column as an individual curve when given a matrix.
+        </p>
+        <div class="figure">
+            <img src="/resources/Ellipsoidal_Channel/Charted_Tunnel_Right.png" class="col-11" alt="Channel with sparsely marked cross-sections">
+            <p>Channel with sparsely marked cross-sections</p>
+        </div>
+        </div>
+    
+        <!-- Sub-section: Shadows -->
+        <div class="sub-section">
+        <div class="title">Shadows</div>
+        <p>
+            Shadows are added by plotting the surface again with one axis scaled almost to zero and shifted to create a projection.
+        </p>
+        <pre class="code-block"><code>
+shadow_xy = surf(cyl_x, cyl_y, cyl_z * 0.01 - 15);
+shadow_xz = surf(cyl_x, cyl_y * 0.01 + 15, cyl_z);
+shadow_yz = surf(cyl_x * 0.01 - 15, cyl_y, cyl_z);
+
+shadow_xy.EdgeAlpha = 0;
+shadow_xy.FaceColor = [0, 0, 1];
+shadow_xy.FaceLighting = "gouraud";
+shadow_xy.FaceAlpha = 0.15;
+
+shadow_xz.EdgeAlpha = 0;
+shadow_xz.FaceColor = [0, 0, 1];
+shadow_xz.FaceLighting = "gouraud";
+shadow_xz.FaceAlpha = 0.15;
+
+shadow_yz.EdgeAlpha = 0;
+shadow_yz.FaceColor = [0, 0, 1];
+shadow_yz.FaceLighting = "gouraud";
+shadow_yz.FaceAlpha = 0.15;
+        </code></pre>
+        <div class="figure">
+            <img src="/resources/Ellipsoidal_Channel/Shadowed_Tunnnel.png" class="col-11" alt="Channel with cross-sections and shadows">
+            <p>Channel with cross-sections and shadows</p>
+        </div>
+        </div>
+    
+        <!-- Bibliography and Final Note -->
+        <div class="section">
+        <p>
+            <strong>Bibliography:</strong> (References: mathworks_polyfit, mathworks_polyder, mathworks_polyval, mathworks_norm, mathworks_surf, mathworks_surface_properties)
+        </p>
+        <p>
+            <strong>Note:</strong> All figures except the first are generated using MATLAB and GeoGebra. Complete code is available at <a href="https://github.com/Rajnoor-Brar/Ellipsoidal-Channel" target="_blank" class="btn btn-outline-dark mb-2 p-0" style="color:var(--my-black);border-color: transparent;font-size:1em; width:1.25em; height:1.25em;"><i class="bi bi-github"></i></a>.
+        </p>
+        </div>
+    
+    </div>
+</div>
+    
