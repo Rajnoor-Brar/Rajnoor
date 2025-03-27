@@ -17,6 +17,15 @@ html[data-bs-theme="dark"] {
     --code-color: #181818;
 }
 
+.card {
+    transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+}
+
+
 pre{
     background-color: var(--my-white);
 }
@@ -50,7 +59,7 @@ pre{
     position: relative;
     font-size: 1.1rem;
     display: flex;
-    width: 90vw;
+    width: 100%;
     flex-direction: column;
     max-width: 98vw;
     justify-content: center;
@@ -79,22 +88,26 @@ pre{
 }
 
 .header .title {
+    font-family:  "Spectral", serif;
     font-size: clamp(2rem, 4vw, 3rem);
+    text-align: center;
     font-weight: bold;
 }
 
 .header .subtitle {
+    font-family: "Edu SA Beginner", cursive;;
     font-size: clamp(1.25rem, 2.5vw, 1.5rem);
     color: var(--subtitle-color);
 }
 
 .header .author {
+    margin-top: 8px;
     font-size: clamp(0.9rem, 1.5vw, 1rem);
     font-weight: 500;
 }
 
 .article {
-    font-family: "Spectral", serif;
+    font-family:"Slabo 27px", serif;
     text-align: justify;
     color:var(--my-black);
     overflow-x: auto;
@@ -285,7 +298,7 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
 
     .article {
         max-width: 100%;
-        padding: 1rem;
+        padding: 0.5rem;
     }
 
     .header{
@@ -306,6 +319,6 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
     }
 
     .figure img {
-        max-width: 100%;
+        max-width: 95%;
     }
 }

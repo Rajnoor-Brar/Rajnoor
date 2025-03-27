@@ -1,0 +1,70 @@
+<div class="certificate h-100 card p-2 col-12 col-lg-5 col-md-8">
+  <div class="row g-0">
+    
+    <div class="col-md-2 d-flex align-items-center justify-content-center" style="aspect-ratio: 1/1;">
+      {{ with .Params.certIcon }}
+        <img src="{{ printf "%s%s" "/resources/" . }}" class="img-fluid" alt="Certificate Icon">
+      {{ end }}
+    </div>
+    
+    <div class="col-md-10 d-flex align-items-center">
+      <div class="card-body flex-wrap d-flex">
+        <div class="certificate-details col-12">
+          {{ with .Params.name }}
+            <div class="certificate-name">
+              <span><strong>{{ . }}</strong></span>
+            </div>
+          {{ end }}
+
+          {{ with .Params.institution }}
+            <div class="certificate-institution">
+              <span>{{ . }}</span>
+            </div>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <hr class="mt-2">
+
+  <div class="d-flex flex-wrap">
+    {{ if .Params.link }}
+      <div class="certificate-link col-12 col-lg-6">
+        <a href="{{ .Params.link }}" target="_blank" class="btn">
+          {{ if .Params.id }}
+            {{ .Params.id }}
+          {{ else }}
+            {{ .Params.link }}
+          {{ end }}
+        </a>
+      </div>
+    {{ else if .Params.id }}
+      <div class="certificate-link col-12 col-lg-6">
+        <a href="javascript:void(0)" class="btn">
+          {{ .Params.id }}
+        </a>
+      </div>
+    {{ end }}
+
+
+        
+    <div class="certificate-extra col-12 col-lg-6 d-flex flex-wrap">
+      {{ with .Params.marks }}
+        <div class="certificate-marks col-6 col-lg-12 d-flex btn justify-content-lg-end"><span>{{ . }}</span></div>
+      {{ end }}
+      
+      {{/*  {{ with .Params.date }}
+        <div class="certificate-date col-6 col-lg-12 d-flex justify-content-end justify-content-lg-end"><span>{{ . }}</span></div>
+      {{ end }}  */}}
+    </div>
+
+
+
+    {{ with .Params.description }}
+      <div class="certificate-description">
+        <p>{{ . }}</p>
+      </div>
+    {{ end }}
+  </div>
+</div>
