@@ -1,0 +1,20 @@
+.abstract{
+    font-size: 0.7em;
+}
+.citation{
+    font-family: "Spectral", serif;;
+    font-size: 0.85em;
+}
+.card {
+    transition: box-shadow 0.2s ease;
+}
+@media (min-width:992px) {
+    .card {
+        width:45%
+    }
+}
+
+
+.card:hover {
+    box-shadow: 0 0 10px 0 var(--my-shadow-color);
+}

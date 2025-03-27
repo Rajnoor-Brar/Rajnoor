@@ -10,6 +10,7 @@
   --my-gray-2:#555;
   --my-gray-3:#333;
   --my-border-color:#22222222;
+  --my-shadow-color:#11111133;
 }
 
 html[data-bs-theme="dark"] {
@@ -24,6 +25,7 @@ html[data-bs-theme="dark"] {
   --my-gray-2: #bbb;
   --my-gray-3: #aaa;
   --my-border-color: #fbfbfb22;
+  --my-shadow-color: #fdfdfd33;
 }
 
 
