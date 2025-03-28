@@ -41,31 +41,49 @@ function parseCSV(text) {
   return data;
 }
 
+function hsvToRgb(h, s, v) {
+    s /= 100; 
+    v /= 100;
+    let c = v * s;
+    let x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    let m = v - c;
+    let r = 0, g = 0, b = 0;
+    if (h < 60) { r = c; g = x; }
+    else if (h < 120) { r = x; g = c; }
+    else if (h < 180) { g = c; b = x; }
+    else if (h < 240) { g = x; b = c; }
+    else if (h < 300) { r = x; b = c; }
+    else { r = c; b = x; }
+    r = Math.round((r + m) * 255);
+    g = Math.round((g + m) * 255);
+    b = Math.round((b + m) * 255);
+    
+    return { r, g, b };
+}
+
 function newQuestion() {
   
-  let rootStyles = getComputedStyle(document.documentElement);
-  
+    let rootStyles = getComputedStyle(document.documentElement);
   let h = Math.floor(Math.random() * 120) * 3;
-  let s = Math.floor(Math.pow(Math.random(),0.8) * 11) * 10;        
-  let v = Math.floor(Math.pow(Math.random(),0.5) * 11) * 10;        
-  // let b = Math.random() < 0.5 ? "00" : "99"; 
-  let b = rootStyles.getPropertyValue('--bb-color-mode').trim().toString().padStart(2, '0');  
+  let s = Math.floor(Math.pow(Math.random(), 0.8) * 11) * 10;
+  let v = Math.floor(Math.pow(Math.random(), 0.5) * 11) * 10;
+  let b = rootStyles.getPropertyValue('--bb-color-mode').trim().toString().padStart(2, '0');
   let hPad = h.toString().padStart(3, '0');
   let sPad = s.toString().padStart(3, '0');
   let vPad = v.toString().padStart(3, '0');
-  
-  let filename = `${hPad}${sPad}${vPad}${b}.png`;
-  let path = `/SVH/${b}/${sPad}/${vPad}/${filename}`;
-  
-  // Update the image element
-  let img = document.getElementById("color-block");
-  img.src = path;
+
+  let rgb = hsvToRgb(h, s, v);
+
+  // Update the <div> element with id "color-block"
+  let divBlock = document.getElementById("color-block");
+  divBlock.style.backgroundColor = `rgb(${rgb["r"]}, ${rgb["g"]}, ${rgb["b"]})`;
+
   // Assign custom dataset attributes
-  img.dataset.imageName = `#${hPad}${sPad}${vPad}${b}`;
-  img.dataset.H = h.toString();
-  img.dataset.S = s.toString();
-  img.dataset.V = v.toString();
-  img.dataset.B = b.toString();
+  divBlock.dataset.imageName = `#${hPad}${sPad}${vPad}${b}`;
+  divBlock.dataset.H = h.toString();
+  divBlock.dataset.S = s.toString();
+  divBlock.dataset.V = v.toString();
+  divBlock.dataset.B = b.toString();
   
   if (window.colorData && window.colorData.length > 0) {
       let closest = getClosestColors(h, s, v, window.colorData);

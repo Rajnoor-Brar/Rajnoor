@@ -12,3 +12,13 @@
   background-color: var(--my-silver-2);
   border: 2px solid var(--bs-body-bg);
 }
+
+#color-bg{
+  background-color: var(--my-white);
+  aspect-ratio: 1/1;
+}
+
+#color-block{
+  background-color: var(--my-black);
+  aspect-ratio: 1/1;
+}
