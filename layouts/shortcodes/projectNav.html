@@ -9,9 +9,9 @@
         {{ $lastIndex := sub (len $crumbs) 1 }}
 
         {{ range $index, $crumb := $crumbs }}
-          {{ if ne $crumb "" }}  <!-- Ignore empty crumbs -->
+          {{ if ne $crumb "" }}
             {{ if eq $index 0 }}
-              {{ $accumulatedPath = $baseURL }}  <!-- Start with base URL -->
+              {{ $accumulatedPath = $baseURL }}
             {{ else }}
               {{ $accumulatedPath = printf "%s/%s" $accumulatedPath (lower $crumb) | relURL }}
             {{ end }}
