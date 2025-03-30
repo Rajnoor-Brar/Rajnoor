@@ -54,35 +54,35 @@ tangent_y(n) = polyval(dp_y, x(n));  % Derivative of y at x(n)
 tangent_z(n) = polyval(dp_z, x(n));  % Derivative of z at x(n)
 end
                 </code></pre><p><strong>Operational Complexity:</strong></p><ul class=list-unstyled><li><strong>Polynomial Fitting (<code>polyfit</code>):</strong> \( O(n \cdot k + k^3) \) where \( n \) is the number of points and \( k \) is the degree.</li><li><strong>Derivative Computation (<code>polyder</code>):</strong> \( O(k) \) for each polynomial.</li><li><strong>Polynomial Evaluation (<code>polyval</code>):</strong> \( O(n \cdot k) \).</li></ul><p><strong>Total Complexity:</strong> \(O(n \cdot k + k^3)\)</p><p><strong>Key Observations:</strong></p><ul class=list-unstyled><li>For large \( n \), the term \( O(n \cdot k) \) dominates.</li><li>For large \( k \), the cubic cost \( O(k^3) \) dominates.</li><li>The code is efficient for small \( k \) but becomes computationally expensive for high-degree polynomials.</li></ul><p><strong>Limitations:</strong> Overestimation or underestimation may occur if the proper degree is not used.</p></div><div class=sub-section><div class=title>Spline Interpolation</div><p>Spline interpolation is a piecewise polynomial method used to approximate a dataset by constructing smooth polynomials between consecutive points. It avoids overfitting and instabilities seen in global polynomial fitting.</p><pre class=code-block><code>
-    window_size = 5;    % Number of points in the fitting window
-    max_order   = 3;    % Maximum degree of the polynomial fit
-    count       = size(x, 2); % Total number of points
+window_size = 5;    % Number of points in the fitting window
+max_order   = 3;    % Maximum degree of the polynomial fit
+count       = size(x, 2); % Total number of points
 
-    tangent_y = zeros(1, count);
-    tangent_z = zeros(1, count);
+tangent_y = zeros(1, count);
+tangent_z = zeros(1, count);
 
-    for n = 1:count
-    % Determine the indices for the fitting window
-    half_window = floor(window_size / 2);
-    start_idx = max(1, n - half_window);
-    end_idx = min(count, n + half_window);
+for n = 1:count
+% Determine the indices for the fitting window
+half_window = floor(window_size / 2);
+start_idx = max(1, n - half_window);
+end_idx = min(count, n + half_window);
 
-    x_window = x(start_idx:end_idx);
-    y_window = y(start_idx:end_idx);
-    z_window = z(start_idx:end_idx);
+x_window = x(start_idx:end_idx);
+y_window = y(start_idx:end_idx);
+z_window = z(start_idx:end_idx);
 
-    % Determine the polynomial order based on the window size
-    current_order = min(max_order, length(x_window) - 1);
+% Determine the polynomial order based on the window size
+current_order = min(max_order, length(x_window) - 1);
 
-    p_y = polyfit(x_window, y_window, current_order);
-    p_z = polyfit(x_window, z_window, current_order);
+p_y = polyfit(x_window, y_window, current_order);
+p_z = polyfit(x_window, z_window, current_order);
 
-    dp_y = polyder(p_y);
-    dp_z = polyder(p_z);
+dp_y = polyder(p_y);
+dp_z = polyder(p_z);
 
-    tangent_y(n) = polyval(dp_y, x(n));
-    tangent_z(n) = polyval(dp_z, x(n));
-    end
+tangent_y(n) = polyval(dp_y, x(n));
+tangent_z(n) = polyval(dp_z, x(n));
+end
                 </code></pre><p><strong>Operational Complexity:</strong></p><ul class=list-unstyled><li><strong>Polynomial Fitting (<code>polyfit</code>):</strong> \( O(m \cdot k^2 + k^3) \) where \( m \) is the window size and \( k \) is the degree.</li><li><strong>Derivative Computation (<code>polyder</code>):</strong> \( O(k) \).</li><li><strong>Polynomial Evaluation (<code>polyval</code>):</strong> \( O(k) \).</li></ul><p><strong>Total Complexity per iteration:</strong> \(O(m \cdot k^2 + k^3)\)</p><p><strong>Limitations:</strong> MATLAB’s <code>polyfit</code> may error if consecutive data points are too close (e.g., differences less than \(0.01\)).</p></div><div class=sub-secsection><div class=title>Central Finite Difference</div><div class=figure><img src="/resources/Ellipsoidal_Channel/Mean Value Tangent.png" class="col-10 col-lg-6" alt="Line connecting two points approximates the slope"><p>Line connecting two points is the slope at some point between them</p></div><p>This method is based on Lagrange's mean value theorem which states that in any interval <span>\(\lbrack a,b\rbrack\)</span>, there is some \(c\) for which:</p><p><span>\[f^{'}(c) = \frac{f(b) - f(a)}{b - a}\]</span></p><p>We assume that \(c\) is close enough to our point that we can approximate its tangent as being equal to our point.</p><pre class=code-block><code>
 count = size(x, 2);
 
