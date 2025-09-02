@@ -1,4 +1,4 @@
-baseURL = 'https://rajnoor.info/'
+baseURL = 'https://rajnoor.in/'
 languageCode = 'en-us'
 title = 'Rajnoor'
 disableKinds = ["taxonomy", "term"]
