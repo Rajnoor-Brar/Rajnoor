@@ -7,17 +7,41 @@
 #get-things-done{
     font-family: "Edu AU VIC WA NT Pre", cursive;
     line-height: 2.25;
-    word-spacing: 0.4em;   
+    word-spacing: 0.4em;
+    color: var(--my-black);
+}
+
+.hero-svg {
+    width: 90%;
+    max-width: 1000px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* stroke style for handwritten effect */
+.trace {
+    stroke: #f00;
+    stroke-width: 3px;
+    fill: none; /* initially no fill */
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+/* reveal fill when fully drawn */
+.trace.filled {
+    fill: var(--my-black);
 }
 
 .hero-section {
-    min-height: 50vh;
+    height: calc(110lvh - var(--nav-height) - env(safe-area-inset-top));
     color: var(--my-black);
-    padding: 100px 0;
+    padding-bottom: calc(5lvh + var(--nav-height) + env(safe-area-inset-top));
 }
 
 .hero-section h1 {
-    font-size: 3rem;
+    font-size: 5rem;
 }
 
 .hero-section p.lead {
@@ -26,6 +50,6 @@
 }
 @media (max-width: 768px) {
     .hero-section h1 {
-        font-size: 2.5rem;
+        font-size: 3rem;
     }
 }

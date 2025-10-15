@@ -1,5 +1,6 @@
 :root{
-    --page-color: #f9f9f9;
+    /* --page-color: #f9f9f9; */
+    --page-color: #fff;
     --page-boder: #22222222;
     --code-color: #fbfbf9;
     --punctuation:#1d70dd;
@@ -12,7 +13,8 @@
 }
 
 html[data-bs-theme="dark"] {
-    --page-color: #252525;
+    /* --page-color: #252525; */
+    --page-color: #111;
     --page-border: #fbfbfb22;
     --code-color: #181818;
 }

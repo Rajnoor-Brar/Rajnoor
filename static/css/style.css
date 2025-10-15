@@ -1,6 +1,7 @@
 :root{
   --bb-color-mode: 99;
-  --bs-body-bg: #f9f9f9;
+  --bs-body-bg: #fff;
+  --my-background: #fafafa;
   --bs-body-color: #222;
   --my-white:#fff;
   --my-black: #111;
@@ -11,11 +12,13 @@
   --my-gray-3:#333;
   --my-border-color:#22222222;
   --my-shadow-color:#11111133;
+  --nav-height: calc(4.5rem + env(safe-area-inset-bottom));
 }
 
 html[data-bs-theme="dark"] {
   --bb-color-mode: 00;
-  --bs-body-bg: #181818;
+  --bs-body-bg: #111;
+  --my-background: #181818;
   --bs-body-color: #fbfbfb;
   --my-white: #111; 
   --my-black: #fff;
@@ -28,17 +31,25 @@ html[data-bs-theme="dark"] {
   --my-shadow-color: #fdfdfd33;
 }
 
-
+* {
+  transition: background-color 0.4s ease-in, color 0.2s ease-out;
+}
 body {
   font-family: 'Montserrat', sans-serif;
   max-width:100vw;
   margin: 0;
   padding: 0;
-  transition: background-color 0.4s ease, color 0.3s ease-out 0.3s;
   overflow-y: auto;
   scrollbar-gutter: stable both-edges;
 }
 
+#page-container {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--my-background);
+  color: var(--bs-body-color);
+}
 
 
 button {
@@ -53,6 +64,9 @@ button {
       border: inherit !important;
       box-shadow: none !important;
   }
+}
+#navPanel{
+  height: var(--nav-height);
 }
 
 #navToggle {
@@ -102,7 +116,7 @@ footer {
 #navLinks{
   font-family: "Spectral", serif;
   position: absolute;
-  top: clamp(10px, 13vw, 7vh);
+  top: clamp(10px, 20vw, 12vh);
   right: 0;
   left: auto;
   background: var(--my-white);
@@ -134,7 +148,7 @@ footer {
 } */
 @media (max-width: 992px){
   #headSignature{
-  max-width:15vh !important;
+  max-height:calc(var(--nav-height)*0.6) !important;
   }
   .border-md {
     border: 1px solid var(--my-border-color);
@@ -142,7 +156,7 @@ footer {
 }
 @media (min-width: 992px){
   #headSignature{
-  max-width:12vh !important;
+  max-height:calc(var(--nav-height)*0.6) !important;
   }
 }
 @media (max-width: 992px) {
@@ -167,7 +181,7 @@ footer {
 
 /* Scrollbar Handle */
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 100, 100, 0.6);
+  background: rgba(100, 100, 100, 0.4);
   border-radius: 4px;
 }
 
