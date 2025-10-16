@@ -75,18 +75,20 @@ button {
 
 #themeIcon {
   font-size:1rem; 
+  color: var(--my-black);
   display: inline-flex; /* Makes it behave like an image */
   align-items: center;
   aspect-ratio: 1/1;
   justify-content: center;
   vertical-align: middle; /* Centers within text */
   line-height: 1; /* Remove extra spacing */
-  transition: transform 0.3s ease-in, color 0.2s ease-out 0.1s;
+  transition: transform 0.3s ease-in, color 0.02s ease-out 0.05s;
 }
 #themeToggle:hover{
-  background-color: var(--my-silver-1);
+  background-color: var(--my-silver-2);
 }
 #themeToggle:hover #themeIcon {
+  color: var(--my-black);
   transition: color 0.05s;
 }
 @keyframes rotateAnim {
