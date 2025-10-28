@@ -56,6 +56,14 @@ button {
   touch-action: manipulation;
 }
 
+.my-btn-icon {
+  color: var(--my-black);
+  transition: color 0s ease, background-color 0s ease;
+  --bs-btn-hover-bg:var(--my-black);
+}
+.my-btn-icon:hover {
+  color: var(--my-white);
+}
 @media (hover: none) {
   /* Override hover styles on non-hover devices */
   button:hover,.btn:hover,button:focus,.btn:focus {
