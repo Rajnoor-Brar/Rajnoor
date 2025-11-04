@@ -1,31 +1,25 @@
-// Signature hitbox: hover/focus opens nav panel. Fixed incorrect classList usage
-
 let hoverTimer;
 
 document.addEventListener("DOMContentLoaded", function () {
     const hitbox = document.getElementById('signature-box');
     const savedTheme = localStorage.getItem("theme");
 
-    hitbox.addEventListener('pointerenter', () => {
-        hoverTimer = setTimeout(() => { hitbox.focus();  }, 200);
-    });
+    hitbox.addEventListener('pointerenter', () => { hoverTimer = setTimeout(() => { hitbox.focus();  }, 200); });
 
-    hitbox.addEventListener('pointerleave', () => {
-        clearTimeout(hoverTimer); hitbox.blur();
-    });
+    hitbox.addEventListener('pointerleave', () => { clearTimeout(hoverTimer); hitbox.blur(); });
 
     hitbox.addEventListener('focus', () => openNavPanel());
     hitbox.addEventListener('blur', () => closeNavPanel());
+
+    shiftCommand("initialise");
 
     if (!savedTheme) {  localStorage.setItem("theme", "auto");  savedTheme = "auto";  }
 
     if      (savedTheme === "dark" ) setDarkTheme() ;
     else if (savedTheme === "light") setLightTheme();
-                        else        setAutoTheme();
+    else                             setAutoTheme();
 
     themeToggleEventMaker();
-
-    shiftCommand("initialise");
 
     document.getElementById("neverEastToggle").addEventListener("click", () => shiftCommand("neverEast"));
     document.getElementById("neverWestToggle").addEventListener("click", () => shiftCommand("neverWest"));
@@ -264,8 +258,8 @@ function shiftSignature(transitionKey) {
 }
 
 function shiftCommand(button) {
-  const nowVert = localStorage.getItem("navVert");
-  const nowHorz = localStorage.getItem("navHorz");
+  let nowVert = localStorage.getItem("navVert");
+  let nowHorz = localStorage.getItem("navHorz");
 
   if (button === "initialise") {
       if (!nowVert || !(nowVert == "top"  || nowVert == "bottom" )){ localStorage.setItem("navVert", "top") ; nowVert = "top" ; }
@@ -288,147 +282,3 @@ function shiftCommand(button) {
     }
   }, 1000);
 }
-
-// const shiftTime = 1200 ; // in ms
-// const neverEast = document.getElementById("neverEast");
-// const neverWest = document.getElementById("neverWest");
-
-// function shiftCommand(button) {
-//   const nowVert = localStorage.getItem("navVert");
-//   const nowHorz = localStorage.getItem("navHorz");
-
-//   if (button == "initilise"){
-//     if (!nowVert || !(nowVert == "top"  || nowVert == "bottom" )){ localStorage.setItem("navVert", "top") ; nowVert = "top" ; }
-
-//     if (!nowHorz || !(nowHorz == "left"  || nowHorz == "right" )){ localStorage.setItem("navHorz", "left"); nowHorz = "left";  }
-
-//     document.getElementById("signature-box").classList.add(nowVert, nowHorz);
-
-//             if (nowVert == 'top' && nowHorz == "left") { arrowsTL(); }
-//     else if (nowVert == 'top' && nowHorz == "right") { arrowsTR(); }
-//     else if (nowVert == 'bottom' && nowHorz == "right") { arrowsBR(); }
-//     else if (nowVert == 'bottom' && nowHorz == "left") { arrowsBL(); }
-
-//     return;
-//   }
-
-//   closeNavPanel();
-
-//   setTimeout(() => {
-//       if (button == "neverEast") {
-//          if (nowVert == 'top' && nowHorz == "left") { shiftTL2BL(); }
-//     else if (nowVert == 'top' && nowHorz == "right") { shiftTR2TL(); }
-//     else if (nowVert == 'bottom' && nowHorz == "right") { shiftBR2BL(); }
-//     else if (nowVert == 'bottom' && nowHorz == "left") { shiftBL2TL(); }
-//   } 
-//   else if (button == "neverWest") {
-//          if (nowVert == 'top' && nowHorz == "left") { shiftTL2TR(); }
-//     else if (nowVert == 'top' && nowHorz == "right") { shiftTR2BR(); }
-//     else if (nowVert == 'bottom' && nowHorz == "right") { shiftBR2TR(); }
-//     else if (nowVert == 'bottom' && nowHorz == "left") { shiftBL2BR(); }
-//   }
-//   } ,1000)
-
-
-// }
-
-// function arrowsTL(){   neverEast.innerText = "south"; neverWest.innerText = "east" ; console.log("top left")}
-// function arrowsTR(){   neverEast.innerText = "west" ; neverWest.innerText = "south"; console.log("top right") }
-// function arrowsBL(){   neverEast.innerText = "north"; neverWest.innerText = "east" ; console.log("bottom left")}
-// function arrowsBR(){   neverEast.innerText = "west" ; neverWest.innerText = "north"; console.log("bottom right")}
-
-// function shiftTL2TR() {
-//     const sig = document.getElementById("signature-box");
-//     sig.classList.remove('left');
-//     sig.classList.add('left2right');
-//     setTimeout(() => {
-//         sig.classList.remove('left2right');
-//         sig.classList.add('right');
-//     }, shiftTime);
-//     localStorage.setItem("navHorz", "right")
-//     arrowsTR() ;
-// }
-
-// function shiftTL2BL() {
-//     const sig = document.getElementById("signature-box");
-//     sig.classList.remove('top');
-//     sig.classList.add('top2bottom');
-//     setTimeout(() => {
-//         sig.classList.remove('top2bottom');
-//         sig.classList.add('bottom');
-//     }, shiftTime);
-//     localStorage.setItem("navVert", "bottom");
-//     arrowsBL();
-// }
-
-// function shiftTR2BR() {
-//     const sig = document.getElementById("signature-box");
-//     sig.classList.remove('top');
-//     sig.classList.add('top2bottom');
-//     setTimeout(() => {
-//         sig.classList.remove('top2bottom');
-//         sig.classList.add('bottom');
-//     }, shiftTime);
-//     localStorage.setItem("navVert", "bottom");
-//     arrowsBR();
-// }
-
-// function shiftTR2TL() {
-//     const sig = document.getElementById("signature-box");
-//     sig.classList.remove('right');
-//     sig.classList.add('right2left');
-//     setTimeout(() => {
-//         sig.classList.remove('right2left');
-//         sig.classList.add('left');
-//     }, shiftTime);
-//     localStorage.setItem("navHorz", "left")
-//     arrowsTL();
-// }
-
-// function shiftBR2BL() {
-//     const sig = document.getElementById("signature-box");
-//     sig.classList.remove('right');
-//     sig.classList.add('right2left');
-//     setTimeout(() => {
-//         sig.classList.remove('right2left');
-//         sig.classList.add('left');
-//     }, shiftTime);
-//     localStorage.setItem("navHorz", "left");
-//      arrowsBL() ;
-// }
-
-// function shiftBR2TR() {
-//     const sig = document.getElementById("signature-box");
-//     sig.classList.remove('bottom');
-//     sig.classList.add('bottom2top');
-//     setTimeout(() => {
-//         sig.classList.remove('bottom2top');
-//         sig.classList.add('top');
-//     }, shiftTime);
-//     localStorage.setItem("navVert", "top");
-//      arrowsTR();
-// }
-
-// function shiftBL2TL() {
-//     const sig = document.getElementById("signature-box");
-//     sig.classList.remove('bottom');
-//     sig.classList.add('bottom2top');
-//     setTimeout(() => {
-//         sig.classList.remove('bottom2top');
-//         sig.classList.add('top');
-//     }, shiftTime);
-//     localStorage.setItem("navVert", "top");
-//      arrowsTL();
-// }
-
-// function shiftBL2BR() {
-//     const sig = document.getElementById("signature-box");
-//     sig.classList.remove('left');
-//     sig.classList.add('left2right');
-//     setTimeout(() => {
-//         sig.classList.remove('left2right');
-//         sig.classList.add('right');
-//     }, shiftTime);
-//     localStorage.setItem("navHorz", "right");
-//     arrowsBR();
-// }
