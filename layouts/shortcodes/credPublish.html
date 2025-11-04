@@ -1,5 +1,5 @@
 {{/*  <div class="publication">
-    <div class="journalIcon"><img src={{printf "\"%s%s\"" "/resources/" {{.Params.pubIcon}}}} class="img-fluid"></div>
+    <div class="journalIcon"><img src={{printf "\"%s%s\"" "/resources/Creds/" {{.Params.pubIcon}}}} class="img-fluid"></div>
     <div class="journalIcon"> </div>
     <div class="title"></div>
     <div class="authors"></div>
@@ -10,15 +10,15 @@
   <div class="h-100 p-0 container-fluid">
     <div class="row g-0">
       
-      <div class="container-fluid col-12 col-md-2 justify-content-center d-flex">
+      <div class="container-fluid col-12 col-md-4 justify-content-center d-flex">
         <div class="container-fluid d-flex align-items-center justify-content-center" style="aspect-ratio: 1/1;">
           {{ with .Params.pubIcon }}
-            <img src="{{ printf "%s%s" "/resources/" . }}" class="img-fluid rounded" alt="Publication Icon">
+            <img src="{{ printf "%s%s" "/resources/Creds/" . }}" class="img-fluid rounded" alt="Publication Icon">
           {{ end }}
         </div>
       </div>
       
-      <div class="col-md-10">
+      <div class="col-md-8">
         <div class="card-body">
           <div class="citation">
             

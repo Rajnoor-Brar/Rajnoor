@@ -253,8 +253,6 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
     color: var(--punctuation);
 }
 
-
-/* Responsive Tweaks */
 @media (max-width: 992px) {
     .header {
         max-width: 95%;
