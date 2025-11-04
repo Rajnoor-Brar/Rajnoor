@@ -1,13 +1,13 @@
 <div class="certificate h-100 card p-2 col-12 col-lg-5 col-md-8">
   <div class="row g-0">
     
-    <div class="col-md-2 d-flex align-items-center justify-content-center p-3" style="aspect-ratio: 1/1;">
+    <div class="col-md-4 d-flex align-items-center justify-content-center p-3" style="aspect-ratio: 1/1;">
       {{ with .Params.certIcon }}
-        <img src="{{ printf "%s%s" "/resources/" . }}" class="img-fluid" alt="Certificate Icon">
+        <img src="{{ printf "%s%s" "/resources/Creds/" . }}" class="img-fluid" alt="Certificate Icon">
       {{ end }}
     </div>
     
-    <div class="col-md-10 d-flex align-items-center">
+    <div class="col-md-8 d-flex align-items-center">
       <div class="card-body flex-wrap d-flex">
         <div class="certificate-details col-12">
           {{ with .Params.name }}
