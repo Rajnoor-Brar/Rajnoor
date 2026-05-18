@@ -31,7 +31,7 @@ description: 'Give a ring!'
                 </div>
             </div>
             
-            <div id="box-02" class="d-lg-none" style="width:100% ;height:5vh;"></div>
+            <div id="box-02" class="d-lg-none contact-spacer"></div>
 
             <div id="box-03" class="d-flex justify-content-center align-items-center col-12 col-lg-5  py-4 my-4">
                 <div id="shell-03" class="col-100 col-lg-8">
@@ -59,10 +59,10 @@ description: 'Give a ring!'
 
                         <div class="mb-3">
                             <label for="message" class="form-label">Message</label>
-                            <textarea class="form-control" id="message" name="message" rows="4"></textarea>
+                            <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
                         </div>
 
-                        <input type="text" name="_country" style="display:none;">
+                        <input type="text" name="_country" tabindex="-1" autocomplete="off" aria-hidden="true" hidden>
 
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary">Send Message</button>

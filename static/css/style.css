@@ -74,7 +74,7 @@ body {
 }
 
 #page-container {
-  width:100vw;
+  width:100%;
   height:100vh;
   display: flex;
   flex-direction: column;
@@ -86,36 +86,21 @@ body {
   position: fixed;
   display: flex;
   justify-content: end;
-  /* bottom:2.5vh;
-  left:2.5vw; */
   z-index:10;
-
   height:auto;
 
-  transition: width var(--signature-bg-duration) ease;
-  /* height: var(--signture-height); */
-
-  transition-property: top, bottom, left, right;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-in-out;
-  touch-action: manipulation;
+  touch-action: none;
+  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 #signature-box.left{
  left:2.5vw;
  align-items: start;
 }
-#signature-box.left2right{
-  left:calc(97.5vw - var(--signture-height));
-}
 
 #signature-box.right{
  right:2.5vw;
-
  align-items: end;
-}
-
-#signature-box.right2left{
-  right:calc(97.5vw - var(--signture-height));
 }
 
 #signature-box.top{
@@ -123,17 +108,14 @@ body {
  top:2.5vw;
 }
 
-#signature-box.top2bottom{
-  top:calc(100vh - 2.5vw - 4.5vh  - var(--signture-height) - env(safe-area-inset-bottom));
-}
-
 #signature-box.bottom{
   flex-direction: column-reverse;
  bottom:calc(2.5vw + 4.5vh);
 }
 
-#signature-box.bottom2top{
-  bottom:calc(100vh - 2.5vw - var(--signture-height));
+#signature-box.dragging {
+  transition: none;
+  cursor: grabbing;
 }
 
 #signature-box:focus{
@@ -141,7 +123,7 @@ body {
 }
 
 #signature-background{
-  overflow-y: hidden;
+  overflow: hidden;
   width: var(--signture-height);
   border-radius: calc(var(--signture-height)*0.4);
   background-color: rgba(var(--my-white-rgb), 0.8);
@@ -280,13 +262,13 @@ body {
 
 @keyframes navExpand{
   0% {height: 0; width:0}
-  25% {height: calc(0.25var(--navExpandedHeight)); width: calc(2*var(--signture-height));}
+  25% {height: calc(0.25 * var(--navExpandedHeight)); width: calc(2*var(--signture-height));}
   100% {height: calc(var(--navExpandedHeight)); width: calc(2*var(--signture-height));}
 }
 
 @keyframes navCollapse{
   100% {height: 0;  width: 0}
-  75% {height: calc(0.25var(--navExpandedHeight)); width: 0;}
+  75% {height: calc(0.25 * var(--navExpandedHeight)); width: 0;}
   0% {height: calc(var(--navExpandedHeight)); width: calc(2*var(--signture-height));}
 }
 
@@ -395,7 +377,69 @@ body {
 }
 #themeToggle:hover {
   text-shadow: var(--my-theme-glow) 0px 0px 4px;
+  transform: rotate(-12deg);
 }
+
+#cornerPicker {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  width: calc(0.4 * var(--signture-height));
+  height: calc(0.4 * var(--signture-height));
+  background: transparent !important;
+  aspect-ratio: 1 / 1;
+}
+
+.corner-dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid var(--my-border-color);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+}
+
+.corner-dot:hover,
+.corner-dot:focus-visible {
+  transform: scale(1.25);
+  outline: none;
+  border-color: var(--my-black);
+}
+
+.corner-dot.active {
+  background-color: var(--my-black);
+  border-color: var(--my-black);
+}
+
+#corner-targets {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+#corner-targets.visible {
+  opacity: 1;
+}
+
+.corner-target {
+  position: absolute;
+  width: calc(var(--signture-height) * 0.6);
+  height: calc(var(--signture-height) * 0.6);
+  border: 2px dashed var(--my-border-color);
+  border-radius: calc(var(--signture-height) * 0.4);
+}
+
+.corner-target.TL { top: 2.5vw; left: 2.5vw; }
+.corner-target.TR { top: 2.5vw; right: 2.5vw; }
+.corner-target.BL { bottom: calc(2.5vw + 4.5vh); left: 2.5vw; }
+.corner-target.BR { bottom: calc(2.5vw + 4.5vh); right: 2.5vw; }
 
 .hover-grow {
   display: inline-block;
@@ -446,6 +490,23 @@ button {
 }
 .invert{
   filter:invert();
+}
+
+.card {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.card:hover {
+  box-shadow: 0 0 10px 0 var(--my-shadow-color);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ::-webkit-scrollbar {

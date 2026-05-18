@@ -2,21 +2,33 @@
 <html lang="en">
   <head>
 
-    <script>if (localStorage.getItem("theme") === "dark") {document.documentElement.setAttribute("data-bs-theme", "dark");}</script>
+    <script>
+      (function(){
+        var t = localStorage.getItem("theme");
+        var dark = t === "dark" || ((t === "auto" || !t) && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        if (dark) document.documentElement.setAttribute("data-bs-theme", "dark");
+      })();
+    </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content={{ .Params.description }}>
+    <meta name="description" content="{{ .Params.description }}">
     <meta name="author" content="Rajnoor Brar">
-    <meta name="robots" content="index, nofollow">
+    <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#fff">
     <meta name="keywords" content="Physics, Mathematics, Computer Science, Rajnoor Brar">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <meta property="og:title" content="{{ .Title }}">
+    <meta property="og:url" content="{{ .Permalink }}">
+    <meta property="og:description" content="{{ .Params.description }}">
     <meta property="og:image" content="/resources/eepy_keety.svg">
     <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ .Title }}">
+    <meta name="twitter:description" content="{{ .Params.description }}">
+    <meta name="twitter:image" content="/resources/eepy_keety.svg">
 
-    <title>{{  .Title }}</title>
+    <title>{{ .Title }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -90,15 +102,15 @@
                 </div>  
                 
                 <div id="actionPanel" class="commandPanel hide">
-                    <div id="themeToggle" role="button" class="action-item panel-item hover-grow hide">
-                        <span id="themeIcon" class="material-symbols-outlined"> light_mode </span>
-                    </div>
-                    <div id="neverEastToggle" role="button" class="action-item panel-item hover-grow hide">
-                        <span id="neverEast" class="material-symbols-outlined"> south </span>
+                    <div id="themeToggle" role="button" tabindex="0" aria-label="Toggle theme" class="action-item panel-item hover-grow hide">
+                        <span id="themeIcon" class="material-symbols-outlined" aria-hidden="true"> light_mode </span>
                     </div>
 
-                    <div id="neverWestToggle" role="button" class="action-item panel-item hover-grow hide">
-                        <span id="neverWest" class="material-symbols-outlined"> east </span>
+                    <div id="cornerPicker" class="action-item panel-item hide" role="group" aria-label="Move signature to corner">
+                        <button class="corner-dot" data-corner="TL" type="button" aria-label="Move to top-left"></button>
+                        <button class="corner-dot" data-corner="TR" type="button" aria-label="Move to top-right"></button>
+                        <button class="corner-dot" data-corner="BL" type="button" aria-label="Move to bottom-left"></button>
+                        <button class="corner-dot" data-corner="BR" type="button" aria-label="Move to bottom-right"></button>
                     </div>
                 </div>
             </div>
@@ -119,13 +131,11 @@
     <script src="{{ .Params.pageScript }}"></script>
 
     <script>
-        
         var buttonid = "{{ .Params.active_nav }}";
         document.addEventListener("DOMContentLoaded", function() {
-            document.querySelector(buttonid).classList.add("active");;
+            var el = document.querySelector(buttonid);
+            if (el) el.classList.add("active");
         });
-
-        
     </script>
 
   </body>

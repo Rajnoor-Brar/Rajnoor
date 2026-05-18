@@ -1,12 +1,23 @@
 let hoverTimer;
+let leaveTimer;
+const HOVER_OPEN_MS = 200;
+const HOVER_LEAVE_GRACE_MS = 180;
 
 document.addEventListener("DOMContentLoaded", function () {
     const hitbox = document.getElementById('signature-box');
-    const savedTheme = localStorage.getItem("theme");
+    let savedTheme = localStorage.getItem("theme");
 
-    hitbox.addEventListener('pointerenter', () => { hoverTimer = setTimeout(() => { hitbox.focus();  }, 200); });
+    hitbox.addEventListener('pointerenter', () => {
+        clearTimeout(leaveTimer);
+        hoverTimer = setTimeout(() => { hitbox.focus(); }, HOVER_OPEN_MS);
+    });
 
-    hitbox.addEventListener('pointerleave', () => { clearTimeout(hoverTimer); hitbox.blur(); });
+    hitbox.addEventListener('pointerleave', () => {
+        clearTimeout(hoverTimer);
+        // Grace period: if the pointer re-enters #signature-box (which contains the
+        // command box and panels) before this elapses, cancel the blur.
+        leaveTimer = setTimeout(() => { hitbox.blur(); }, HOVER_LEAVE_GRACE_MS);
+    });
 
     hitbox.addEventListener('focus', () => openNavPanel());
     hitbox.addEventListener('blur', () => closeNavPanel());
@@ -21,8 +32,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     themeToggleEventMaker();
 
-    document.getElementById("neverEastToggle").addEventListener("click", () => shiftCommand("neverEast"));
-    document.getElementById("neverWestToggle").addEventListener("click", () => shiftCommand("neverWest"));
+    attachCornerPickerHandlers();
+    attachKeyboardHandler();
+    attachDragHandlers();
 
 });
 
@@ -195,90 +207,253 @@ function closeNavPanel() {
 
 
 // __________________________________________________________________________________________________________________
-// ============================================== Nav Position Toggles ==============================================
+// ============================================== Nav Position System ==============================================
 
-const shiftTime = 1200; // in ms
+const SHIFT_DURATION_MS = 500;
+const DRAG_THRESHOLD_PX = 8;
+const THROW_VELOCITY_PX_PER_MS = 0.5;
 const sig = document.getElementById("signature-box");
-const neverEast = document.getElementById("neverEast");
-const neverWest = document.getElementById("neverWest");
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-// Map current position to arrow directions
-const arrowMap = {
-  'top-left':    { east: "south", west: "east" },
-  'top-right':   { east: "west",  west: "south" },
-  'bottom-left': { east: "north", west: "east" },
-  'bottom-right':{ east: "west",  west: "north" }
-};
-
-// Transition definitions
-const transitions = {
-  "TL->TR": { axis: "horz", remove: "left", addAnim: "left2right", addFinal: "right", navHorz: "right" },
-  "TR->TL": { axis: "horz", remove: "right", addAnim: "right2left", addFinal: "left", navHorz: "left" },
-  "TL->BL": { axis: "vert", remove: "top", addAnim: "top2bottom", addFinal: "bottom", navVert: "bottom" },
-  "TR->BR": { axis: "vert", remove: "top", addAnim: "top2bottom", addFinal: "bottom", navVert: "bottom" },
-  "BR->BL": { axis: "horz", remove: "right", addAnim: "right2left", addFinal: "left", navHorz: "left" },
-  "BL->BR": { axis: "horz", remove: "left", addAnim: "left2right", addFinal: "right", navHorz: "right" },
-  "BL->TL": { axis: "vert", remove: "bottom", addAnim: "bottom2top", addFinal: "top", navVert: "top" },
-  "BR->TR": { axis: "vert", remove: "bottom", addAnim: "bottom2top", addFinal: "top", navVert: "top" },
-};
-
-function arrowsUpdate(vert, horz) {
-  const key = `${vert}-${horz}`;
-  spacer = document.querySelector(".top-spacer");
-  if (spacer){
-      if (vert == "bottom"){spacer.classList.add("contract");}
-      else {spacer.classList.remove("contract");}
-  }
-
-
-  const arrows = arrowMap[key];
-  if (arrows) {
-    neverEast.innerText = arrows.east;
-    neverWest.innerText = arrows.west;
-    console.log(key);
-  }
+function cornerCode(vert, horz) {
+  return `${vert[0].toUpperCase()}${horz[0].toUpperCase()}`;
 }
 
-function shiftSignature(transitionKey) {
-  const t = transitions[transitionKey];
-  if (!t) return;
-  
-  sig.classList.remove(t.remove);
-  sig.classList.add(t.addAnim);
+function cornerFromCode(code) {
+  return {
+    vert: code[0] === 'T' ? 'top' : 'bottom',
+    horz: code[1] === 'L' ? 'left' : 'right'
+  };
+}
 
-  setTimeout(() => {
-    sig.classList.remove(t.addAnim);
-    sig.classList.add(t.addFinal);
-  }, shiftTime);
+function currentCornerCode() {
+  return cornerCode(
+    localStorage.getItem('navVert') || 'top',
+    localStorage.getItem('navHorz') || 'left'
+  );
+}
 
-  if (t.navVert) localStorage.setItem("navVert", t.navVert);
-  if (t.navHorz) localStorage.setItem("navHorz", t.navHorz);
-  
-  arrowsUpdate(localStorage.getItem("navVert"), localStorage.getItem("navHorz"));
+function updateTopSpacer(vert) {
+  const spacer = document.querySelector('.top-spacer');
+  if (!spacer) return;
+  if (vert === 'bottom') spacer.classList.add('contract');
+  else spacer.classList.remove('contract');
+}
+
+function updateCornerPicker(code) {
+  document.querySelectorAll('.corner-dot').forEach(d => {
+    d.classList.toggle('active', d.dataset.corner === code);
+  });
+}
+
+// FLIP-style transform-only shift between corners (layout-free)
+function shiftSignature(fromCode, toCode) {
+  if (fromCode === toCode) return;
+  const from = cornerFromCode(fromCode);
+  const to = cornerFromCode(toCode);
+
+  const beforeRect = sig.getBoundingClientRect();
+
+  sig.classList.remove(from.vert, from.horz);
+  sig.classList.add(to.vert, to.horz);
+
+  const afterRect = sig.getBoundingClientRect();
+
+  const dx = beforeRect.left - afterRect.left;
+  const dy = beforeRect.top - afterRect.top;
+
+  sig.style.transition = 'none';
+  sig.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+  // Force reflow so the browser commits the pre-state before we animate
+  void sig.offsetWidth;
+
+  if (reduceMotion.matches) {
+    sig.style.transition = '';
+    sig.style.transform = '';
+  } else {
+    sig.style.transition = '';
+    sig.style.transform = '';
+    // The base transition rule on #signature-box (`transition: transform 500ms cubic-bezier(...)`) takes over.
+  }
+
+  localStorage.setItem('navVert', to.vert);
+  localStorage.setItem('navHorz', to.horz);
+  updateTopSpacer(to.vert);
+  updateCornerPicker(toCode);
+}
+
+function requestShift(toCode) {
+  const fromCode = currentCornerCode();
+  if (fromCode === toCode) return;
+
+  const panelOpen = !commandBox.classList.contains('hide');
+  if (panelOpen) {
+    closeNavPanel();
+    setTimeout(() => shiftSignature(fromCode, toCode), 350);
+  } else {
+    shiftSignature(fromCode, toCode);
+  }
 }
 
 function shiftCommand(button) {
-  let nowVert = localStorage.getItem("navVert");
-  let nowHorz = localStorage.getItem("navHorz");
-
-  if (button === "initialise") {
-      if (!nowVert || !(nowVert == "top"  || nowVert == "bottom" )){ localStorage.setItem("navVert", "top") ; nowVert = "top" ; }
-      if (!nowHorz || !(nowHorz == "left"  || nowHorz == "right" )){ localStorage.setItem("navHorz", "left"); nowHorz = "left";  }
+  if (button === 'initialise') {
+    let nowVert = localStorage.getItem('navVert');
+    let nowHorz = localStorage.getItem('navHorz');
+    if (!nowVert || (nowVert !== 'top' && nowVert !== 'bottom')) {
+      localStorage.setItem('navVert', 'top');
+      nowVert = 'top';
+    }
+    if (!nowHorz || (nowHorz !== 'left' && nowHorz !== 'right')) {
+      localStorage.setItem('navHorz', 'left');
+      nowHorz = 'left';
+    }
     sig.classList.add(nowVert, nowHorz);
-    arrowsUpdate(nowVert, nowHorz);
-    return;
+    updateTopSpacer(nowVert);
+    updateCornerPicker(cornerCode(nowVert, nowHorz));
+  }
+}
+
+// __________________________________________________________________________________________________________________
+// ============================================== Corner-target hints (drag affordance) ==============================
+
+let cornerTargetsEl = null;
+function ensureCornerTargets() {
+  if (cornerTargetsEl) return cornerTargetsEl;
+  cornerTargetsEl = document.createElement('div');
+  cornerTargetsEl.id = 'corner-targets';
+  ['TL', 'TR', 'BL', 'BR'].forEach(c => {
+    const t = document.createElement('div');
+    t.className = `corner-target ${c}`;
+    cornerTargetsEl.appendChild(t);
+  });
+  document.body.appendChild(cornerTargetsEl);
+  return cornerTargetsEl;
+}
+function showCornerTargets() { ensureCornerTargets().classList.add('visible'); }
+function hideCornerTargets() { if (cornerTargetsEl) cornerTargetsEl.classList.remove('visible'); }
+
+// __________________________________________________________________________________________________________________
+// ============================================== Mini-map dot clicks ==============================================
+
+function attachCornerPickerHandlers() {
+  document.querySelectorAll('.corner-dot').forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      e.stopPropagation();
+      requestShift(dot.dataset.corner);
+    });
+  });
+}
+
+// __________________________________________________________________________________________________________________
+// ============================================== Keyboard navigation ==============================================
+
+function attachKeyboardHandler() {
+  sig.addEventListener('keydown', (e) => {
+    const axis = { ArrowUp: ['top', null], ArrowDown: ['bottom', null], ArrowLeft: [null, 'left'], ArrowRight: [null, 'right'] }[e.key];
+    if (!axis) return;
+    e.preventDefault();
+    const [v, h] = axis;
+    const nowV = localStorage.getItem('navVert') || 'top';
+    const nowH = localStorage.getItem('navHorz') || 'left';
+    const target = cornerCode(v || nowV, h || nowH);
+    requestShift(target);
+  });
+}
+
+// __________________________________________________________________________________________________________________
+// ============================================== Drag + swipe/throw ==============================================
+
+let dragState = null;   // null | 'pending' | 'dragging'
+let dragStart = null;
+
+function attachDragHandlers() {
+  sig.addEventListener('pointerdown', (e) => {
+    // Don't start a drag from inside the command box (nav links, theme toggle, corner-picker)
+    if (e.target.closest('#commandBox')) return;
+    if (e.button !== undefined && e.button !== 0) return;
+
+    dragState = 'pending';
+    dragStart = { x: e.clientX, y: e.clientY, t: performance.now(), pointerId: e.pointerId };
+    clearTimeout(hoverTimer);
+    try { sig.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+
+  sig.addEventListener('pointermove', (e) => {
+    if (!dragState) return;
+    const dx = e.clientX - dragStart.x;
+    const dy = e.clientY - dragStart.y;
+
+    if (dragState === 'pending' && Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
+      dragState = 'dragging';
+      sig.classList.add('dragging');
+      sig.blur();
+      closeNavPanel();
+      showCornerTargets();
+    }
+
+    if (dragState === 'dragging') {
+      sig.style.transition = 'none';
+      sig.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+    }
+  });
+
+  function finishDrag(e) {
+    if (!dragState) return;
+    const wasDragging = dragState === 'dragging';
+
+    if (wasDragging) {
+      const dx = e.clientX - dragStart.x;
+      const dy = e.clientY - dragStart.y;
+      const dt = performance.now() - dragStart.t;
+      const dist = Math.hypot(dx, dy);
+      const velocity = dist / Math.max(dt, 1);
+
+      let targetCode;
+      if (velocity > THROW_VELOCITY_PX_PER_MS) {
+        // Throw: target corner = direction of velocity vector
+        const vert = dy > 0 ? 'bottom' : 'top';
+        const horz = dx > 0 ? 'right' : 'left';
+        targetCode = cornerCode(vert, horz);
+      } else {
+        // Snap to quadrant of release point
+        targetCode = cornerCode(
+          e.clientY < window.innerHeight / 2 ? 'top' : 'bottom',
+          e.clientX < window.innerWidth / 2 ? 'left' : 'right'
+        );
+      }
+
+      sig.classList.remove('dragging');
+      hideCornerTargets();
+
+      // Clear drag transform without transition so FLIP measurement is clean
+      sig.style.transition = 'none';
+      sig.style.transform = '';
+      void sig.offsetWidth;
+
+      const fromCode = currentCornerCode();
+      if (fromCode !== targetCode) {
+        shiftSignature(fromCode, targetCode);
+      }
+    } else {
+      // Tap (no drag) — ensure the panel opens. On touch, focus may not fire
+      // automatically because we called setPointerCapture.
+      sig.focus();
+    }
+
+    try { sig.releasePointerCapture(dragStart.pointerId); } catch (_) {}
+    dragState = null;
+    dragStart = null;
   }
 
-  closeNavPanel();
-
-  setTimeout(() => {
-    const keyBase = `${nowVert[0].toUpperCase()}${nowHorz[0].toUpperCase()}`;
-    if (button === "neverEast") {
-      const nextMap = { TL: "BL", TR: "TL", BR: "BL", BL: "TL" };
-      shiftSignature(`${keyBase}->${nextMap[keyBase]}`);
-    } else if (button === "neverWest") {
-      const nextMap = { TL: "TR", TR: "BR", BR: "TR", BL: "BR" };
-      shiftSignature(`${keyBase}->${nextMap[keyBase]}`);
+  sig.addEventListener('pointerup', finishDrag);
+  sig.addEventListener('pointercancel', () => {
+    if (dragState === 'dragging') {
+      sig.classList.remove('dragging');
+      hideCornerTargets();
+      sig.style.transition = 'none';
+      sig.style.transform = '';
     }
-  }, 1000);
+    dragState = null;
+    dragStart = null;
+  });
 }
