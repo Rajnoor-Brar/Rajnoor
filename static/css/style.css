@@ -500,6 +500,15 @@ button {
   transform: translateY(-2px);
 }
 
+/* Page transition */
+#page-content {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+#page-content.page-leaving {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

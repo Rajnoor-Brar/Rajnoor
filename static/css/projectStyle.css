@@ -54,6 +54,7 @@ pre{
 
 .btn.page-list{
     background-color: var(--my-white);
+    color: var(--my-black);
     border:none
 }
 .btn.page-list:hover{

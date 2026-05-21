@@ -2,6 +2,8 @@ let hoverTimer;
 let leaveTimer;
 const HOVER_OPEN_MS = 200;
 const HOVER_LEAVE_GRACE_MS = 180;
+// true when the panel was opened by tap/click — stays open until outside tap
+let pinnedOpen = false;
 
 document.addEventListener("DOMContentLoaded", function () {
     const hitbox = document.getElementById('signature-box');
@@ -9,18 +11,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     hitbox.addEventListener('pointerenter', () => {
         clearTimeout(leaveTimer);
-        hoverTimer = setTimeout(() => { hitbox.focus(); }, HOVER_OPEN_MS);
+        hoverTimer = setTimeout(() => {
+            pinnedOpen = false;   // hover-open: not pinned
+            hitbox.focus();
+        }, HOVER_OPEN_MS);
     });
 
     hitbox.addEventListener('pointerleave', () => {
         clearTimeout(hoverTimer);
+        if (pinnedOpen) return;  // tap/click opened — ignore leave
         // Grace period: if the pointer re-enters #signature-box (which contains the
         // command box and panels) before this elapses, cancel the blur.
         leaveTimer = setTimeout(() => { hitbox.blur(); }, HOVER_LEAVE_GRACE_MS);
     });
 
     hitbox.addEventListener('focus', () => openNavPanel());
-    hitbox.addEventListener('blur', () => closeNavPanel());
+    hitbox.addEventListener('blur', () => { pinnedOpen = false; closeNavPanel(); });
+
+    // Outside-tap/click dismissal for pinned (tap-opened) panel
+    document.addEventListener('pointerdown', (e) => {
+        if (!pinnedOpen) return;
+        if (hitbox.contains(e.target)) return;
+        pinnedOpen = false;
+        hitbox.blur();
+    }, { capture: true });
 
     shiftCommand("initialise");
 
@@ -435,8 +449,8 @@ function attachDragHandlers() {
         shiftSignature(fromCode, targetCode);
       }
     } else {
-      // Tap (no drag) — ensure the panel opens. On touch, focus may not fire
-      // automatically because we called setPointerCapture.
+      // Tap (no drag) — pin the panel open until outside tap/click
+      pinnedOpen = true;
       sig.focus();
     }
 
@@ -457,3 +471,132 @@ function attachDragHandlers() {
     dragStart = null;
   });
 }
+
+// ─── SPA Navigation ──────────────────────────────────────────────────────────
+(function () {
+  let abortController = null;
+
+  function updateActiveNav(activeNavId) {
+    document.querySelectorAll('.nav-link.active').forEach(el => el.classList.remove('active'));
+    if (activeNavId) {
+      const el = document.querySelector(activeNavId);
+      if (el) el.classList.add('active');
+    }
+  }
+
+  async function navigateTo(url, pushState) {
+    // Cancel any in-flight fetch
+    if (abortController) abortController.abort();
+    abortController = new AbortController();
+
+    const content = document.getElementById('page-content');
+
+    // Run page-specific cleanup (e.g. clear homeScript timers)
+    if (typeof window.__pageCleanup === 'function') {
+      window.__pageCleanup();
+      window.__pageCleanup = null;
+    }
+
+    // Fade out
+    content.classList.add('page-leaving');
+
+    let html, finalUrl;
+    try {
+      const res = await fetch(url, { signal: abortController.signal });
+      if (!res.ok) throw new Error(res.status);
+      // Use the post-redirect URL (e.g. /credentials → /credentials/)
+      finalUrl = new URL(res.url).pathname;
+      html = await res.text();
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      // Fallback: hard navigate
+      location.href = url;
+      return;
+    }
+
+    // Wait for CSS fade-out to finish
+    await new Promise(r => setTimeout(r, 160));
+
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const newContent = doc.getElementById('page-content');
+    if (!newContent) { location.href = url; return; }
+
+    // Swap page-specific CSS
+    const pageStyleEl = document.getElementById('page-style');
+    const newStyleHref = doc.getElementById('page-style')?.getAttribute('href') || '';
+    if (pageStyleEl) pageStyleEl.setAttribute('href', newStyleHref);
+
+    // Swap content
+    content.innerHTML = newContent.innerHTML;
+    content.dataset.activeNav = newContent.dataset.activeNav || '';
+
+    // Update title + active nav
+    document.title = doc.title;
+    updateActiveNav(newContent.dataset.activeNav);
+
+    // Scroll to top
+    window.scrollTo(0, 0);
+
+    // Fade in — do this before script loading so content is never blocked
+    content.classList.remove('page-leaving');
+
+    if (pushState) history.pushState({ url: finalUrl }, '', finalUrl);
+
+    // Re-render math (KaTeX) if loaded
+    if (typeof renderMathInElement === 'function') {
+      renderMathInElement(content, {
+        delimiters: [
+          { left: '\\(', right: '\\)', display: false },
+          { left: '\\[', right: '\\]', display: true },
+        ]
+      });
+    }
+
+    // Re-highlight code blocks (Prism) if loaded
+    if (typeof Prism !== 'undefined') {
+      Prism.highlightAllUnder(content);
+    }
+
+    // Swap page-specific script (fire-and-forget — never block the fade-in)
+    const oldScript = document.getElementById('page-script');
+    if (oldScript) oldScript.remove();
+    const newScriptSrc = doc.getElementById('page-script')?.getAttribute('src') || '';
+    if (newScriptSrc) {
+      const script = document.createElement('script');
+      script.id = 'page-script';
+      script.src = newScriptSrc;
+      document.body.appendChild(script);
+    }
+  }
+
+  // Intercept same-origin link clicks
+  document.addEventListener('click', e => {
+    const link = e.target.closest('a[href]');
+    if (!link) return;
+    let url;
+    try { url = new URL(link.href, location.href); } catch { return; }
+    if (url.origin !== location.origin) return;
+    if (link.target === '_blank') return;
+    if (link.hasAttribute('download')) return;
+    if (link.getAttribute('href')?.startsWith('mailto:')) return;
+    if (link.getAttribute('href')?.startsWith('javascript:')) return;
+    // Same page, only hash change — let browser handle
+    if (url.pathname === location.pathname && url.hash !== location.hash) return;
+    e.preventDefault();
+    navigateTo(url.pathname + url.search, true);
+  });
+
+  // Handle back / forward
+  window.addEventListener('popstate', () => {
+    navigateTo(location.pathname + location.search, false);
+  });
+
+  // Stamp initial history entry so popstate works on first back
+  history.replaceState({ url: location.pathname }, '', location.pathname);
+
+  // Apply active nav on initial load (replaces the removed inline script)
+  document.addEventListener('DOMContentLoaded', () => {
+    const activeNav = document.getElementById('page-content')?.dataset.activeNav;
+    updateActiveNav(activeNav);
+  });
+}());

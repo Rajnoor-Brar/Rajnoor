@@ -2,11 +2,11 @@ baseURL = 'https://rajnoor.in/'
 languageCode = 'en-us'
 title = 'Rajnoor'
 disableKinds = ["taxonomy", "term"]
+
 [outputs]
   home = ["html"]
   section = ["html"]
   page = ["html"]
-
 
 [markup]
   [markup.goldmark]
