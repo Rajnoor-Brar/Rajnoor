@@ -214,12 +214,40 @@ pre{
 ul,td{
     text-align: left;
 }
+
+/* ── Markdown-generated headings inside .article ───────────────────────── */
+.article h2 {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: bold;
+    border-bottom: 2px solid var(--my-border-color);
+    padding-bottom: 0.4em;
+    margin-top: 2em;
+    margin-bottom: 1em;
+}
+
+.article h3 {
+    font-size: clamp(1.5rem, 2.5vw, 1.75rem);
+    font-weight: bold;
+    margin-top: 1.5em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px groove var(--my-border-color);
+    margin-bottom: 0.75em;
+}
+
+/* Markdown lists: match original list-unstyled appearance */
+.article ul {
+    list-style-type: none;
+    padding-left: 0;
+}
 td{
     padding-inline: 8px;
     border: 1px dashed var(--my-border-color);
 }
 
-pre.code-block {
+/* Matches both raw-HTML .code-block (legacy .html pages) and Prism-processed
+   pre[class*="language-"] (generated from fenced code blocks in .md pages) */
+pre.code-block,
+pre[class*="language-"] {
     background-color: var(--code-color);
     border-radius: 0.5rem;
     overflow-x: auto;

@@ -146,6 +146,9 @@ font-size: max(clamp(1.2rem, 2vw, 2.5rem),clamp(1.2rem, 3vh, 2.5rem)) !important
 .about-line {
   width: 90vw;
   display: flex;
+  justify-content: start;
+  align-items: center;
+  text-align: left;
   padding-block: max(0.5vw,1.5vh);
   font-size: clamp(0.9rem, 1.2vw, 1.8rem);
   border: none;

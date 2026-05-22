@@ -1,5 +1,36 @@
 {{ define "main" }}
+<div class="container-fluid top-spacer"></div>
+
+<div class="container-fluid justify-content-center d-flex">
+  <div class="col-12 col-lg-6 d-flex mx-0 px-1 px-lg-3 py-4 my-2 align-items-center">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb align-items-center d-flex mb-0">
+        <li class="breadcrumb-item d-flex align-items-center">
+          <a class="btn page-nav" href="/projects">Projects</a>
+        </li>
+        <li class="breadcrumb-item d-flex align-items-center">
+          <a class="btn page-nav active">{{ .Title }}</a>
+        </li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+{{ with .Params.longTitle }}
+<div class="page{{ with $.Params.language }} language-{{ . }}{{ end }} line-numbers">
+  <div class="header col-7">
+    <div class="title">{{ . }}</div>
+    {{ with $.Params.subtitle }}<div class="subtitle">{{ . }}</div>{{ end }}
+    {{ with $.Params.author }}<div class="author">{{ . }}</div>{{ end }}
+  </div>
+  <div class="article col-lg-8 col-12">
+    {{ $.Content }}
+  </div>
+</div>
+{{ else }}
 {{ .Content }}
+{{ end }}
+
 <nav class="project-nav-prevnext" aria-label="Project navigation">
   {{ with .PrevInSection }}
   <a class="project-nav-prevnext__prev" href="{{ .RelPermalink }}">

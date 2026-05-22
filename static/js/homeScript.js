@@ -16,9 +16,7 @@ function initHomePage() {
   const lines = document.querySelectorAll(".about-line");
 
   const nowHorz = localStorage.getItem("navHorz");
-  document.querySelectorAll(".about").forEach((item) => {
-    item.classList.add((nowHorz === "left") ? "right" : "left");
-  });
+  if (header) header.classList.add((nowHorz === "left") ? "right" : "left");
 
   const heroSeen = sessionStorage.getItem("rj_hero_seen") === "1";
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

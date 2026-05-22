@@ -605,8 +605,10 @@ function attachDragHandlers() {
     if (typeof renderMathInElement === 'function') {
       renderMathInElement(content, {
         delimiters: [
-          { left: '\\(', right: '\\)', display: false },
+          { left: '$$', right: '$$', display: true },
           { left: '\\[', right: '\\]', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false },
         ]
       });
     }

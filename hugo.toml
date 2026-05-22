@@ -9,9 +9,16 @@ disableKinds = ["taxonomy", "term"]
   page    = ["html"]
 
 [markup]
+  [markup.highlight]
+    codeFences = false   # Let Prism handle fenced code blocks in .md files
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true  # Needed to allow raw HTML inside Markdown
+    [markup.goldmark.extensions.passthrough]
+      enable = true
+      [markup.goldmark.extensions.passthrough.delimiters]
+        block  = [["$$", "$$"]]
+        inline = [["$", "$"]]
 
 [params]
   math = true  # Enables math rendering

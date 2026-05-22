@@ -1,0 +1,8 @@
+{{- $src  := .Get "src" -}}
+{{- $alt  := .Get "alt" | default "" -}}
+{{- $cap  := .Get "caption" | default "" -}}
+{{- $size := .Get "size" | default "col-11" -}}
+<div class="figure">
+  <img src="{{ $src }}" class="{{ $size }}" alt="{{ $alt }}">
+  {{ with $cap }}<p>{{ . }}</p>{{ end }}
+</div>
