@@ -4,9 +4,9 @@ title = 'Rajnoor'
 disableKinds = ["taxonomy", "term"]
 
 [outputs]
-  home = ["html"]
-  section = ["html"]
-  page = ["html"]
+  home    = ["html", "json"]   # json: search index for command palette (B3)
+  section = ["html", "rss"]   # rss: notebook feed
+  page    = ["html"]
 
 [markup]
   [markup.goldmark]
@@ -15,3 +15,10 @@ disableKinds = ["taxonomy", "term"]
 
 [params]
   math = true  # Enables math rendering
+
+[params.features]
+  notebook        = false
+  nowPage         = false
+  commandPalette  = false
+  scrollArc       = false
+  shortcutHints   = false

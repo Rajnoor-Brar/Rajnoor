@@ -1,0 +1,28 @@
+{{ define "main" }}
+<div class="container-fluid top-spacer"></div>
+
+<div class="notebook-list container col-12 col-md-8 col-lg-6 py-5 px-4">
+  <header class="notebook-list__header mb-5">
+    <h1 class="notebook-list__title">Notebook</h1>
+    <p class="notebook-list__desc">{{ .Params.description }}</p>
+  </header>
+
+  {{ if .Pages }}
+  <ol class="notebook-list__posts list-unstyled">
+    {{ range .Pages.ByDate.Reverse }}
+    <li class="notebook-list__entry">
+      <time class="notebook-entry__date" datetime="{{ .Date.Format "2006-01-02" }}">
+        {{ .Date.Format "02 Jan 2006" }}
+      </time>
+      <a class="notebook-entry__title" href="{{ .RelPermalink }}">{{ .Title }}</a>
+      {{ if .Params.description }}
+      <p class="notebook-entry__desc">{{ .Params.description }}</p>
+      {{ end }}
+    </li>
+    {{ end }}
+  </ol>
+  {{ else }}
+  <p class="notebook-empty">Nothing here yet.</p>
+  {{ end }}
+</div>
+{{ end }}

@@ -584,3 +584,253 @@ button {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 100, 100, 0.9);
 } */
+
+/* ── Command Box (⌘K palette) ───────────────────────────────────────────── */
+.command-box {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 20vh;
+}
+
+.command-box--open {
+  display: flex;
+}
+
+.command-box__panel {
+  background: var(--my-white);
+  border: 1px solid var(--my-border-color);
+  border-radius: 12px;
+  box-shadow: 0 12px 48px var(--my-shadow-color);
+  width: 90vw;
+  max-width: 36rem;
+  overflow: hidden;
+}
+
+.command-box__input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--bs-body-color);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--my-border-color);
+  outline: none;
+}
+
+.command-box__input::placeholder {
+  color: var(--my-gray-1);
+  font-weight: 400;
+}
+
+.command-box__list {
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem 0;
+  max-height: 22rem;
+  overflow-y: auto;
+}
+
+.command-box__item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.25rem;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.command-box__item.active,
+.command-box__item:hover {
+  background: var(--my-silver-2);
+}
+
+.command-box__title {
+  font-family: 'Spectral', serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--bs-body-color);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.command-box__kind {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--my-gray-1);
+  background: var(--my-silver-1);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.command-box__status {
+  padding: 0.75rem 1.25rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.82rem;
+  color: var(--my-gray-1);
+}
+
+.command-box__status--error {
+  color: #c0392b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .command-box,
+  .command-box__item {
+    transition: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* ── Scroll Arc ─────────────────────────────────────────────────────────── */
+:root {
+  --scroll-progress: 0;
+  --scroll-arc-opacity: 0;
+}
+
+.scroll-arc {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  pointer-events: none;
+  opacity: var(--scroll-arc-opacity);
+  transition: opacity 0.3s ease;
+  /* Default: top-left corner — arc traces from top to left */
+  top: -8px;
+  left: -8px;
+  transform: rotate(225deg);
+}
+
+/* Reposition arc for each corner — mirrors the corner classes on #signature-box */
+#signature-box.top.right    .scroll-arc { top: -8px;    left: auto; right: -8px;   transform: rotate(315deg); }
+#signature-box.bottom.left  .scroll-arc { top: auto;    bottom: -8px; left: -8px;  transform: rotate(135deg); }
+#signature-box.bottom.right .scroll-arc { top: auto;    bottom: -8px; left: auto; right: -8px; transform: rotate(45deg); }
+
+.scroll-arc__path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--scroll-progress));
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-arc__path {
+    transition: none;
+  }
+  .scroll-arc {
+    transition: none;
+  }
+}
+
+/* ── Shortcut Hints overlay ─────────────────────────────────────────────── */
+.shortcut-hints {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+}
+
+.shortcut-hints--open {
+  display: flex;
+}
+
+.shortcut-hints__panel {
+  position: relative;
+  background: var(--my-white);
+  border: 1px solid var(--my-border-color);
+  border-radius: 12px;
+  box-shadow: 0 8px 40px var(--my-shadow-color);
+  padding: 2rem 2.5rem;
+  min-width: 18rem;
+  max-width: 32rem;
+  width: 90vw;
+}
+
+.shortcut-hints__title {
+  font-family: 'Spectral', serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--bs-body-color);
+  margin-bottom: 1.25rem;
+}
+
+.shortcut-hints__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.shortcut-hints__list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.82rem;
+  color: var(--my-gray-2);
+}
+
+.shortcut-hints__list li span {
+  margin-left: auto;
+  text-align: right;
+}
+
+.shortcut-hints__list kbd {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--my-silver-1);
+  color: var(--my-gray-3);
+  border: 1px solid var(--my-border-color);
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+  white-space: nowrap;
+}
+
+.shortcut-hints__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  color: var(--my-gray-1);
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.shortcut-hints__close:hover {
+  color: var(--bs-body-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shortcut-hints {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

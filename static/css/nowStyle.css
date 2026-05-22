@@ -1,0 +1,60 @@
+.now-page {
+    min-height: 70vh;
+}
+
+.now-title {
+    font-family: 'Spectral', serif;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 200;
+    color: var(--bs-body-color);
+    margin-bottom: 0.25rem;
+}
+
+.now-updated {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--my-gray-1);
+    margin-bottom: 0;
+}
+
+.now-section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--my-border-color);
+}
+
+.now-section:last-of-type {
+    border-bottom: none;
+}
+
+.now-section h2 {
+    font-family: 'Spectral', serif;
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+    font-weight: 400;
+    color: var(--bs-body-color);
+    margin-bottom: 0.75rem;
+}
+
+.now-section p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--my-gray-2);
+    margin-bottom: 0;
+}
+
+.now-footer {
+    margin-top: 3rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    color: var(--my-gray-1);
+}
+
+.now-footer a {
+    color: var(--my-gray-2);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}

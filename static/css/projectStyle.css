@@ -335,3 +335,178 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
         max-width: 95%;
     }
 }
+
+/* ── Filter toggle button ───────────────────────────────────────────────── */
+.filter-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0.3rem 0.5rem 0.3rem 0.25rem;
+    color: var(--my-gray-1);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: color 0.15s ease, transform 0.15s ease;
+    flex-shrink: 0;
+}
+
+.filter-toggle:hover {
+    color: var(--my-black);
+}
+
+.filter-toggle.active {
+    color: var(--my-black);
+}
+
+.filter-toggle.active .bi-funnel::before {
+    content: "\F2F1";   /* bi-funnel-fill codepoint */
+}
+
+/* ── Collapsible filter panel ───────────────────────────────────────────── */
+.project-filters-wrap {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.25s ease;
+}
+
+.project-filters-wrap.open {
+    max-height: 200px;   /* generous ceiling; actual content is ~40px */
+}
+
+/* ── Project groups ─────────────────────────────────────────────────────── */
+.project-group {
+    margin-bottom: 1rem;
+}
+
+.project-group.hidden {
+    display: none;
+}
+
+.project-group__title {
+    font-family: 'Spectral', serif;
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 300;
+    color: var(--bs-body-color);
+    margin-bottom: 0.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--my-border-color);
+}
+
+.project-group__desc {
+    font-family: 'Edu SA Beginner', cursive;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--my-gray-1);
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+}
+
+/* ── Filter chips ───────────────────────────────────────────────────────── */
+.filter-chip {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--my-border-color);
+    background: var(--my-silver-1);
+    color: var(--my-gray-2);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+.filter-chip:hover {
+    transform: scale(1.05);
+    border-color: var(--my-gray-2);
+}
+
+.filter-chip.active {
+    background: var(--my-black);
+    color: var(--my-white);
+    border-color: var(--my-black);
+}
+
+.project-card-wrap {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.project-card-wrap.hidden {
+    display: none;
+}
+
+.project-empty-state {
+    font-family: 'Spectral', serif;
+    font-style: italic;
+    color: var(--my-gray-1);
+    text-align: center;
+    width: 100%;
+    padding: 2rem 0;
+}
+
+/* ── Project prev/next nav ──────────────────────────────────────────────── */
+.project-nav-prevnext {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 2rem 1.5rem 3rem;
+    max-width: 56rem;
+    margin: 0 auto;
+    border-top: 1px solid var(--my-border-color);
+}
+
+.project-nav-prevnext a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--my-border-color);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--bs-body-color);
+    max-width: 48%;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.project-nav-prevnext a:hover {
+    box-shadow: 0 0 10px 0 var(--my-shadow-color);
+    transform: translateY(-2px);
+}
+
+.project-nav-prevnext__next {
+    margin-left: auto;
+    text-align: right;
+}
+
+.project-nav-prevnext__label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--my-gray-1);
+}
+
+.project-nav-prevnext__title {
+    font-family: 'Spectral', serif;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+@media (max-width: 576px) {
+    .project-nav-prevnext {
+        flex-direction: column;
+        padding: 1.5rem 1rem 2.5rem;
+    }
+
+    .project-nav-prevnext a {
+        max-width: 100%;
+    }
+
+    .project-nav-prevnext__next {
+        text-align: left;
+    }
+}

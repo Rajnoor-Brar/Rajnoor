@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <script>
+      (function(){
+        var t = localStorage.getItem("theme");
+        var dark = t === "dark" || ((t === "auto" || !t) && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        if (dark) document.documentElement.setAttribute("data-bs-theme", "dark");
+      })();
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{ .Params.description }}">
+    <meta name="author" content="Rajnoor Brar">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#fff">
+    <meta name="keywords" content="Physics, Mathematics, Computer Science, Rajnoor Brar">
+    <meta name="rj-features" content='{ "notebook": {{ site.Params.features.notebook }}, "nowPage": {{ site.Params.features.nowPage }}, "commandPalette": {{ site.Params.features.commandPalette }}, "scrollArc": {{ site.Params.features.scrollArc }}, "shortcutHints": {{ site.Params.features.shortcutHints }} }'>
+
+    <meta property="og:title" content="{{ .Title }}">
+    <meta property="og:url" content="{{ .Permalink }}">
+    <meta property="og:description" content="{{ .Params.description }}">
+    <meta property="og:image" content="/resources/eepy_keety.svg">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ .Title }}">
+    <meta name="twitter:description" content="{{ .Params.description }}">
+    <meta name="twitter:image" content="/resources/eepy_keety.svg">
+
+    <title>{{ .Title }}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Pre:wght@400..700&family=Edu+SA+Beginner:wght@400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Slabo+27px&family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100,1&icon_names=brightness_4,brightness_5,dark_mode,east,light_mode,north,south,west&display=block" />
+
+    <link rel="icon" type="image/png" href="/sparks.png">
+
+    {{ if .Params.code }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism.min.css" integrity="sha512-/mZ1FHPkg6EKcxo0fKXF51ak6Cr2ocgDi5ytaTBjsQZIH/RNs6GF6+oId/vPe3eJB836T36nXwVh/WBl/cWT4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    {{ end }}
+    {{ if .Params.math }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" integrity="sha384-zh0CIslj+VczCZtlzBcjt5ppRcsAmDnRem7ESsYwWwg3m/OaJ2l4x7YBZl9Kxxib" crossorigin="anonymous">
+    {{ end }}
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link id="page-style" rel="stylesheet" href="{{ .Params.pageStyle }}">
+
+    {{ if site.Params.features.notebook }}
+    <link rel="alternate" type="application/rss+xml" title="Notebook — {{ site.Title }}" href="/notebook/index.xml">
+    {{ end }}
+
+    {{ block "head-extra" . }}{{ end }}
+  </head>
+
+  <body>
+
+    <div id="page-container" class=" d-flex flex-column">
+
+        <div id="signature-box" tabindex="0">
+            <div id="signature-background">
+                <svg
+                    viewBox="0 0 3300 1330"
+                    xml:space="preserve"
+                    id="signature">
+
+                    <path d="M 331.53035,91.608771 C 347.47417,103.56664 288.55823,408.09111 257.49132,529.25856 183.2262,818.89528 168.23938,811.36938 45.247748,1083.7275 49.462888,849.18488 -18.546111,418.57786 476.31621,126.15991 564.01032,74.339401 646.25354,93.021051 667.17129,155.77429 766.15428,452.72327 263.37579,676.18141 211.5305,699.22378 365.48065,858.56898 361.88803,857.57798 507.57824,1027.794"
+                        class="signature-letters"
+                        id="NameR1" pathLength="1" aria-label="R"/>
+                    <path d="M 889.80967,706.80568 C 606.46162,674.18501 483.14503,1036.3332 716.59506,1041.601 c 220.48116,4.935 166.5316,-258.63792 162.36199,-329.45362 -10.39907,79.7748 -40.29906,204.053 21.72666,322.05642"
+                        class="signature-letters sign-secondary"
+                        id="NameA" pathLength="1" aria-label="a" transform="translate(100, 0)"/>
+
+                    <path d="m 1130.823,749.81328 c 6.1834,77.6658 36.2744,510.26312 -61.2643,521.41602 -68.3046,-0.7757 -130.28746,-64.6781 -105.84503,-145.0397"
+                        class="signature-letters sign-secondary"
+                        id="NameJ" pathLength="1" aria-label="j" transform="translate(200, 0)"/>
+
+                    <path d="m 1131.9447,598.09524 c -12.1168,-1.96662 -42.2398,46.10065 -5.1512,34.56275 7.0194,-2.1774 18.5289,-11.04631 13.9543,-20.77087 -13.5622,-28.80332 -33.7518,15.94367 -22.4192,16.65247 13.1471,0.8236 23.4033,-24.37209 9.4106,-21.18591 -7.9805,1.81976 -10.8483,22.43731 2.3065,15.72661 10.9482,-5.58702 3.0215,-15.65637 -3.3445,-9.38617 -4.9743,4.89739 3.5828,6.0084 4.2594,6.0978"
+                        class="signature-letters sign-tert"
+                        id="NameJdot" pathLength="1" transform="translate(200, -200)"/>
+
+                    <path d="m 1339.5464,743.35438 c 18.1644,167.8314 -1.914,163.991 -61.8861,323.33622 7.656,-30.0417 88.7348,-348.11292 199.081,-332.34872 88.0905,12.5742 11.6296,311.13372 4.9367,337.27312"
+                        class="signature-letters sign-secondary"
+                        id="NameN" pathLength="1" aria-label="n" transform="translate(300, 0)" />
+
+                    <path d="m 1825.7981,798.01278 c -247.4076,17.7236 -296.8522,330.50262 -59.1367,248.23452 173.6072,-60.11352 205.5654,-349.86582 -27.8064,-229.84802"
+                        class="signature-letters sign-secondary"
+                        id="NameO1" pathLength="1" aria-label="o" transform="translate(400, 0)"/>
+
+                    <path d="m 2144.0917,818.69918 c -282.6349,121.1144 -114.709,280.03812 -3.7047,229.90272 182.9873,-82.61262 151.7911,-338.89872 -11.0104,-257.49792"
+                        class="signature-letters sign-secondary"
+                        id="NameO2" pathLength="1" aria-label="o" transform="translate(450, 0)"/>
+
+                    <path d="m 2423.6227,775.70548 c -19.5468,154.2781 -29.4144,149.5209 -73.8067,297.77002 13.4944,-32.8997 151.9701,-369.88102 265.2235,-356.57512"
+                        class="signature-letters sign-secondary"
+                        id="NameR2" pathLength="1" aria-label="r" transform="translate(575, 0)"/>
+                </svg>
+            </div>
+
+
+            {{ if site.Params.features.scrollArc }}
+            <svg id="scroll-arc" class="scroll-arc" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+              <path id="scroll-arc-path"
+                d="M 50,4 A 46,46 0 1 1 4,50"
+                class="scroll-arc__path"
+                pathLength="1"
+                fill="none"
+                stroke="var(--my-black)"
+                stroke-width="2"
+                stroke-linecap="round"/>
+            </svg>
+            {{ end }}
+
+            <div id="commandBox" class="hide">
+                <div  id="navPanel" class="commandPanel hide">
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="home-nav" href="/"><span class="nav-text">Home</span></a></div>
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="project-nav" href="/projects"><span class="nav-text">Projects</span></a></div>
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="cred-nav" href="/credentials"><span class="nav-text">Credentials</span></a></div>
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="contact-nav" href="/contact"><span class="nav-text">Contact</span></a></div>
+                    {{ if site.Params.features.notebook }}
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="notebook-nav" href="/notebook"><span class="nav-text">Notebook</span></a></div>
+                    {{ end }}
+                </div>
+
+                <div id="actionPanel" class="commandPanel hide">
+                    <button id="themeToggle" type="button" aria-label="Toggle theme" class="action-item panel-item hover-grow">
+                        <span id="themeIcon" class="material-symbols-outlined" aria-hidden="true"> light_mode </span>
+                    </button>
+
+                    <div id="cornerPicker" class="action-item panel-item" role="group" aria-label="Move signature to corner">
+                        <button class="corner-dot" data-corner="TL" type="button" aria-label="Move to top-left"></button>
+                        <button class="corner-dot" data-corner="TR" type="button" aria-label="Move to top-right"></button>
+                        <button class="corner-dot" data-corner="BL" type="button" aria-label="Move to bottom-left"></button>
+                        <button class="corner-dot" data-corner="BR" type="button" aria-label="Move to bottom-right"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="page-content" data-active-nav="{{ .Params.active_nav }}">
+          {{ block "main" . }}{{ .Content }}{{ end }}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous" defer></script>
+
+    {{ if .Params.math }}
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js" integrity="sha384-Rma6DA2IPUwhNxmrB/7S3Tno0YY7sFu9WSYMCuulLhIqYSGZ2gKCJWIqhBWqMQfh" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js" integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+    {{ end }}
+    {{ if .Params.code }}
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js" integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-matlab.min.js" integrity="sha512-pSQLsop+Wkom6bc8uIln7cByTC3Egn966aRfLrbP6oPgEdVGcmID85DdNkLP5NvEy4baIHgEv0IsK2gW/CYw1Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    {{ end }}
+
+    <script src="/js/script.js"></script>
+
+    <script id="page-script" src="{{ .Params.pageScript }}"></script>
+
+    {{ if site.Params.features.commandPalette }}
+    <div id="command-box-overlay" class="command-box" role="dialog" aria-modal="true" aria-label="Command palette">
+      <div class="command-box__panel">
+        <input id="command-box-input"
+               class="command-box__input"
+               type="text"
+               placeholder="Search pages…"
+               autocomplete="off"
+               spellcheck="false"
+               aria-label="Search"
+               aria-autocomplete="list"
+               aria-controls="command-box-list">
+        <ul id="command-box-list" class="command-box__list" role="listbox" aria-label="Results"></ul>
+      </div>
+    </div>
+    <script src="/js/commandBox.js" defer></script>
+    {{ end }}
+
+    {{ if site.Params.features.scrollArc }}
+    <script src="/js/scrollArc.js" defer></script>
+    {{ end }}
+
+    {{ if site.Params.features.shortcutHints }}
+    <div id="shortcut-hints" class="shortcut-hints" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+      <div class="shortcut-hints__panel">
+        <h2 class="shortcut-hints__title">Keyboard shortcuts</h2>
+        <ul class="shortcut-hints__list">
+          <li><kbd>?</kbd><span>Show / hide this overlay</span></li>
+          <li><kbd>Esc</kbd><span>Close panels &amp; overlays</span></li>
+          {{ if site.Params.features.commandPalette }}
+          <li><kbd>⌘K</kbd><span>Open command palette</span></li>
+          {{ end }}
+          <li><kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd><span>Move signature to corner</span></li>
+          <li><kbd>T</kbd><span>Cycle theme (via signature toggle)</span></li>
+        </ul>
+        <button class="shortcut-hints__close" onclick="document.getElementById('shortcut-hints').classList.remove('shortcut-hints--open')" aria-label="Close shortcuts">✕</button>
+      </div>
+    </div>
+    <script src="/js/shortcutHints.js" defer></script>
+    {{ end }}
+
+    {{ block "body-extra" . }}{{ end }}
+  </body>
+</html>

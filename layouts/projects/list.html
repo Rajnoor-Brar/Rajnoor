@@ -1,0 +1,126 @@
+{{ define "main" }}
+<div style="min-height: auto;">
+  <div class="container-fluid top-spacer"></div>
+
+  {{/* ── Collect tags only from visible projects ── */}}
+  {{ $allTags := slice }}
+  {{ range .Pages }}
+    {{ if .Params.show }}
+      {{ $allTags = $allTags | append .Params.tags }}
+    {{ end }}
+  {{ end }}
+  {{ $uniqueTags := $allTags | uniq | sort }}
+
+  <div class="container-fluid justify-content-center d-flex">
+    <div class="col-12 col-lg-6 d-flex mx-0 px-1 px-lg-3 py-4 my-2 align-items-center">
+      {{ if $uniqueTags }}
+      <button id="filter-toggle"
+              class="filter-toggle"
+              type="button"
+              aria-label="Toggle tag filters"
+              aria-expanded="false"
+              aria-controls="project-filters-wrap">
+        <i class="bi bi-funnel" aria-hidden="true"></i>
+      </button>
+      {{ end }}
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb align-items-center d-flex mb-0">
+          <li class="breadcrumb-item d-flex align-items-center">
+            <a class="btn page-nav active">Projects</a>
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  {{ if $uniqueTags }}
+  <div id="project-filters-wrap" class="project-filters-wrap">
+    <div class="container-fluid justify-content-center d-flex">
+      <div id="project-filters" class="col-12 col-md-8 col-lg-6 d-flex flex-wrap gap-2 px-4 pb-3">
+        {{ range $uniqueTags }}
+        <button class="filter-chip" data-tag="{{ . }}" type="button">{{ . }}</button>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+  {{ end }}
+
+  <div id="project-grid" class="container-fluid p-0 m-0">
+
+    {{/* ── Named groups from data/projectGroups.yaml ── */}}
+    {{ range $g := site.Data.projectGroups }}
+      {{ $pages := where $.Pages "Params.group" $g.slug }}
+      {{ $visiblePages := where $pages "Params.show" true }}
+      {{ if $visiblePages }}
+      <section class="project-group" id="group-{{ $g.slug }}" data-group="{{ $g.slug }}">
+        <div class="container-fluid justify-content-center d-flex">
+          <div class="col-12 col-md-8 col-lg-6 px-4">
+            <h2 class="project-group__title">{{ $g.name }}</h2>
+            <p class="project-group__desc">{{ $g.description }}</p>
+          </div>
+        </div>
+        <div class="project-group__grid container-fluid p-0 m-0 d-flex align-items-center justify-content-center">
+          <div class="container col-12 col-md-8 col-lg-6 d-flex flex-wrap justify-content-evenly align-items-center justify-content-lg-between">
+            {{ range $visiblePages.ByWeight }}
+            <div class="project-card-wrap col-10 col-lg-5 m-4 p-2" data-tags="{{ delimit .Params.tags " " }}" data-group="{{ .Params.group }}">
+              <div class="card h-100">
+                <img src="{{ .Params.cardImage }}" class="card-img-top" alt="{{ .Params.cardTitle }}">
+                <div class="card-body">
+                  <a href="{{ .RelPermalink }}" class="btn m-0 align-items-center d-flex btn-light page-list">
+                    <h5 class="card-title">{{ .Params.cardTitle }}</h5>
+                  </a>
+                  <p class="card-text">{{ .Params.cardText }}</p>
+                </div>
+              </div>
+            </div>
+            {{ end }}
+          </div>
+        </div>
+      </section>
+      {{ end }}
+    {{ end }}
+
+    {{/* ── "Other" group — pages with no recognised group ── */}}
+    {{ $knownSlugs := slice }}
+    {{ range site.Data.projectGroups }}{{ $knownSlugs = $knownSlugs | append .slug }}{{ end }}
+    {{ $otherPages := slice }}
+    {{ range .Pages }}
+      {{ if and .Params.show (not (in $knownSlugs .Params.group)) }}
+        {{ $otherPages = $otherPages | append . }}
+      {{ end }}
+    {{ end }}
+    {{ if $otherPages }}
+    <section class="project-group" id="group-other" data-group="other">
+      <div class="container-fluid justify-content-center d-flex">
+        <div class="col-12 col-md-8 col-lg-6 px-4">
+          <h2 class="project-group__title">Other</h2>
+        </div>
+      </div>
+      <div class="project-group__grid container-fluid p-0 m-0 d-flex align-items-center justify-content-center">
+        <div class="container col-12 col-md-8 col-lg-6 d-flex flex-wrap justify-content-evenly align-items-center justify-content-lg-between">
+          {{ range $otherPages }}
+          <div class="project-card-wrap col-10 col-lg-5 m-4 p-2" data-tags="{{ delimit .Params.tags " " }}" data-group="other">
+            <div class="card h-100">
+              <img src="{{ .Params.cardImage }}" class="card-img-top" alt="{{ .Params.cardTitle }}">
+              <div class="card-body">
+                <a href="{{ .RelPermalink }}" class="btn m-0 align-items-center d-flex btn-light page-list">
+                  <h5 class="card-title">{{ .Params.cardTitle }}</h5>
+                </a>
+                <p class="card-text">{{ .Params.cardText }}</p>
+              </div>
+            </div>
+          </div>
+          {{ end }}
+        </div>
+      </div>
+    </section>
+    {{ end }}
+
+    {{/* ── Empty state for filter ── */}}
+    <div class="container-fluid justify-content-center d-flex">
+      <p id="project-empty-state" class="project-empty-state" style="display:none;">No projects match this combination.</p>
+    </div>
+
+  </div>
+</div>
+{{ end }}

@@ -1,0 +1,17 @@
+{{ define "main" }}
+{{ .Content }}
+<nav class="project-nav-prevnext" aria-label="Project navigation">
+  {{ with .PrevInSection }}
+  <a class="project-nav-prevnext__prev" href="{{ .RelPermalink }}">
+    <span class="project-nav-prevnext__label">← Previous</span>
+    <span class="project-nav-prevnext__title">{{ .Title }}</span>
+  </a>
+  {{ end }}
+  {{ with .NextInSection }}
+  <a class="project-nav-prevnext__next" href="{{ .RelPermalink }}">
+    <span class="project-nav-prevnext__label">Next →</span>
+    <span class="project-nav-prevnext__title">{{ .Title }}</span>
+  </a>
+  {{ end }}
+</nav>
+{{ end }}
