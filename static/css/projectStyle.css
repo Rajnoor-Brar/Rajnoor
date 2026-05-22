@@ -61,6 +61,15 @@ pre{
     font-weight: bolder;
 }
 
+/* Inline GitHub icon button in article footer (Ellipsoidal Channel) */
+.my-btn-icon {
+    border-color: transparent !important;
+    font-size: 1em;
+    width: 1.25em;
+    height: 1.25em;
+    padding: 0;
+}
+
 .page {
     position: relative;
     font-size: 1.1rem;
@@ -197,7 +206,7 @@ pre{
     font-size: 0.9em;
     text-align: center;
     margin-top: 0.25em;
-    padding:none;
+    padding: 0;
     margin-bottom:-6px;
     color: var(--my-gray-1);
 }

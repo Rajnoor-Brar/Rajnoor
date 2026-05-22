@@ -40,9 +40,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!savedTheme) {  localStorage.setItem("theme", "auto");  savedTheme = "auto";  }
 
-    if      (savedTheme === "dark" ) setDarkTheme() ;
-    else if (savedTheme === "light") setLightTheme();
-    else                             setAutoTheme();
+    // Set icon immediately so there's no wrong-icon flash on initial load.
+    // setAutoTheme() → updateAutoTheme() handles its own icon; set explicit ones here.
+    if      (savedTheme === "dark" ) { themeIcon.innerText = "dark_mode";  setDarkTheme();  }
+    else if (savedTheme === "light") { themeIcon.innerText = "light_mode"; setLightTheme(); }
+    else                             { setAutoTheme(); }
+
+    themeAnimReady = true; // allow icon swap animation after initial paint
 
     themeToggleEventMaker();
 
@@ -57,16 +61,26 @@ document.addEventListener("DOMContentLoaded", function () {
 const themeToggleBtn = document.getElementById("themeToggle");
 const themeIcon = document.getElementById("themeIcon");
 
+// Guard: skip icon-swap animation on the initial load call from setAutoTheme()
+let themeAnimReady = false;
+
 function themeToggleEventMaker(){
   themeToggleBtn.addEventListener("click", function () {
+        // Restart animation cleanly even on rapid clicks
+        themeIcon.classList.remove("rotate");
+        void themeIcon.offsetWidth;
         themeIcon.classList.add("rotate");
         // document.getElementById("signature-box").blur();
         setTimeout(() => {
             let currentTheme = localStorage.getItem("theme") || "auto";
 
+            // Fire background/colour transition for manual toggles
+            document.documentElement.classList.add('theme-transitioning');
+            setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 350);
+
             if (currentTheme === "light") {
                 themeIcon.innerText = "dark_mode";
-                localStorage.setItem("theme", "dark"); 
+                localStorage.setItem("theme", "dark");
                 setDarkTheme();
             }
             else if (currentTheme === "dark") {
@@ -77,7 +91,7 @@ function themeToggleEventMaker(){
                 mediaQuery.removeEventListener('change', updateAutoTheme);
                 themeIcon.innerText = "light_mode";
                 localStorage.setItem("theme", "light");
-                setLightTheme(); 
+                setLightTheme();
             }
 
             setTimeout(() => {
@@ -123,14 +137,14 @@ function updateAutoTheme() {
 }
 
 function applyTheme(theme) {
-    themeIcon.style.opacity = "0";
-    themeIcon.style.transform = "rotate(180deg) scale(0.8)";
-
-    setTimeout(() => {
-        themeIcon.style.opacity = "1";
-        themeIcon.style.transform = "rotate(0) scale(1)";
-    }, 200);
-
+    // Fire background/colour transition for system-triggered auto changes
+    document.documentElement.classList.add('theme-transitioning');
+    setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 350);
+    if (themeAnimReady) {
+        themeIcon.classList.remove('icon-swap');
+        void themeIcon.offsetWidth; // restart animation
+        themeIcon.classList.add('icon-swap');
+    }
     if (theme === "dark") setDarkTheme();
     else setLightTheme();
 }
@@ -155,68 +169,63 @@ let commandPanels = document.querySelectorAll('.commandPanel');
 
 // --------------- Open Nav Panel ---------------
 
+// Re-sync the active-rail position on navPanel — offsetTop is 0 while the
+// panel is display:none, so we must refresh once it's actually laid out.
+function refreshActiveRail() {
+  const panel = document.getElementById('navPanel');
+  if (!panel) return;
+  const active = panel.querySelector('.nav-link.active');
+  const item = active?.closest('.nav-item');
+  if (!item) return;
+  // --y-offset is resolved by CSS via calc(); JS only needs the row's offsetTop.
+  panel.style.setProperty('--active-y', item.offsetTop + 'px');
+  panel.style.setProperty('--active-shown', '1');
+}
+
 function openNavPanel() {
   clearAllTimeouts(hideTimeouts);
-
-  commandBox.classList.remove('hide');
-  commandBox.classList.add('show');
-
   clearAllTimeouts(showTimeouts);
 
-  commandPanels.forEach((commandPanel, i) => {
-    const tPanel = setTimeout(() => {
-      commandPanel.classList.remove('contract');
-      commandPanel.classList.remove('hide');
-      commandPanel.classList.add('show');
+  commandBox.classList.remove('hide');
 
-      const panelItems = commandPanel.querySelectorAll('.panel-item');
-      panelItems.forEach((panelItem, j) => {
-        const tItem = setTimeout(() => {
-          panelItem.classList.remove('hide');
-          panelItem.classList.add('show');
-        }, j * itemTime + 5);
-        showTimeouts.push(tItem);
-      });
+  commandPanels.forEach((panel, i) => {
+    const t = setTimeout(() => {
+      panel.classList.remove('contract', 'hide');
+      panel.classList.add('show');
+      if (panel.id === 'navPanel') refreshActiveRail();
     }, i * panelTime);
-    showTimeouts.push(tPanel);
+    showTimeouts.push(t);
   });
 }
 
 function closeNavPanel() {
   clearAllTimeouts(showTimeouts);
-  commandBox.classList.remove('show');
   clearAllTimeouts(hideTimeouts);
+  commandBox.classList.remove('show');
 
+  // Collapse in reverse order (actionPanel first, then navPanel)
   const panels = [...commandPanels].reverse();
-  panels.forEach((commandPanel, i) => {
-    
-    const tPanel = setTimeout(() => {
-      const panelItems = [...commandPanel.querySelectorAll('.panel-item')].reverse();
-      commandPanel.classList.remove('show');
-      commandPanel.classList.add('contract');
-      panelItems.forEach((panelItem, j) => {
-        const tItem = setTimeout(() => {
-          panelItem.classList.remove('show');
-          panelItem.classList.add('hide');
-        }, j * itemTime);
-        hideTimeouts.push(tItem);
-      });
+  panels.forEach((panel, i) => {
+    const t = setTimeout(() => {
+      panel.classList.remove('show');
+      panel.classList.add('contract');
 
-      const tHidePanel = setTimeout(() => {
-        commandPanel.classList.add('hide');
-      }, panelItems.length * itemTime);
-      hideTimeouts.push(tHidePanel);
-      
-      if (i === panels.length - 1) {
-        const tHideBox = setTimeout(() => {
-          commandBox.classList.add('hide');
-          document.getElementById("signature-box").blur();
-        }, panelItems.length * itemTime + panelTime);
-        hideTimeouts.push(tHideBox);
-      }
+      // Hide after the collapse animation completes (navPanel: 0.18s, actionPanel: 0.12s)
+      const animDuration = panel.id === 'navPanel' ? 180 : 120;
+      const tHide = setTimeout(() => {
+        panel.classList.remove('contract');
+        panel.classList.add('hide');
+      }, animDuration + 20);
+      hideTimeouts.push(tHide);
     }, i * panelTime);
-    hideTimeouts.push(tPanel);
+    hideTimeouts.push(t);
   });
+
+  // Hide commandBox once all panels have finished collapsing
+  const tHideBox = setTimeout(() => {
+    commandBox.classList.add('hide');
+  }, (panels.length - 1) * panelTime + 220);
+  hideTimeouts.push(tHideBox);
 }
 
 
@@ -478,13 +487,35 @@ function attachDragHandlers() {
 
   function updateActiveNav(activeNavId) {
     document.querySelectorAll('.nav-link.active').forEach(el => el.classList.remove('active'));
+    const panel = document.getElementById('navPanel');
     if (activeNavId) {
       const el = document.querySelector(activeNavId);
       if (el) el.classList.add('active');
+      // refreshActiveRail reads .nav-link.active + applies --y-offset
+      if (typeof refreshActiveRail === 'function') refreshActiveRail();
+    } else if (panel) {
+      panel.style.setProperty('--active-shown', '0');
     }
   }
 
-  async function navigateTo(url, pushState) {
+  // Hover rail: glides to whichever nav-item the pointer is over
+  document.addEventListener('mouseover', (e) => {
+    const item = e.target.closest('#navPanel .nav-item');
+    const panel = document.getElementById('navPanel');
+    if (!item || !panel) return;
+    panel.style.setProperty('--hover-y', item.offsetTop + 'px');
+    panel.style.setProperty('--hover-shown', '1');
+  });
+  document.addEventListener('mouseout', (e) => {
+    const panel = document.getElementById('navPanel');
+    if (!panel) return;
+    // Hide when leaving panel entirely
+    if (e.target.closest('#navPanel') && !e.relatedTarget?.closest('#navPanel')) {
+      panel.style.setProperty('--hover-shown', '0');
+    }
+  });
+
+  async function navigateTo(url, pushState, restoreScrollY) {
     // Cancel any in-flight fetch
     if (abortController) abortController.abort();
     abortController = new AbortController();
@@ -499,6 +530,11 @@ function attachDragHandlers() {
 
     // Fade out
     content.classList.add('page-leaving');
+
+    // Separate path+search from hash fragment
+    let urlHash = '';
+    const hashIdx = url.indexOf('#');
+    if (hashIdx !== -1) { urlHash = url.slice(hashIdx); url = url.slice(0, hashIdx); }
 
     let html, finalUrl;
     try {
@@ -534,13 +570,25 @@ function attachDragHandlers() {
     document.title = doc.title;
     updateActiveNav(newContent.dataset.activeNav);
 
-    // Scroll to top
-    window.scrollTo(0, 0);
+    // Scroll: restore saved position (back/forward), jump to hash anchor, or top
+    if (restoreScrollY != null) {
+      window.scrollTo(0, restoreScrollY);
+    } else if (urlHash) {
+      const target = document.getElementById(urlHash.slice(1));
+      if (target) target.scrollIntoView({ behavior: 'instant' });
+      else window.scrollTo(0, 0);
+    } else {
+      window.scrollTo(0, 0);
+    }
 
     // Fade in — do this before script loading so content is never blocked
     content.classList.remove('page-leaving');
 
-    if (pushState) history.pushState({ url: finalUrl }, '', finalUrl);
+    if (pushState) {
+      // Save current scroll before stamping new entry
+      history.replaceState({ ...history.state, scrollY: window.scrollY }, '');
+      history.pushState({ url: finalUrl + urlHash }, '', finalUrl + urlHash);
+    }
 
     // Re-render math (KaTeX) if loaded
     if (typeof renderMathInElement === 'function') {
@@ -580,19 +628,20 @@ function attachDragHandlers() {
     if (link.hasAttribute('download')) return;
     if (link.getAttribute('href')?.startsWith('mailto:')) return;
     if (link.getAttribute('href')?.startsWith('javascript:')) return;
-    // Same page, only hash change — let browser handle
-    if (url.pathname === location.pathname && url.hash !== location.hash) return;
+    // Same page: hash-only change (or no change at all) — let browser handle
+    if (url.pathname === location.pathname) return;
     e.preventDefault();
-    navigateTo(url.pathname + url.search, true);
+    navigateTo(url.pathname + url.search + url.hash, true);
   });
 
-  // Handle back / forward
-  window.addEventListener('popstate', () => {
-    navigateTo(location.pathname + location.search, false);
+  // Handle back / forward — restore saved scroll position if available
+  window.addEventListener('popstate', (e) => {
+    const savedY = e.state?.scrollY ?? null;
+    navigateTo(location.pathname + location.search + location.hash, false, savedY);
   });
 
   // Stamp initial history entry so popstate works on first back
-  history.replaceState({ url: location.pathname }, '', location.pathname);
+  history.replaceState({ url: location.pathname, scrollY: 0 }, '', location.pathname);
 
   // Apply active nav on initial load (replaces the removed inline script)
   document.addEventListener('DOMContentLoaded', () => {

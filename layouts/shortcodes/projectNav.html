@@ -13,7 +13,7 @@
             {{ if eq $index 0 }}
               {{ $accumulatedPath = $baseURL }}
             {{ else }}
-              {{ $accumulatedPath = printf "%s/%s" $accumulatedPath (lower $crumb) | relURL }}
+              {{ $accumulatedPath = printf "%s/%s" $accumulatedPath ($crumb | lower | replaceRE " " "-") | relURL }}
             {{ end }}
 
             <li class="breadcrumb-item d-flex align-items-center">

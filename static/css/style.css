@@ -36,7 +36,11 @@ html[data-bs-theme="dark"] {
   --my-shadow-color: #fdfdfd33;
 }
 
-* {
+/* Theme colour transition only fires while the user is actively toggling —
+   not on every hover, focus, or class change. JS adds/removes .theme-transitioning. */
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
   transition: background-color 0.2s ease-in, color 0.1s ease-out;
 }
 body {
@@ -228,52 +232,75 @@ body {
   border-radius: calc(var(--signture-height)*0.4) !important;
 }
 
+/* Transform-origin: panels expand/collapse away from the signature pill */
+#signature-box.top.left    .commandPanel { transform-origin: top left; }
+#signature-box.top.right   .commandPanel { transform-origin: top right; }
+#signature-box.bottom.left  .commandPanel { transform-origin: bottom left; }
+#signature-box.bottom.right .commandPanel { transform-origin: bottom right; }
+
 #navPanel{
   overflow: hidden;
   position: relative;
   display: flex;
-  height: auto;
+  width: calc(2 * var(--signture-height));
 
   flex-direction: column;
   align-items: center;
   justify-content: start;
-  backdrop-filter: blur(20px) ; 
+  backdrop-filter: blur(20px);
   background-color: rgba(var(--my-white-rgb), 0.8) !important;
 
-  padding-block: calc(0.2*var(--signture-height));
-  padding-left: calc(0.25*var(--signture-height));
+  padding: calc(0.15*var(--signture-height)) calc(0.2*var(--signture-height));
 
-  /* transition:height 1s ease-out !important; */
   animation-name: none;
-  animation-duration: 0.4s;
+  animation-duration: 0.18s;
   animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
 
-  animation-fill-mode: forwards;
-  --navExpandedHeight: calc( ( (4*var(--navItemHeightFactor)) + (0.4) )  *  var(--signture-height) )
+/* Active + hover rails — vertical line segments that glide along the panel's
+   left edge to indicate the active nav item (full thickness) and the
+   currently-hovered item (half thickness). Positions are driven by
+   --active-y / --hover-y CSS vars set from JS. */
+#navPanel{
+  --y-offset: calc(0.15 * var(--signture-height));
+}
+#navPanel::before,
+#navPanel::after {
+  content: "";
+  position: absolute;
+  /* left: calc(0.01 * var(--signture-height)); */
+  left : 0px;
+  height: calc(0.3 * var(--signture-height));
+  background: var(--my-black);
+  border-radius: 2px;
+  pointer-events: none;
+  transition: top 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.15s ease;
+}
+#navPanel::before {
+  top: calc(var(--active-y, 0px) + var(--y-offset));
+  width: 2px;
+  opacity: var(--active-shown, 0);
+  z-index: 2;
+}
+#navPanel::after {
+  top: calc(var(--hover-y, 0px) + var(--y-offset));
+  width: 1px;
+  opacity: var(--hover-shown, 0);
+  z-index: 1;
 }
 
 #navPanel.show{
-  animation-name: navExpand;
+  display: flex !important;
+  animation-name: panelExpand;
 }
 
 #navPanel.contract{
-  animation-name: navCollapse;
-}
-
-@keyframes navExpand{
-  0% {height: 0; width:0}
-  25% {height: calc(0.25 * var(--navExpandedHeight)); width: calc(2*var(--signture-height));}
-  100% {height: calc(var(--navExpandedHeight)); width: calc(2*var(--signture-height));}
-}
-
-@keyframes navCollapse{
-  100% {height: 0;  width: 0}
-  75% {height: calc(0.25 * var(--navExpandedHeight)); width: 0;}
-  0% {height: calc(var(--navExpandedHeight)); width: calc(2*var(--signture-height));}
+  animation-name: panelCollapse;
 }
 
 .nav-item{
-  display: block;
+  display: flex !important;
   font-family: "Spectral", serif;
   font-size: 1rem;
 
@@ -281,10 +308,26 @@ body {
   height: calc(0.6*var(--signture-height));
 
   align-items: center;
+  justify-content: center;
   transition: display calc(var(--signature-bg-duration)/5) ease, color 0s, ;
 }
 .nav-link{
-  padding-left: calc(0.2*var(--signture-height)) !important;
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 50%;  
+  padding-block: 0 !important;
+  padding-inline: calc(0.1*var(--signture-height)) !important;
+  margin-left: calc(0.1*var(--signture-height));
+}
+.nav-text{
+  position: absolute;
+  top: 50%;
+  /* margin-left: calc(0.1*var(--signture-height)); */
+  left: calc(0.1*var(--signture-height));
+  right: calc(0.1*var(--signture-height));
+  transform: translateY(-50%);
+  line-height: 1;
 }
 
 #home-nav{
@@ -311,48 +354,41 @@ body {
   position: relative;
   overflow: hidden;
   margin-block: calc(0.25*var(--signture-height));
-  
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
 
-  /* margin-bottom: calc(2.5vw); */
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
 
   border-radius: calc(var(--signture-height)*0.4) !important;
   background-color: rgba(var(--my-white-rgb), 0.8) !important;
   box-shadow: var(--my-border-color) 0px 3px 6px !important;
   backdrop-filter: blur(20px);
 
-  padding-block: calc(0.2*var(--signture-height));
-  padding-inline: calc(0.1*var(--signture-height)); 
+  padding: calc(0.1*var(--signture-height)) calc(0.1*var(--signture-height));
 
-  transition-property: width;
-
-  /* transition-property: width, padding-inline; */
-  animation: 0.4s;
+  width: calc(2 * var(--signture-height));
+  animation-duration: 0.12s;
   animation-timing-function: ease-out;
-  animation-fill-mode: forwards;
+  animation-fill-mode: both;
 }
 
 #actionPanel.show{
   display: flex !important;
-  animation-name: actionExpand;
+  animation-name: panelExpand;
 }
 
 #actionPanel.contract{
-  animation-name: actionCollapse;
+  animation-name: panelCollapse;
 }
 
-@keyframes actionExpand{
-  0% {width: 0; height: 0}
-  50% {width:calc(var(--signture-height)); height:calc(0.8*var(--signture-height)); }
-  100% {width:calc(2*var(--signture-height)); height:calc(0.8*var(--signture-height)); }
+@keyframes panelExpand {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
 }
 
-@keyframes actionCollapse{
-  100% {width: 0; height: 0}
-  50% {width:calc(var(--signture-height)); height:0; }
-  0% {width:calc(2*var(--signture-height)); height:calc(0.8*var(--signture-height)); }
+@keyframes panelCollapse {
+  from { transform: scale(1);   opacity: 1; }
+  to   { transform: scale(0.7); opacity: 0; }
 }
 
 .action-item{
@@ -360,7 +396,7 @@ body {
   font-size: 1.2rem;
   justify-content: center;
   align-items: center;
-  height: calc(0.4*var(--signture-height));
+  height: calc(0.55*var(--signture-height));
 
   width:auto; aspect-ratio: 1 / 1; border:none;
   transition: display calc(var(--signature-bg-duration)/5) ease, color 0s, ;
@@ -373,6 +409,8 @@ body {
 #themeToggle{
   transition: transform 0.3s ease-in, color 0.02s ease-out 0.05s;
   background-color: transparent !important;
+  border: none;
+  padding: 0;
   touch-action: manipulation;
 }
 #themeToggle:hover {
@@ -485,9 +523,19 @@ button {
   animation: rotateAnim 1s ease;
 }
 
-.active{
-  border-left: var(--my-black) 1px solid;
+/* Icon swap animation for auto-theme system changes (no inline transform needed) */
+@keyframes iconSwap {
+  0%   { opacity: 1; transform: scale(1) rotate(0deg); }
+  40%  { opacity: 0; transform: scale(0.7) rotate(90deg); }
+  60%  { opacity: 0; transform: scale(0.7) rotate(90deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
 }
+.icon-swap {
+  animation: iconSwap 0.35s ease;
+}
+
+/* Active/hover rails are drawn on #navPanel via ::before / ::after (see above);
+   .nav-link.active no longer needs its own border. */
 .invert{
   filter:invert();
 }

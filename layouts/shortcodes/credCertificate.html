@@ -33,7 +33,7 @@
   <div class="d-flex flex-wrap">
     {{ if .Params.link }}
       <div class="certificate-link col-12 col-lg-6">
-        <a href="{{ .Params.link }}" target="_blank" class="btn">
+        <a href="{{ .Params.link }}" target="_blank" rel="noopener noreferrer" class="btn">
           {{ if .Params.id }}
             {{ .Params.id }}
           {{ else }}
