@@ -1,24 +1,31 @@
+{{/* Certificate card. Receives one entry from data/credentials.yaml as context. */}}
 <div class="certificate h-100 card p-2 col-12 col-lg-5 col-md-8">
   <div class="row g-0">
-    
-    <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
-      {{ with .Params.certIcon }}
-        <div style="width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-          <img src="{{ printf "%s%s" "/resources/creds/" . }}" style="width:100%;height:100%;object-fit:contain;" alt="Certificate Icon">
+
+    <div class="col-md-4 d-flex align-items-center justify-content-center p-5 p-md-3">
+      {{ $hasThemed := and .icon_light .icon_dark }}
+      {{ if or $hasThemed .icon }}
+        <div class="certificate-icon">
+          {{ if $hasThemed }}
+            <img src="{{ printf "/resources/creds/%s" .icon_light }}" class="theme-img--light" alt="Certificate Icon" loading="lazy">
+            <img src="{{ printf "/resources/creds/%s" .icon_dark }}" class="theme-img--dark" alt="Certificate Icon" loading="lazy">
+          {{ else }}
+            <img src="{{ printf "/resources/creds/%s" .icon }}" alt="Certificate Icon" loading="lazy">
+          {{ end }}
         </div>
       {{ end }}
     </div>
-    
+
     <div class="col-md-8 d-flex align-items-center">
       <div class="card-body flex-wrap d-flex">
         <div class="certificate-details col-12">
-          {{ with .Params.name }}
+          {{ with .title }}
             <div class="certificate-name">
               <span><strong>{{ . }}</strong></span>
             </div>
           {{ end }}
 
-          {{ with .Params.institution }}
+          {{ with .institution }}
             <div class="certificate-institution">
               <span>{{ . }}</span>
             </div>
@@ -27,43 +34,31 @@
       </div>
     </div>
   </div>
-  
+
   <hr class="mt-2">
 
-  <div class="d-flex flex-wrap">
-    {{ if .Params.link }}
+  <div class="d-flex flex-wrap certificate-footer">
+    {{ if .link }}
       <div class="certificate-link col-12 col-lg-6">
-        <a href="{{ .Params.link }}" target="_blank" rel="noopener noreferrer" class="btn">
-          {{ if .Params.id }}
-            {{ .Params.id }}
-          {{ else }}
-            {{ .Params.link }}
-          {{ end }}
+        <a href="{{ .link }}" target="_blank" rel="noopener noreferrer" class="btn">
+          {{ if .id }}{{ .id }}{{ else }}{{ .link }}{{ end }}
         </a>
       </div>
-    {{ else if .Params.id }}
+    {{ else if .id }}
       <div class="certificate-link col-12 col-lg-6">
         <a href="javascript:void(0)" class="btn">
-          {{ .Params.id }}
+          {{ .id }}
         </a>
       </div>
     {{ end }}
 
-
-        
     <div class="certificate-extra col-12 col-lg-6 d-flex flex-wrap">
-      {{ with .Params.marks }}
+      {{ with .marks }}
         <div class="certificate-marks col-6 col-lg-12 d-flex btn justify-content-lg-end"><span>{{ . }}</span></div>
       {{ end }}
-      
-      {{/*  {{ with .Params.date }}
-        <div class="certificate-date col-6 col-lg-12 d-flex justify-content-end justify-content-lg-end"><span>{{ . }}</span></div>
-      {{ end }}  */}}
     </div>
 
-
-
-    {{ with .Params.description }}
+    {{ with .description }}
       <div class="certificate-description">
         <p>{{ . }}</p>
       </div>

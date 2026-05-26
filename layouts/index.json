@@ -1,12 +1,64 @@
+{{/* Build a list of pages that should appear in the command palette.
+     Rules:
+       - skip pages where `searchable: false` (explicit opt-out)
+       - skip pages where `show: false` (legacy / hidden projects;
+         projects' `show` lives in data/projects.yaml — see lookup below)
+       - skip the 404 page
+       - skip empty pages (no description and no title)
+       - skip /now/ when the nowPage feature flag is off
+       - skip notebook section when the notebook feature flag is off
+*/}}
+
+{{/* Build a lookup of project metadata keyed by Page.RelPermalink so each
+     project page can pull its `tags` and `show` from data/projects.yaml. */}}
+{{ $projectData := dict }}
+{{ range $entry := site.Data.projects }}
+  {{ with site.GetPage $entry.path }}
+    {{ $projectData = merge $projectData (dict .RelPermalink $entry) }}
+  {{ end }}
+{{ end }}
+
+{{ $entries := slice }}
+{{ range $p := site.RegularPages }}
+  {{ $skip := false }}
+  {{ $tags := $p.Params.tags | default slice }}
+  {{ $show := $p.Params.show }}
+  {{ $image := "" }}
+  {{ $weight := 0 }}
+  {{ with index $projectData $p.RelPermalink }}
+    {{ $tags = .tags | default slice }}
+    {{ $show = .show }}
+    {{ $image = .cardImage | default "" }}
+    {{ $weight = .weight | default 0 }}
+  {{ else }}
+    {{/* Chapter pages aren't keyed directly — inherit show from the bundle root */}}
+    {{ with $p.Parent }}
+      {{ with index $projectData .RelPermalink }}
+        {{ $show = .show }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ if eq $p.Params.searchable false }}{{ $skip = true }}{{ end }}
+  {{ if eq $show false }}{{ $skip = true }}{{ end }}
+  {{ if eq $p.RelPermalink "/404.html" }}{{ $skip = true }}{{ end }}
+  {{ if and (not $p.Params.description) (not $p.Title) }}{{ $skip = true }}{{ end }}
+  {{ if and (eq $p.RelPermalink "/now/") (not site.Params.features.nowPage) }}{{ $skip = true }}{{ end }}
+  {{ if and (eq $p.Section "notebook") (not site.Params.features.notebook) }}{{ $skip = true }}{{ end }}
+  {{ if not $skip }}
+    {{ $entries = $entries | append (dict "page" $p "tags" $tags "image" $image "weight" $weight) }}
+  {{ end }}
+{{ end }}
 [
-{{ range $i, $p := site.RegularPages -}}
+{{ range $i, $e := $entries -}}
 {{ if $i }},{{ end }}
 {
-  "title": {{ $p.Title | jsonify }},
-  "url":   {{ $p.RelPermalink | jsonify }},
-  "kind":  {{ $p.Section | jsonify }},
-  "tags":  {{ ($p.Params.tags | default slice) | jsonify }},
-  "desc":  {{ ($p.Params.description | default "") | jsonify }}
+  "title":  {{ $e.page.Title | jsonify }},
+  "url":    {{ $e.page.RelPermalink | jsonify }},
+  "kind":   {{ $e.page.Section | jsonify }},
+  "tags":   {{ $e.tags | jsonify }},
+  "desc":   {{ ($e.page.Params.description | default "") | jsonify }},
+  "image":  {{ $e.image | jsonify }},
+  "weight": {{ $e.weight | jsonify }}
 }
 {{- end }}
 ]

@@ -1,14 +1,77 @@
-#wrapper {
-  background-color: var(--bs-body-bg);
-  }
-h1 {
-  margin: 30px 0;
-  font-size: 4em;
-  line-height: 1;
-  letter-spacing: -1px;
+/* ── 404 page ────────────────────────────────────────────────────────────── */
+#not-found {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  padding-bottom: 4rem;
+  gap: 1.75rem;
 }
 
-footer{
-  position: absolute;
-  bottom:0;
+/* Optical centering on desktop — extra bottom padding pulls the
+   composition slightly above the geometric midpoint. */
+@media (min-width: 768px) {
+  #not-found {
+    padding-bottom: 18vh;
+  }
+}
+
+.err-code {
+  font-family: var(--my-font-ui);
+  font-size: 4rem;
+  font-weight: 500;
+  padding-bottom: 2rem;
+  letter-spacing: -0.03em;
+  color: var(--my-black);
+  line-height: 1;
+  margin: 0;
+}
+
+#the-kitty {
+  width: clamp(8rem, 22vw, 13rem);
+  height: auto;
+  display: block;
+}
+html[data-bs-theme="dark"] #the-kitty {
+  filter: invert(1);
+}
+
+.err-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.err-title {
+  font-family: var(--my-font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--my-black);
+  margin: 0;
+}
+
+.err-sub {
+  font-family: var(--my-font-ui);
+  font-size: 0.95rem;
+  color: var(--my-gray-3);
+  margin: 0;
+  line-height: 1.7;
+}
+
+.err-sub a {
+  color: var(--bs-body-color);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.err-sub a:hover {
+  text-decoration-color: var(--my-theme-day);
+}
+
+html[data-bs-theme="dark"] .err-sub a:hover {
+  text-decoration-color: var(--my-theme-night);
 }

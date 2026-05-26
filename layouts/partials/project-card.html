@@ -1,13 +1,19 @@
-{{ if .Params.show }}
-<div class="col-10 col-lg-5 m-4 p-2">
-    <div class="card h-100">
-      <img src="{{ .Params.cardImage }}" class="card-img-top" alt="{{ .Params.cardTitle }}">
-      <div class="card-body">
-        <a href="{{ .RelPermalink }}" class="btn m-0 align-items-center d-flex btn-light page-list">
-          <h5 class="card-title">{{ .Params.cardTitle }}</h5>
-        </a>
-        <p class="card-text">{{ .Params.cardText }}</p>
-      </div>
+{{/* Project card. Expects a dict with keys:
+     href, cardImage, cardImage_Light, cardImage_Dark, cardTitle, cardText, tags, group, show. */}}
+{{ if .show }}
+<div class="project-card-wrap col-10 col-lg-5 m-4 p-2" data-tags="{{ with .tags }}{{ delimit . " " }}{{ end }}" data-group="{{ .group }}">
+  <a href="{{ .href }}" class="card h-100 project-card">
+    {{ $hasThemed := and .cardImage_Light .cardImage_Dark }}
+    {{ if $hasThemed }}
+      <img src="{{ .cardImage_Light }}" class="card-img-top theme-img--light" alt="{{ .cardTitle }}">
+      <img src="{{ .cardImage_Dark }}" class="card-img-top theme-img--dark" alt="{{ .cardTitle }}">
+    {{ else }}
+      <img src="{{ .cardImage }}" class="card-img-top" alt="{{ .cardTitle }}">
+    {{ end }}
+    <div class="card-body">
+      <h5 class="card-title">{{ .cardTitle }}</h5>
+      <p class="card-text">{{ .cardText }}</p>
     </div>
+  </a>
 </div>
 {{ end }}

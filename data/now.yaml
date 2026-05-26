@@ -1,0 +1,32 @@
+
+# Gated by features.nowPage in hugo.toml. When that flag is
+# off, the snippet on home renders nothing and the /now/ nav link is hidden.
+#
+# Fields:
+#   verb        — short italicised verb ("refining", "reading", "curious about", …)
+#   phrase      — the rest of the line; may contain inline HTML like <cite>…</cite>
+#   description — optional expansion text; shown as a <details> disclosure on /now/
+#                 and as a native hover tooltip on the home snippet
+
+updated: "May 2026"
+
+items:
+  - verb: "learning"
+    phrase: "AI and ML"
+    description: "Something I've been meaning to do for a while. I guess it's time to open the youtube."
+
+  - verb: "exploring"
+    phrase: "High Energy Physics"
+    description: "Use real data to do analysis, and get used to the tools and process"
+
+  # - verb: "learning"
+  #   phrase: "differential geometry and its role in general relativity"
+  #   description: "Diving deep into the mathematical foundations of general relativity."
+
+  # - verb: "building"
+  #   phrase: "the Notebook, command palette, and scroll arc on this site"
+  #   description: "Working on improving the user experience and functionality of this site."
+
+  # - verb: "exploring"
+  #   phrase: "Hugo's template system and scientific visualisation in MATLAB"
+  #   description: "Investigating the capabilities of Hugo's templating engine and MATLAB's visualization tools."

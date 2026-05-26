@@ -33,23 +33,24 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Pre:wght@400..700&family=Edu+SA+Beginner:wght@400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Slabo+27px&family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100,1&icon_names=brightness_4,brightness_5,dark_mode,east,light_mode,north,south,west&display=block" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Edu+SA+Beginner:wght@400..700&family=Inconsolata:wght@200..900&family=Instrument+Serif:ital@0;1&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Quicksand:wght@300..700&family=Slabo+27px&family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100,1&icon_names=brightness_4,brightness_5,dark_mode,east,format_size,image,light_mode,north,south,west&display=block" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL@20..48,100..600,0..1&icon_names=keyboard_arrow_down,keyboard_arrow_left,keyboard_arrow_right,keyboard_arrow_up,question_mark,shift&display=block" />
 
     <link rel="icon" type="image/png" href="/sparks.png">
 
-    {{ if .Params.code }}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism.min.css" integrity="sha512-/mZ1FHPkg6EKcxo0fKXF51ak6Cr2ocgDi5ytaTBjsQZIH/RNs6GF6+oId/vPe3eJB836T36nXwVh/WBl/cWT4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    {{ end }}
-    {{ if .Params.math }}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css" integrity="sha384-zh0CIslj+VczCZtlzBcjt5ppRcsAmDnRem7ESsYwWwg3m/OaJ2l4x7YBZl9Kxxib" crossorigin="anonymous">
-    {{ end }}
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
 
     <link rel="stylesheet" href="/css/style.css">
-    <link id="page-style" rel="stylesheet" href="{{ .Params.pageStyle }}">
+    {{ with .Params.pageStyle }}<link id="page-style" rel="stylesheet" href="{{ . }}">{{ end }}
+
+    <noscript><style>#rj-page-loader{display:none!important}</style></noscript>
 
     {{ if site.Params.features.notebook }}
     <link rel="alternate" type="application/rss+xml" title="Notebook — {{ site.Title }}" href="/notebook/index.xml">
@@ -60,10 +61,14 @@
 
   <body>
 
+    <div id="rj-page-loader" aria-hidden="true">
+      <div class="rj-spinner"></div>
+    </div>
+
     <div id="page-container" class=" d-flex flex-column">
 
-        <div id="signature-box" tabindex="0">
-            <div id="signature-background">
+        <div id="command-console" tabindex="0">
+            <div id="signature-panel">
                 <svg
                     viewBox="0 0 3300 1330"
                     xml:space="preserve"
@@ -103,41 +108,40 @@
             </div>
 
 
-            {{ if site.Params.features.scrollArc }}
-            <svg id="scroll-arc" class="scroll-arc" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-              <path id="scroll-arc-path"
-                d="M 50,4 A 46,46 0 1 1 4,50"
-                class="scroll-arc__path"
-                pathLength="1"
-                fill="none"
-                stroke="var(--my-black)"
-                stroke-width="2"
-                stroke-linecap="round"/>
-            </svg>
-            {{ end }}
-
-            <div id="commandBox" class="hide">
-                <div  id="navPanel" class="commandPanel hide">
-                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="home-nav" href="/"><span class="nav-text">Home</span></a></div>
-                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="project-nav" href="/projects"><span class="nav-text">Projects</span></a></div>
-                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="cred-nav" href="/credentials"><span class="nav-text">Credentials</span></a></div>
-                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="contact-nav" href="/contact"><span class="nav-text">Contact</span></a></div>
+            <div id="command-box" class="hide">
+                <div  id="nav-panel" class="command-panel hide">
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="home-nav" data-nav-key="home" href="/"><span class="nav-text">Home</span></a></div>
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="project-nav" data-nav-key="projects" href="/projects"><span class="nav-text">Projects</span></a></div>
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="cred-nav" data-nav-key="credentials" href="/credentials"><span class="nav-text">Credentials</span></a></div>
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="about-nav" data-nav-key="about" href="/about"><span class="nav-text">About</span></a></div>
                     {{ if site.Params.features.notebook }}
-                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="notebook-nav" href="/notebook"><span class="nav-text">Notebook</span></a></div>
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="notebook-nav" data-nav-key="notebook" href="/notebook"><span class="nav-text">Notebook</span></a></div>
+                    {{ end }}
+                    {{ if site.Params.features.nowPage }}
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="now-nav" data-nav-key="now" href="/now"><span class="nav-text">Now</span></a></div>
                     {{ end }}
                 </div>
 
-                <div id="actionPanel" class="commandPanel hide">
-                    <button id="themeToggle" type="button" aria-label="Toggle theme" class="action-item panel-item hover-grow">
-                        <span id="themeIcon" class="material-symbols-outlined" aria-hidden="true"> light_mode </span>
+                <div id="action-panel" class="command-panel hide">
+  
+
+                    <button id="theme-toggle" type="button" aria-label="Toggle theme" class="action-item panel-item hover-grow">
+                        <span id="theme-icon" class="material-symbols-outlined" aria-hidden="true"> light_mode </span>
                     </button>
 
-                    <div id="cornerPicker" class="action-item panel-item" role="group" aria-label="Move signature to corner">
+                    {{ if site.Params.features.shortcutHints }}
+                    <button id="shortcut-hints-toggle" type="button" aria-label="Show keyboard shortcuts" class="action-item panel-item hover-grow">
+                        <span class="material-symbols-rounded" aria-hidden="true">question_mark</span>
+                    </button>
+                    {{ end }}
+
+                    <div id="corner-picker" class="action-item panel-item" role="group" aria-label="Move signature to corner">
                         <button class="corner-dot" data-corner="TL" type="button" aria-label="Move to top-left"></button>
                         <button class="corner-dot" data-corner="TR" type="button" aria-label="Move to top-right"></button>
                         <button class="corner-dot" data-corner="BL" type="button" aria-label="Move to bottom-left"></button>
                         <button class="corner-dot" data-corner="BR" type="button" aria-label="Move to bottom-right"></button>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -148,35 +152,31 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous" defer></script>
 
-    {{ if .Params.math }}
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js" integrity="sha384-Rma6DA2IPUwhNxmrB/7S3Tno0YY7sFu9WSYMCuulLhIqYSGZ2gKCJWIqhBWqMQfh" crossorigin="anonymous"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js" integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}]});"></script>
-    {{ end }}
-    {{ if .Params.code }}
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js" integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-matlab.min.js" integrity="sha512-pSQLsop+Wkom6bc8uIln7cByTC3Egn966aRfLrbP6oPgEdVGcmID85DdNkLP5NvEy4baIHgEv0IsK2gW/CYw1Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    {{ end }}
 
     <script src="/js/script.js"></script>
 
-    <script id="page-script" src="{{ .Params.pageScript }}"></script>
+    {{ with .Params.pageScript }}<script id="page-script" src="{{ . }}"></script>{{ end }}
 
     {{ if site.Params.features.commandPalette }}
-    <div id="command-box-overlay" class="command-box" role="dialog" aria-modal="true" aria-label="Command palette">
-      <div class="command-box__panel">
-        <input id="command-box-input"
-               class="command-box__input"
+    <div id="command-palette" class="command-palette" role="dialog" aria-modal="true" aria-label="Command palette">
+      <div class="command-palette__panel">
+        <input id="command-palette-input"
+               class="command-palette__input"
                type="text"
                placeholder="Search pages…"
                autocomplete="off"
                spellcheck="false"
                aria-label="Search"
                aria-autocomplete="list"
-               aria-controls="command-box-list">
-        <ul id="command-box-list" class="command-box__list" role="listbox" aria-label="Results"></ul>
+               aria-controls="command-palette-list">
+        <ul id="command-palette-list" class="command-palette__list" role="listbox" aria-label="Results"></ul>
       </div>
     </div>
-    <script src="/js/commandBox.js" defer></script>
+    <script src="/js/command-box.js" defer></script>
     {{ end }}
 
     {{ if site.Params.features.scrollArc }}
@@ -187,16 +187,27 @@
     <div id="shortcut-hints" class="shortcut-hints" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
       <div class="shortcut-hints__panel">
         <h2 class="shortcut-hints__title">Keyboard shortcuts</h2>
-        <ul class="shortcut-hints__list">
-          <li><kbd>?</kbd><span>Show / hide this overlay</span></li>
-          <li><kbd>Esc</kbd><span>Close panels &amp; overlays</span></li>
-          {{ if site.Params.features.commandPalette }}
-          <li><kbd>⌘K</kbd><span>Open command palette</span></li>
-          {{ end }}
-          <li><kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd><span>Move signature to corner</span></li>
-          <li><kbd>T</kbd><span>Cycle theme (via signature toggle)</span></li>
-        </ul>
-        <button class="shortcut-hints__close" onclick="document.getElementById('shortcut-hints').classList.remove('shortcut-hints--open')" aria-label="Close shortcuts">✕</button>
+
+        <div class="shortcut-hints__section">
+          <p class="shortcut-hints__section-label">Everywhere</p>
+          <ul class="shortcut-hints__list">
+            <li><kbd>?</kbd><span>Show / hide this overlay</span></li>
+            <li><kbd>Esc</kbd><span>Close panels &amp; overlays</span></li>
+            <li><kbd>Alt</kbd> <kbd>T</kbd><span>Cycle theme</span></li>
+            {{ if site.Params.features.commandPalette }}
+            <li><kbd><span class="material-symbols-rounded sym-hollow" aria-hidden="true">shift</span></kbd> <kbd>Space</kbd><span>Command palette</span></li>
+            {{ end }}
+          </ul>
+        </div>
+
+        <div class="shortcut-hints__section">
+          <p class="shortcut-hints__section-label">Signature open</p>
+          <ul class="shortcut-hints__list">
+            <li><kbd><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_left</span></kbd> <kbd><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_right</span></kbd> <kbd><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_up</span></kbd> <kbd><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_down</span></kbd><span>Move to corner</span></li>
+          </ul>
+        </div>
+
+        <button class="shortcut-hints__close" aria-label="Close shortcuts">✕</button>
       </div>
     </div>
     <script src="/js/shortcutHints.js" defer></script>

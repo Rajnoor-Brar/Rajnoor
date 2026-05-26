@@ -1,4 +1,13 @@
 public
+resources/_gen
 .DS_Store
 **/.DS_Store
 .hugo_build.lock
+
+CLAUDE.md
+
+# Editors
+.vscode
+.idea
+*.swp
+*~

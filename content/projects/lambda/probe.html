@@ -1,0 +1,22 @@
+---
+layout: default
+title: "Probe"
+longTitle: "Probe — parallel TTree reader"
+subtitle: "Multi-threaded reading with event-row joins and feed-style scalar payloads"
+active_nav: "projects"
+pageScript: "/js/projectScript.js"
+pageStyle: "/css/projectStyle.css"
+show: true
+weight: 20
+description: "Read ROOT TTrees in parallel, invoke user callbacks with typed Event/Feed payloads."
+---
+<p>
+  Stub. The Probe layer reads ROOT TTrees in parallel and delivers typed
+  payloads to user callbacks. Two payload shapes:
+</p>
+<ul>
+  <li><strong>Event</strong> — multi-row join across particle trees sharing an event-index branch (e.g. protons + pions for the same event).</li>
+  <li><strong>Feed</strong> — scalar per-entry payload from a single TTree (one Lorentz per labelled particle, plus named scalar/array node columns).</li>
+</ul>
+<h2 id="streaming">Streaming methods</h2>
+<p>Three entry points on <code>ProbeParallel</code>: <code>streamEvents</code>, <code>streamFeed</code>, <code>stream</code>.</p>

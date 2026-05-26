@@ -1,0 +1,86 @@
+/* ── About page ───────────────────────────────────────────────────────── */
+
+.about-page__title {
+  font-family: var(--my-font-title);
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin: 0 0 0.4em 0;
+  color: var(--my-black);
+}
+
+.about-page__lede {
+  font-family: var(--my-font-lede);
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  color: var(--my-gray-2);
+  margin: 0;
+}
+
+/* Link pills — site-token monochrome (no Bootstrap brand colors) */
+.about-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.about-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1.1rem;
+  font-family: var(--my-font-ui);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--my-black);
+  background: var(--my-white);
+  border: 1px solid var(--my-border-color);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    box-shadow var(--motion-base) ease,
+    transform var(--motion-fast) ease;
+}
+
+.about-link i {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.about-link:hover,
+.about-link:focus-visible {
+  color: var(--my-black);
+  border-color: var(--my-gray-2);
+  box-shadow: 0 0 10px 0 var(--my-shadow-color);
+  transform: translateY(-2px);
+  text-shadow: var(--my-theme-accent) 0 0 4px;
+}
+
+/* Credits */
+.about-credits {
+  bottom: 0;
+  font-family: var(--my-font-ui);
+  font-style: italic;
+  font-size: clamp(0.85rem, 1vw, 1rem);
+  color: var(--my-gray-2);
+}
+
+.about-credits p {
+  margin: 0 0.5em;
+}
+
+.about-credits a {
+  color: var(--my-gray-3);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color var(--motion-fast) ease;
+}
+
+.about-credits a:hover {
+  color: var(--my-black);
+}
+#about-credit-note{
+  margin-top:0.5em;
+  font-size: 0.8em;
+}

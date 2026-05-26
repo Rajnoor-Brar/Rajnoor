@@ -24,8 +24,9 @@ disableKinds = ["taxonomy", "term"]
   math = true  # Enables math rendering
 
 [params.features]
-  notebook        = false
-  nowPage         = false
-  commandPalette  = false
-  scrollArc       = false
-  shortcutHints   = false
+  notebook           = false
+  nowPage            = true
+  nowExpanded = true   # true → <details open> on /now/ page; false → collapsed by default
+  commandPalette     = true
+  scrollArc          = true
+  shortcutHints      = true

@@ -3,25 +3,37 @@ function initHomePage() {
   const intervals = [];
 
   // Register cleanup so SPA nav can cancel before leaving
-  window.__pageCleanup = function () {
+  window.__registerCleanup(function () {
     timers.forEach(clearTimeout);
     intervals.forEach(clearInterval);
     timers.length = 0;
     intervals.length = 0;
-  };
+  });
 
   const gtdPaths = document.querySelectorAll(".gtd-path");
   const about = document.getElementById("about");
   const header = document.getElementById("about-header");
   const lines = document.querySelectorAll(".about-line");
+  const nowBlock = document.getElementById("now");
 
+  // Bio header/lines flip edge with the signature corner; the now-block is
+  // centered as a hero footer and stays put regardless of corner.
   const nowHorz = localStorage.getItem("navHorz");
   if (header) header.classList.add((nowHorz === "left") ? "right" : "left");
 
-  const heroSeen = sessionStorage.getItem("rj_hero_seen") === "1";
+  // Animation re-shows after a 12-hour TTL. Stored as Date.now() in localStorage.
+  const ANIM_TTL_MS = 12 * 60 * 60 * 1000;
+  const isFresh = (key) => {
+    const t = parseInt(localStorage.getItem(key), 10);
+    return Number.isFinite(t) && (Date.now() - t) < ANIM_TTL_MS;
+  };
+  const stampFresh = (key) => {
+    try { localStorage.setItem(key, String(Date.now())); } catch (e) { /* quota/disabled — non-fatal */ }
+  };
+  const heroFresh = isFresh("rj_hero_seen_at");
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (heroSeen || reduceMotion) {
+  if (heroFresh || reduceMotion) {
     const gtdContainer = document.getElementById("gtd-container");
     if (gtdContainer) gtdContainer.classList.add("d-none");
     if (about) {
@@ -38,6 +50,7 @@ function initHomePage() {
       line.classList.add("typed");
       line.textContent = finalTexts[i] || "";
     });
+    if (nowBlock) nowBlock.classList.add("typed");
     return;
   }
 
@@ -45,9 +58,6 @@ function initHomePage() {
   const unwriteInterval = 600;
 
   const unwriteGTD = () => {
-    gtdPaths.forEach(() => {
-      timers.push(setTimeout(() => {}, unwriteInterval)); // placeholder; paths use class
-    });
     gtdPaths.forEach((path) => {
       const t = setTimeout(() => {
         path.classList.remove("draw");
@@ -96,7 +106,27 @@ function initHomePage() {
 
     const typeNext = (i) => {
       if (i >= lines.length) {
-        sessionStorage.setItem("rj_hero_seen", "1");
+        // Pause, then fade in the "now" snippet — a deliberate "by the way…"
+        const tNow = setTimeout(() => {
+          if (nowBlock) nowBlock.classList.add("typed");
+          stampFresh("rj_hero_seen_at");
+
+          // Discover-pulse on the signature pill. Also gated by a 12h TTL so it
+          // can fire again after the user's been away. Skipped under reduced motion.
+          const signatureFresh = isFresh("rj_signature_seen_at");
+          const pill = document.getElementById("command-console");
+          if (!signatureFresh && pill && !reduceMotion) {
+            const tPulse = setTimeout(() => {
+              pill.classList.add("discover-pulse");
+              // Remove after the animation completes
+              const tClear = setTimeout(() => pill.classList.remove("discover-pulse"), 2600);
+              timers.push(tClear);
+              stampFresh("rj_signature_seen_at");
+            }, 600);
+            timers.push(tPulse);
+          }
+        }, 900);
+        timers.push(tNow);
         return;
       }
       lines[i].classList.add("typed");

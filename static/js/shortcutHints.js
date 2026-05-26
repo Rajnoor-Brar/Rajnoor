@@ -25,12 +25,19 @@
     if (e.target === dialog) close();
   });
 
+  // Action-panel "?" toggle button
+  const toggleBtn = document.getElementById('shortcut-hints-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggle();
+    });
+  }
+
+  // Close button inside the overlay
+  const closeBtn = dialog.querySelector('.shortcut-hints__close');
+  if (closeBtn) closeBtn.addEventListener('click', close);
+
   // Expose cleanup for SPA navigation
-  window.__pageCleanup = (function (prev) {
-    return function () {
-      close();
-      if (typeof prev === 'function') prev();
-      window.__pageCleanup = null;
-    };
-  })(window.__pageCleanup);
+  window.__registerCleanup(function () { close(); });
 })();

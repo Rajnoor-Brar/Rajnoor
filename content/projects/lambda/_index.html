@@ -1,0 +1,22 @@
+---
+layout: default
+title: "Lambda"
+longTitle: "Lambda — Reconstruction Pipeline"
+active_nav: "projects"
+pageScript: "/js/projectScript.js"
+pageStyle: "/css/projectStyle.css"
+description: "A multi-threaded ROOT/Pythia framework for Λ-baryon reconstruction. Pipeline: probe events → analysis callbacks → record histograms."
+---
+<p>
+  Stub overview. This is a multi-page project: the landing page introduces the
+  project, then each chapter covers one component of the runtime
+  (<em>Probe</em>, <em>Record</em>, <em>Monitor</em>, <em>Paint</em>). The full
+  content is being drafted and ported in.
+</p>
+<p>
+  The runtime is a three-stage pipeline: data flows from ROOT TTrees into the
+  Probe layer, through user analysis callbacks, into the Record writer that
+  buffers fill requests through a worker pool and merges per-thread clones at
+  the end of the run. The Monitor layer runs a heartbeat thread that handles
+  progress rendering, stall detection, and checkpoint signalling.
+</p>

@@ -3,6 +3,6 @@
 {{- $cap  := .Get "caption" | default "" -}}
 {{- $size := .Get "size" | default "col-11" -}}
 <div class="figure">
-  <img src="{{ $src }}" class="{{ $size }}" alt="{{ $alt }}">
+  <img src="{{ $src }}" class="{{ $size }}" alt="{{ $alt }}" loading="lazy">
   {{ with $cap }}<p>{{ . }}</p>{{ end }}
 </div>

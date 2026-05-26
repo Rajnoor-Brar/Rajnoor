@@ -1,0 +1,50 @@
+{{/* Renders data/now.yaml. Variant: "full" (page list) or "snippet" (home slice). */}}
+{{ $variant := .Get 0 }}
+
+{{ if eq $variant "full" }}
+<div class="container-fluid top-spacer"></div>
+
+<div class="now-page container col-12 col-md-8 col-lg-6 py-5 px-4">
+
+  <header class="now-header mb-5">
+    <h1 class="now-title">Now</h1>
+    {{ with site.Data.now.updated }}
+    <p class="now-updated">Updated <time>{{ . }}</time>.</p>
+    {{ end }}
+  </header>
+
+  <ul class="now-items list-unstyled">
+    {{ range site.Data.now.items }}
+    <li class="now-item-row">
+      {{ if .description }}
+      <details class="now-item-details"{{ if site.Params.features.nowExpanded }} open{{ end }}>
+        <summary class="now-item-summary">
+          <span class="now-item__verb"><em>{{ .verb }}</em></span>
+          <span class="now-item__phrase">{{ .phrase | safeHTML }}</span>
+        </summary>
+        <p class="now-item__description">{{ .description }}</p>
+      </details>
+      {{ else }}
+      <span class="now-item__verb"><em>{{ .verb }}</em></span>
+      <span class="now-item__phrase">{{ .phrase | safeHTML }}</span>
+      {{ end }}
+    </li>
+    {{ end }}
+  </ul>
+</div>
+
+{{ else if eq $variant "snippet" }}
+  {{ if site.Params.features.nowPage }}
+<a id="now" class="about-now" href="/now/" aria-label="Now — what I'm currently up to">
+  <div class="d-block">
+    {{ range $i, $item := first 3 site.Data.now.items }}
+    <span class="{{ if eq $i 0 }}d-inline{{ else }}d-none d-md-inline{{ end }}">
+      {{ if gt $i 0 }}<span class="now-sep">·</span>{{ end }}
+      <span class="now-item"{{ with $item.description }} title="{{ . }}"{{ end }}><em>{{ $item.verb }}</em> {{ $item.phrase | safeHTML }}</span>
+      <br class="d-inline d-md-none">
+    </span>
+    {{ end }}
+  </div>
+</a>
+  {{ end }}
+{{ end }}

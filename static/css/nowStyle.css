@@ -3,7 +3,7 @@
 }
 
 .now-title {
-    font-family: 'Spectral', serif;
+    font-family: var(--my-font-title);
     font-size: clamp(2.5rem, 6vw, 4rem);
     font-weight: 200;
     color: var(--bs-body-color);
@@ -11,7 +11,7 @@
 }
 
 .now-updated {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--my-font-date);
     font-size: 0.75rem;
     font-weight: 500;
     text-transform: uppercase;
@@ -20,35 +20,79 @@
     margin-bottom: 0;
 }
 
-.now-section {
-    margin-bottom: 2.5rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--my-border-color);
+/* ── Flat item list (driven by data/now.yaml via nowPage shortcode) ── */
+.now-items {
+    margin: 0;
+    padding: 0;
 }
 
-.now-section:last-of-type {
+.now-item-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5em;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--my-border-color);
+    line-height: 1.6;
+}
+
+.now-item-row:last-child {
     border-bottom: none;
 }
 
-.now-section h2 {
-    font-family: 'Spectral', serif;
-    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-    font-weight: 400;
-    color: var(--bs-body-color);
-    margin-bottom: 0.75rem;
+.now-item__verb {
+    font-family: var(--my-font-ui);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--my-gray-1);
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    flex: 0 0 auto;
+    min-width: 6.5rem;
 }
 
-.now-section p {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.95rem;
-    line-height: 1.75;
-    color: var(--my-gray-2);
-    margin-bottom: 0;
+.now-item__verb em {
+    font-style: italic;
+}
+
+.now-item__phrase {
+    font-family: var(--my-font-article-alt);
+    font-size: 1.05rem;
+    color: var(--bs-body-color);
+    flex: 1 1 auto;
+}
+
+.now-item__phrase cite {
+    font-style: italic;
+}
+
+/* ── Description disclosure (<details> on /now/ full page) ── */
+.now-item-details {
+  flex: 1;
+}
+
+.now-item-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5em;
+  cursor: pointer;
+  list-style: none;
+}
+.now-item-summary::-webkit-details-marker { display: none; }
+
+.now-item__description {
+  font-family: var(--my-font-ui);
+  font-size: 0.82rem;
+  color: var(--my-gray-2);
+  margin: 0.45rem 0 0;
+  padding-left: 7rem;
+  line-height: 1.55;
 }
 
 .now-footer {
     margin-top: 3rem;
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--my-font-ui);
     font-size: 0.8rem;
     color: var(--my-gray-1);
 }

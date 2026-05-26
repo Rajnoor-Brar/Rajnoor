@@ -10,26 +10,21 @@ html, body {
 #hero {
     position: fixed;
     display: flex;
-    justify-content: center ;
+    justify-content: space-between ;
+    flex-direction: column;
     align-items: center;
-    font-family: "Spectral", serif;
+    font-family: var(--my-font-title);
     margin: 0;
     padding: 0;
+    padding-top: 20vh !important;
     height: 100vh !important;
     width: 100vw !important;
 }
 
 @media (min-width:576px){
     #hero{
-        padding-bottom: 10vh !important;
+        padding-top: 25vh !important;
     }
-}
-
-#get-things-done{
-    font-family: "Edu AU VIC WA NT Pre", cursive;
-    line-height: 2.25;
-    word-spacing: 0.4em;
-    color: var(--my-black);
 }
 
 .gtd-svg {
@@ -54,7 +49,7 @@ html, body {
 
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
     .gtd-svg {
         height: 17vh !important;
     }
@@ -95,6 +90,21 @@ html, body {
   0% { stroke-dashoffset: 0; fill-opacity: 1; }
 }
 
+/* Reduced motion: land directly at the filled state — no draw/fill phases.
+   The global reduce-motion rule in style.css clamps animation duration to
+   0.01ms, but the keyframes' final values include a partial dashoffset; this
+   override ensures the resting state is the *fully drawn + filled* glyph. */
+@media (prefers-reduced-motion: reduce) {
+  .gtd-path {
+    stroke-dashoffset: 0 !important;
+    fill-opacity: 1 !important;
+    transition: none !important;
+  }
+  .draw, .undraw { animation: none !important; }
+  /* In homeScript.js the unwriteGTD step still adds .d-none to #gtd-container
+     after a short delay, so the hero remains transient under reduced motion. */
+}
+
 
 /* --- Scroll Lock State --- */
 body.locked {
@@ -129,7 +139,7 @@ body.locked {
 /* --- Typing Effects --- */
 #about-header,
 .about-line {
-  font-family: "Spectral", serif;
+  font-family: var(--my-font-title);
 }
 
 #about-header {
@@ -177,6 +187,70 @@ font-size: max(clamp(1.2rem, 2vw, 2.5rem),clamp(1.2rem, 3vh, 2.5rem)) !important
     align-items: center;
 }
 
+/* ── "Now" snippet — voice surface beneath the typed bio lines ───────────
+   Sits as the last child of #about so it stays in normal flow with the
+   bio. Always centered (no corner-flip variants); breathing room above
+   provided by viewport/rem-based margin-top so the gap doesn't collapse
+   under the small font-size. */
+.about-now {
+  width: 90vw;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  text-align: center;
+  gap: 0;
+  margin-top: max(3vh, 1.2rem);
+  padding-block: max(0.5vw, 1.5vh);
+  font-family: var(--my-font-ui);
+  font-size: clamp(0.75rem, 0.5em, 1.15rem);
+  color: var(--my-gray-2);
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  /* link reset */
+  text-decoration: none;
+  user-select: none;
+  cursor: pointer;
+}
+
+@media (max-width: 576px) {
+  .about-now {
+    margin-bottom: 12vh;
+  font-size: clamp(0.25rem, 0.5em, 1.15rem);
+  }
+}
+
+.about-now.typed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.now-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3em;
+  padding-inline: 0.35em;
+  transition: color var(--motion-base) ease;
+}
+.now-item em {
+  font-style: italic;
+  color: var(--my-gray-1);
+  font-weight: 400;
+}
+.now-item cite {
+  font-style: italic;
+}
+.now-item:hover { color: var(--my-black); }
+.now-item:hover em { color: var(--my-black); }
+
+.now-sep {
+  color: var(--my-gray-1);
+  user-select: none;
+  opacity: 0.6;
+  padding-inline: 0.25em;
+}
+
 .blink-cursor{
   animation: blinkCursor 0.8s step-end infinite alternate;
 }
@@ -184,3 +258,4 @@ font-size: max(clamp(1.2rem, 2vw, 2.5rem),clamp(1.2rem, 3vh, 2.5rem)) !important
 @keyframes blinkCursor {
   50% { border-color: transparent; }
 }
+

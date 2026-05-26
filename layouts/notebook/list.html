@@ -3,7 +3,12 @@
 
 <div class="notebook-list container col-12 col-md-8 col-lg-6 py-5 px-4">
   <header class="notebook-list__header mb-5">
-    <h1 class="notebook-list__title">Notebook</h1>
+    <div class="notebook-list__title-row">
+      <h1 class="notebook-list__title">Notebook</h1>
+      <a href="/notebook/index.xml" class="notebook-rss" aria-label="RSS feed" title="Subscribe via RSS">
+        <i class="bi bi-rss" aria-hidden="true"></i>
+      </a>
+    </div>
     <p class="notebook-list__desc">{{ .Params.description }}</p>
   </header>
 

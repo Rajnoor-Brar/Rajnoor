@@ -1,11 +1,11 @@
-// ── Command Box (⌘K palette) ─────────────────────────────────────────────────
+// ── Command Palette (⌘K palette) ─────────────────────────────────────────────
 // Gated by window.__features.commandPalette — only loaded when flag is on.
 (function () {
   if (!window.__features?.commandPalette) return;
 
-  const overlay = document.getElementById('command-box-overlay');
-  const input   = document.getElementById('command-box-input');
-  const list    = document.getElementById('command-box-list');
+  const overlay = document.getElementById('command-palette');
+  const input   = document.getElementById('command-palette-input');
+  const list    = document.getElementById('command-palette-list');
   if (!overlay || !input || !list) return;
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -14,7 +14,7 @@
 
   // ── Open / close ──────────────────────────────────────────────────────────
   function open() {
-    overlay.classList.add('command-box--open');
+    overlay.classList.add('command-palette--open');
     input.value = '';
     input.focus();
     activeIndex = -1;
@@ -23,24 +23,40 @@
   }
 
   function close() {
-    overlay.classList.remove('command-box--open');
+    overlay.classList.remove('command-palette--open');
     activeIndex = -1;
   }
 
   function toggle() {
-    overlay.classList.contains('command-box--open') ? close() : open();
+    overlay.classList.contains('command-palette--open') ? close() : open();
   }
 
   // ── Index fetch ────────────────────────────────────────────────────────────
   async function fetchIndex() {
-    list.innerHTML = '<li class="command-box__status">Loading…</li>';
+    list.innerHTML = '<li class="command-palette__status">Loading…</li>';
+    const controller = new AbortController();
+    const timeoutId  = setTimeout(() => controller.abort('timeout'), 8000);
     try {
-      const res  = await fetch('/index.json');
+      const res = await fetch('/index.json', { signal: controller.signal });
+      clearTimeout(timeoutId);
       if (!res.ok) throw new Error(res.status);
       pages = await res.json();
       renderResults(input.value);
     } catch (e) {
-      list.innerHTML = '<li class="command-box__status command-box__status--error">Could not load index.</li>';
+      clearTimeout(timeoutId);
+      if (e.name === 'AbortError') {
+        // 8 s timeout — offer a retry
+        list.innerHTML =
+          '<li class="command-palette__status command-palette__status--error">' +
+          'Took too long to load. ' +
+          '<button class="command-palette__retry">Retry</button>' +
+          '</li>';
+        list.querySelector('.command-palette__retry')
+            ?.addEventListener('click', () => fetchIndex(), { once: true });
+      } else {
+        list.innerHTML =
+          '<li class="command-palette__status command-palette__status--error">Could not load index.</li>';
+      }
     }
   }
 
@@ -73,22 +89,22 @@
       .slice(0, 8);
 
     if (!scored.length) {
-      list.innerHTML = '<li class="command-box__status">No results.</li>';
+      list.innerHTML = '<li class="command-palette__status">No results.</li>';
       activeIndex = -1;
       return;
     }
 
     list.innerHTML = scored.map((x, i) => {
       const p = x.page;
-      const kindLabel = p.kind ? `<span class="command-box__kind">${p.kind}</span>` : '';
-      return `<li class="command-box__item${i === 0 ? ' active' : ''}" data-url="${p.url}" role="option" aria-selected="${i === 0}">
-        <span class="command-box__title">${escHtml(p.title)}</span>
+      const kindLabel = p.kind ? `<span class="command-palette__kind">${p.kind}</span>` : '';
+      return `<li class="command-palette__item${i === 0 ? ' active' : ''}" data-url="${p.url}" role="option" aria-selected="${i === 0}">
+        <span class="command-palette__title">${escHtml(p.title)}</span>
         ${kindLabel}
       </li>`;
     }).join('');
     activeIndex = 0;
 
-    list.querySelectorAll('.command-box__item').forEach(item => {
+    list.querySelectorAll('.command-palette__item').forEach(item => {
       item.addEventListener('click', () => navigate(item.dataset.url));
       item.addEventListener('mouseover', () => setActive(item));
     });
@@ -99,7 +115,7 @@
   }
 
   function setActive(el) {
-    list.querySelectorAll('.command-box__item').forEach((item, i) => {
+    list.querySelectorAll('.command-palette__item').forEach((item, i) => {
       const on = item === el;
       item.classList.toggle('active', on);
       item.setAttribute('aria-selected', on);
@@ -108,7 +124,7 @@
   }
 
   function moveActive(dir) {
-    const items = [...list.querySelectorAll('.command-box__item')];
+    const items = [...list.querySelectorAll('.command-palette__item')];
     if (!items.length) return;
     activeIndex = Math.max(0, Math.min(items.length - 1, activeIndex + dir));
     items.forEach((item, i) => {
@@ -131,19 +147,25 @@
   }
 
   // ── Events ─────────────────────────────────────────────────────────────────
-  // ⌘K / Ctrl+K
+  // ⇧⌘Space (Mac) / Shift+Win+Space (Windows) — toggles palette
+  // • opens only when focus is outside text inputs
+  // • closes even when the palette's own search input has focus
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      toggle();
+    if (e.code === 'Space' && e.shiftKey && !e.altKey && !e.metaKey && !e.ctrlKey) {
+      const isOpen = overlay.classList.contains('command-palette--open');
+      const tag    = document.activeElement?.tagName;
+      if (isOpen || !tag || !['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) {
+        e.preventDefault();
+        toggle();
+      }
     }
-    if (!overlay.classList.contains('command-box--open')) return;
+    if (!overlay.classList.contains('command-palette--open')) return;
     if (e.key === 'Escape') { e.preventDefault(); close(); }
     if (e.key === 'ArrowDown') { e.preventDefault(); moveActive(+1); }
     if (e.key === 'ArrowUp')   { e.preventDefault(); moveActive(-1); }
     if (e.key === 'Enter') {
       e.preventDefault();
-      const active = list.querySelector('.command-box__item.active');
+      const active = list.querySelector('.command-palette__item.active');
       if (active) navigate(active.dataset.url);
     }
   });
@@ -156,11 +178,5 @@
   });
 
   // Expose cleanup for SPA navigation
-  window.__pageCleanup = (function (prev) {
-    return function () {
-      close();
-      if (typeof prev === 'function') prev();
-      window.__pageCleanup = null;
-    };
-  })(window.__pageCleanup);
+  window.__registerCleanup(function () { close(); });
 })();

@@ -4,9 +4,9 @@
 
   {{/* ── Collect tags only from visible projects ── */}}
   {{ $allTags := slice }}
-  {{ range .Pages }}
-    {{ if .Params.show }}
-      {{ $allTags = $allTags | append .Params.tags }}
+  {{ range site.Data.projects }}
+    {{ if .show }}
+      {{ $allTags = $allTags | append .tags }}
     {{ end }}
   {{ end }}
   {{ $uniqueTags := $allTags | uniq | sort }}
@@ -49,9 +49,8 @@
 
     {{/* ── Named groups from data/projectGroups.yaml ── */}}
     {{ range $g := site.Data.projectGroups }}
-      {{ $pages := where $.Pages "Params.group" $g.slug }}
-      {{ $visiblePages := where $pages "Params.show" true }}
-      {{ if $visiblePages }}
+      {{ $entries := where (where site.Data.projects "group" $g.slug) "show" true }}
+      {{ if $entries }}
       <section class="project-group" id="group-{{ $g.slug }}" data-group="{{ $g.slug }}">
         <div class="container-fluid justify-content-center d-flex">
           <div class="col-12 col-md-8 col-lg-6 px-4">
@@ -59,60 +58,28 @@
             <p class="project-group__desc">{{ $g.description }}</p>
           </div>
         </div>
-        <div class="project-group__grid container-fluid p-0 m-0 d-flex align-items-center justify-content-center">
-          <div class="container col-12 col-md-8 col-lg-6 d-flex flex-wrap justify-content-evenly align-items-center justify-content-lg-between">
-            {{ range $visiblePages.ByWeight }}
-            <div class="project-card-wrap col-10 col-lg-5 m-4 p-2" data-tags="{{ delimit .Params.tags " " }}" data-group="{{ .Params.group }}">
-              <div class="card h-100">
-                <img src="{{ .Params.cardImage }}" class="card-img-top" alt="{{ .Params.cardTitle }}">
-                <div class="card-body">
-                  <a href="{{ .RelPermalink }}" class="btn m-0 align-items-center d-flex btn-light page-list">
-                    <h5 class="card-title">{{ .Params.cardTitle }}</h5>
-                  </a>
-                  <p class="card-text">{{ .Params.cardText }}</p>
-                </div>
-              </div>
-            </div>
-            {{ end }}
-          </div>
-        </div>
+        {{ partial "_internal/project-grid.html" $entries }}
       </section>
       {{ end }}
     {{ end }}
 
-    {{/* ── "Other" group — pages with no recognised group ── */}}
+    {{/* ── "Other" group — entries whose group isn't in projectGroups.yaml ── */}}
     {{ $knownSlugs := slice }}
     {{ range site.Data.projectGroups }}{{ $knownSlugs = $knownSlugs | append .slug }}{{ end }}
-    {{ $otherPages := slice }}
-    {{ range .Pages }}
-      {{ if and .Params.show (not (in $knownSlugs .Params.group)) }}
-        {{ $otherPages = $otherPages | append . }}
+    {{ $otherEntries := slice }}
+    {{ range site.Data.projects }}
+      {{ if and .show (not (in $knownSlugs .group)) }}
+        {{ $otherEntries = $otherEntries | append . }}
       {{ end }}
     {{ end }}
-    {{ if $otherPages }}
+    {{ if $otherEntries }}
     <section class="project-group" id="group-other" data-group="other">
       <div class="container-fluid justify-content-center d-flex">
         <div class="col-12 col-md-8 col-lg-6 px-4">
           <h2 class="project-group__title">Other</h2>
         </div>
       </div>
-      <div class="project-group__grid container-fluid p-0 m-0 d-flex align-items-center justify-content-center">
-        <div class="container col-12 col-md-8 col-lg-6 d-flex flex-wrap justify-content-evenly align-items-center justify-content-lg-between">
-          {{ range $otherPages }}
-          <div class="project-card-wrap col-10 col-lg-5 m-4 p-2" data-tags="{{ delimit .Params.tags " " }}" data-group="other">
-            <div class="card h-100">
-              <img src="{{ .Params.cardImage }}" class="card-img-top" alt="{{ .Params.cardTitle }}">
-              <div class="card-body">
-                <a href="{{ .RelPermalink }}" class="btn m-0 align-items-center d-flex btn-light page-list">
-                  <h5 class="card-title">{{ .Params.cardTitle }}</h5>
-                </a>
-                <p class="card-text">{{ .Params.cardText }}</p>
-              </div>
-            </div>
-          </div>
-          {{ end }}
-        </div>
-      </div>
+      {{ partial "_internal/project-grid.html" $otherEntries }}
     </section>
     {{ end }}
 

@@ -1,0 +1,83 @@
+{{/* project-page-context.html — returns multi-page project state for a page under /projects/.
+     Call once at the top of layouts/projects/default.html; read fields off the returned dict.
+
+     A "chapter" is a page under a sub-section of /projects/ (e.g. /projects/lambda/probe/).
+     A "bundle landing" is the _index of such a sub-section (e.g. /projects/lambda/).
+
+     Returned dict keys:
+       isBundleLanding          bool
+       isChapter                bool
+       isPartOfMultipageProject bool
+       bundleRoot               Page|false
+       chapters                 Pages|slice  (Params.show=true, unordered)
+       chapterPrev              Page|false
+       chapterNext              Page|false
+       projPrev                 Page|false   (adjacent in gallery sort order)
+       projNext                 Page|false
+*/}}
+{{- $isBundleLanding := and .IsSection (ne .RelPermalink "/projects/") -}}
+{{- $isChapter := and .Parent.IsSection (ne .Parent.RelPermalink "/projects/") -}}
+{{- $isPartOfMultipageProject := or $isBundleLanding $isChapter -}}
+{{- $bundleRoot := false -}}
+{{- $chapters   := slice -}}
+{{- if $isBundleLanding -}}
+  {{- $bundleRoot = . -}}
+  {{- $chapters  = where .Pages "Params.show" true -}}
+{{- else if $isChapter -}}
+  {{- $bundleRoot = .Parent -}}
+  {{- $chapters  = where .Parent.Pages "Params.show" true -}}
+{{- end -}}
+
+{{- $chapterPrev := false -}}
+{{- $chapterNext := false -}}
+{{- if $isPartOfMultipageProject -}}
+  {{- $sortedChapters := $chapters.ByWeight -}}
+  {{- if $isBundleLanding -}}
+    {{- if gt (len $sortedChapters) 0 -}}
+      {{- $chapterNext = index $sortedChapters 0 -}}
+    {{- end -}}
+  {{- else if $isChapter -}}
+    {{- $chapterIdx := -1 -}}
+    {{- range $i, $p := $sortedChapters -}}
+      {{- if eq $p.RelPermalink $.RelPermalink -}}{{- $chapterIdx = $i -}}{{- end -}}
+    {{- end -}}
+    {{- if gt $chapterIdx 0 -}}
+      {{- $chapterPrev = index $sortedChapters (sub $chapterIdx 1) -}}
+    {{- else if eq $chapterIdx 0 -}}
+      {{- $chapterPrev = $bundleRoot -}}
+    {{- end -}}
+    {{- if lt (add $chapterIdx 1) (len $sortedChapters) -}}
+      {{- $chapterNext = index $sortedChapters (add $chapterIdx 1) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $currentProject := . -}}
+{{- if $isChapter -}}{{- $currentProject = .Parent -}}{{- end -}}
+{{- $sortedEntries := sort (where site.Data.projects "show" true) "weight" -}}
+{{- $projIdx := -1 -}}
+{{- range $i, $entry := $sortedEntries -}}
+  {{- with site.GetPage $entry.path -}}
+    {{- if eq .RelPermalink $currentProject.RelPermalink -}}{{- $projIdx = $i -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $projPrev := false -}}
+{{- $projNext := false -}}
+{{- if gt $projIdx 0 -}}
+  {{- $projPrev = site.GetPage (index $sortedEntries (sub $projIdx 1)).path -}}
+{{- end -}}
+{{- if and (ge $projIdx 0) (lt (add $projIdx 1) (len $sortedEntries)) -}}
+  {{- $projNext = site.GetPage (index $sortedEntries (add $projIdx 1)).path -}}
+{{- end -}}
+
+{{- return dict
+  "isBundleLanding"          $isBundleLanding
+  "isChapter"                $isChapter
+  "isPartOfMultipageProject" $isPartOfMultipageProject
+  "bundleRoot"               $bundleRoot
+  "chapters"                 $chapters
+  "chapterPrev"              $chapterPrev
+  "chapterNext"              $chapterNext
+  "projPrev"                 $projPrev
+  "projNext"                 $projNext
+-}}

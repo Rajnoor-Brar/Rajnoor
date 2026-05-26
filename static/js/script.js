@@ -1,3 +1,76 @@
+// ─── Page loader ─────────────────────────────────────────────────────────────
+// The loader div lives in baseof.html (covers content from first paint).
+// JS only handles the dismissal once DOM + fonts are ready.
+(function () {
+  var dismissed = false;
+  function dismiss() {
+    if (dismissed) return;
+    dismissed = true;
+    var el = document.getElementById('rj-page-loader');
+    if (!el) return;
+    el.classList.add('dismissed');
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 500);
+  }
+
+  var domReady = new Promise(function (res) {
+    if (document.readyState !== 'loading') res();
+    else document.addEventListener('DOMContentLoaded', res, { once: true });
+  });
+  var fontsReady = (document.fonts && document.fonts.ready) || Promise.resolve();
+  Promise.all([domReady, fontsReady]).then(dismiss);
+  setTimeout(dismiss, 2500); // failsafe — never trap the user
+})();
+
+// ─── Image placeholder & graceful load ───────────────────────────────────────
+// • Shimmer background (CSS) pulses while images are downloading
+// • .img-loaded triggers @starting-style fade-in when the image arrives
+// • Broken images fall back to /resources/img_placeholder.svg
+(function () {
+  var PLACEHOLDER = '/resources/img_placeholder.svg';
+
+  function markLoaded(img) {
+    // If we already fell into error state, don't re-classify as loaded
+    // (the placeholder itself fires a load event — we ignore it)
+    if (img.classList.contains('img-error')) return;
+    img.classList.add('img-loaded');
+  }
+
+  function markError(img) {
+    if (img.dataset.rjErrored === '1') return; // prevent infinite loop
+    img.dataset.rjErrored = '1';
+    img.classList.remove('img-loaded');
+    img.classList.add('img-error');
+    img.src = PLACEHOLDER;
+  }
+
+  function checkImg(img) {
+    var src = img.getAttribute('src');
+    if (!src || src === '') return;
+    if (img.classList.contains('img-loaded') || img.classList.contains('img-error')) return;
+    if (img.complete) {
+      if (img.naturalWidth > 0) markLoaded(img);
+      else markError(img);
+    }
+    // Otherwise in-flight: the delegated listeners below will handle it
+  }
+
+  // Capture phase: load/error don't bubble, capture catches them at document level
+  document.addEventListener('load', function (e) {
+    if (e.target && e.target.tagName === 'IMG') markLoaded(e.target);
+  }, { capture: true });
+  document.addEventListener('error', function (e) {
+    if (e.target && e.target.tagName === 'IMG') markError(e.target);
+  }, { capture: true });
+
+  function initImages(root) {
+    (root || document).querySelectorAll('img').forEach(checkImg);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () { initImages(); }, { once: true });
+  // Exposed so navigateTo() can re-scan after a content swap
+  window.__initImages = initImages;
+})();
+
 // Feature flags — read from the <meta name="rj-features"> tag written by Hugo.
 // Each Track-B module can guard itself with: if (!window.__features.notebook) return;
 (function () {
@@ -17,7 +90,7 @@ const HOVER_LEAVE_GRACE_MS = 180;
 let pinnedOpen = false;
 
 document.addEventListener("DOMContentLoaded", function () {
-    const hitbox = document.getElementById('signature-box');
+    const hitbox = document.getElementById('command-console');
     let savedTheme = localStorage.getItem("theme");
 
     hitbox.addEventListener('pointerenter', () => {
@@ -31,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
     hitbox.addEventListener('pointerleave', () => {
         clearTimeout(hoverTimer);
         if (pinnedOpen) return;  // tap/click opened — ignore leave
-        // Grace period: if the pointer re-enters #signature-box (which contains the
+        // Grace period: if the pointer re-enters #command-console (which contains the
         // command box and panels) before this elapses, cancel the blur.
         leaveTimer = setTimeout(() => { hitbox.blur(); }, HOVER_LEAVE_GRACE_MS);
     });
@@ -53,8 +126,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Set icon immediately so there's no wrong-icon flash on initial load.
     // setAutoTheme() → updateAutoTheme() handles its own icon; set explicit ones here.
-    if      (savedTheme === "dark" ) { themeIcon.innerText = "dark_mode";  setDarkTheme();  }
-    else if (savedTheme === "light") { themeIcon.innerText = "light_mode"; setLightTheme(); }
+    if      (savedTheme === "dark" ) { themeIcon.innerText = "dark_mode";  setTheme("dark");  }
+    else if (savedTheme === "light") { themeIcon.innerText = "light_mode"; setTheme("light"); }
     else                             { setAutoTheme(); }
 
     themeAnimReady = true; // allow icon swap animation after initial paint
@@ -65,23 +138,49 @@ document.addEventListener("DOMContentLoaded", function () {
     attachKeyboardHandler();
     attachDragHandlers();
 
+    // Alt+T (Opt+T on macOS) — cycle theme, same as clicking the toggle
+    document.addEventListener('keydown', (e) => {
+      if (e.altKey && !e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 't' &&
+          !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+        e.preventDefault();
+        themeToggleBtn.click();
+      }
+    });
+});
+
+// ── Page-console contraction toggle ────────────────────────────────────────
+// Delegated so it survives SPA #page-content swaps. The contract button only
+// exists when a page injects a #page-console — pages without one are no-ops.
+// State persisted in localStorage so it survives navigations and reloads.
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('#page-console-toggle');
+    if (!btn) return;
+    e.stopPropagation();
+    const pc = document.getElementById('page-console');
+    if (!pc) return;
+    const contracted = pc.classList.toggle('contracted');
+    btn.setAttribute('aria-expanded', contracted ? 'false' : 'true');
+    localStorage.setItem('rj_page_console_contracted', contracted ? '1' : '0');
 });
 
 // __________________________________________________________________________________________________________________
 // ============================================== Theme Toggle Functions ==============================================
-const themeToggleBtn = document.getElementById("themeToggle");
-const themeIcon = document.getElementById("themeIcon");
+const themeToggleBtn = document.getElementById("theme-toggle");
+const themeIcon = document.getElementById("theme-icon");
 
 // Guard: skip icon-swap animation on the initial load call from setAutoTheme()
 let themeAnimReady = false;
 
 function themeToggleEventMaker(){
   themeToggleBtn.addEventListener("click", function () {
-        // Restart animation cleanly even on rapid clicks
+        tapHaptic();
+        // Cancel any in-progress animation, then restart cleanly.
+        // getAnimations().cancel() is more reliable than the void-offsetWidth
+        // reflow trick, which browsers can silently skip.
+        themeIcon.getAnimations().forEach(a => a.cancel());
         themeIcon.classList.remove("rotate");
-        void themeIcon.offsetWidth;
         themeIcon.classList.add("rotate");
-        // document.getElementById("signature-box").blur();
+        // document.getElementById("command-console").blur();
         setTimeout(() => {
             let currentTheme = localStorage.getItem("theme") || "auto";
 
@@ -92,7 +191,7 @@ function themeToggleEventMaker(){
             if (currentTheme === "light") {
                 themeIcon.innerText = "dark_mode";
                 localStorage.setItem("theme", "dark");
-                setDarkTheme();
+                setTheme("dark");
             }
             else if (currentTheme === "dark") {
                 localStorage.setItem("theme", "auto");
@@ -102,35 +201,30 @@ function themeToggleEventMaker(){
                 mediaQuery.removeEventListener('change', updateAutoTheme);
                 themeIcon.innerText = "light_mode";
                 localStorage.setItem("theme", "light");
-                setLightTheme();
+                setTheme("light");
             }
 
             setTimeout(() => {
                 themeIcon.classList.remove("rotate");
-            }, 700);
+            }, 500);
 
-        }, 300);
+        }, 500);
     });
 }
 
 
-function setLightTheme(){
-
-    let metaThemeColor = document.querySelector("meta[name=theme-color]");
-    let black = getComputedStyle(document.documentElement).getPropertyValue('--my-background').trim();
-
-    document.documentElement.setAttribute("data-bs-theme", "light");
-
-    metaThemeColor.setAttribute("content", black);
+// ── Haptic helper — 10ms pulse on touch devices; no-op on desktop ────────────
+function tapHaptic() {
+  if (navigator.vibrate) navigator.vibrate(10);
 }
 
-function setDarkTheme(){
-    let metaThemeColor = document.querySelector("meta[name=theme-color]");
-    let black = getComputedStyle(document.documentElement).getPropertyValue('--my-background').trim();
+function setTheme(mode) {
+    const metaThemeColor = document.querySelector("meta[name=theme-color]");
+    const bg = getComputedStyle(document.documentElement).getPropertyValue('--my-background').trim();
 
-    document.documentElement.setAttribute("data-bs-theme", "dark");
+    document.documentElement.setAttribute("data-bs-theme", mode);
 
-    metaThemeColor.setAttribute("content", black);         
+    if (metaThemeColor) metaThemeColor.setAttribute("content", bg);
 }
 
 function setAutoTheme() {
@@ -151,23 +245,25 @@ function applyTheme(theme) {
     // Fire background/colour transition for system-triggered auto changes
     document.documentElement.classList.add('theme-transitioning');
     setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 350);
-    if (themeAnimReady) {
+    // Skip icon-swap when .rotate is already running (manual toggle) —
+    // both set `animation` on the same element and the last cascade wins,
+    // which would kill the spin mid-way through the dark→auto transition.
+    if (themeAnimReady && !themeIcon.classList.contains('rotate')) {
         themeIcon.classList.remove('icon-swap');
         void themeIcon.offsetWidth; // restart animation
         themeIcon.classList.add('icon-swap');
     }
-    if (theme === "dark") setDarkTheme();
-    else setLightTheme();
+    setTheme(theme === "dark" ? "dark" : "light");
 }
 
 
+// ___________________________________________________________________________________________________________________
 // ___________________________________________________________________________________________________________________
 // ============================================== Command Box Functions ==============================================
 
 let showTimeouts = [];
 let hideTimeouts = [];
 
-let itemTime = 50;
 let panelTime = 100;
 
 function clearAllTimeouts(arr) {
@@ -175,15 +271,34 @@ function clearAllTimeouts(arr) {
   arr.length = 0;
 }
 
-let commandBox = document.getElementById('commandBox');
-let commandPanels = document.querySelectorAll('.commandPanel');
+// Registers a SPA cleanup callback, chaining safely into any prior registration.
+window.__registerCleanup = function (fn) {
+  const prev = window.__pageCleanup;
+  window.__pageCleanup = function () {
+    try { fn(); } catch (e) { console.error('pageCleanup error:', e); }
+    if (typeof prev === 'function') {
+      try { prev(); } catch (e) { console.error('pageCleanup chain error:', e); }
+    }
+    window.__pageCleanup = null;
+  };
+};
+
+let commandBox = document.getElementById('command-box');
+let commandPanels = document.querySelectorAll('.command-panel');
+
+// Chain into SPA cleanup so mid-animation navigation can't leak phantom
+// open/close timers onto the next page.
+window.__registerCleanup(function () {
+  clearAllTimeouts(showTimeouts);
+  clearAllTimeouts(hideTimeouts);
+});
 
 // --------------- Open Nav Panel ---------------
 
-// Re-sync the active-rail position on navPanel — offsetTop is 0 while the
+// Re-sync the active-rail position on nav-panel — offsetTop is 0 while the
 // panel is display:none, so we must refresh once it's actually laid out.
 function refreshActiveRail() {
-  const panel = document.getElementById('navPanel');
+  const panel = document.getElementById('nav-panel');
   if (!panel) return;
   const active = panel.querySelector('.nav-link.active');
   const item = active?.closest('.nav-item');
@@ -203,7 +318,7 @@ function openNavPanel() {
     const t = setTimeout(() => {
       panel.classList.remove('contract', 'hide');
       panel.classList.add('show');
-      if (panel.id === 'navPanel') refreshActiveRail();
+      if (panel.id === 'nav-panel') refreshActiveRail();
     }, i * panelTime);
     showTimeouts.push(t);
   });
@@ -214,15 +329,18 @@ function closeNavPanel() {
   clearAllTimeouts(hideTimeouts);
   commandBox.classList.remove('show');
 
-  // Collapse in reverse order (actionPanel first, then navPanel)
+  // (Scroll-arc no longer lives inside command-console — no focus-hide to mask.)
+  // (Text-size panel auto-close removed — toggle no longer lives inside command-console.)
+
+  // Collapse in reverse order (action-panel first, then nav-panel)
   const panels = [...commandPanels].reverse();
   panels.forEach((panel, i) => {
     const t = setTimeout(() => {
       panel.classList.remove('show');
       panel.classList.add('contract');
 
-      // Hide after the collapse animation completes (navPanel: 0.18s, actionPanel: 0.12s)
-      const animDuration = panel.id === 'navPanel' ? 180 : 120;
+      // Hide after the collapse animation completes (nav-panel: 0.18s, action-panel: 0.12s)
+      const animDuration = panel.id === 'nav-panel' ? 180 : 120;
       const tHide = setTimeout(() => {
         panel.classList.remove('contract');
         panel.classList.add('hide');
@@ -232,7 +350,7 @@ function closeNavPanel() {
     hideTimeouts.push(t);
   });
 
-  // Hide commandBox once all panels have finished collapsing
+  // Hide command-box once all panels have finished collapsing
   const tHideBox = setTimeout(() => {
     commandBox.classList.add('hide');
   }, (panels.length - 1) * panelTime + 220);
@@ -243,10 +361,10 @@ function closeNavPanel() {
 // __________________________________________________________________________________________________________________
 // ============================================== Nav Position System ==============================================
 
-const SHIFT_DURATION_MS = 500;
+const SHIFT_DURATION_MS = 350; // matches --motion-slow
 const DRAG_THRESHOLD_PX = 8;
 const THROW_VELOCITY_PX_PER_MS = 0.5;
-const sig = document.getElementById("signature-box");
+const commandConsoleEl = document.getElementById("command-console");
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 function cornerCode(vert, horz) {
@@ -286,34 +404,35 @@ function shiftSignature(fromCode, toCode) {
   const from = cornerFromCode(fromCode);
   const to = cornerFromCode(toCode);
 
-  const beforeRect = sig.getBoundingClientRect();
+  const beforeRect = commandConsoleEl.getBoundingClientRect();
 
-  sig.classList.remove(from.vert, from.horz);
-  sig.classList.add(to.vert, to.horz);
+  commandConsoleEl.classList.remove(from.vert, from.horz);
+  commandConsoleEl.classList.add(to.vert, to.horz);
 
-  const afterRect = sig.getBoundingClientRect();
+  const afterRect = commandConsoleEl.getBoundingClientRect();
 
   const dx = beforeRect.left - afterRect.left;
   const dy = beforeRect.top - afterRect.top;
 
-  sig.style.transition = 'none';
-  sig.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+  commandConsoleEl.style.transition = 'none';
+  commandConsoleEl.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
   // Force reflow so the browser commits the pre-state before we animate
-  void sig.offsetWidth;
+  void commandConsoleEl.offsetWidth;
 
   if (reduceMotion.matches) {
-    sig.style.transition = '';
-    sig.style.transform = '';
+    commandConsoleEl.style.transition = '';
+    commandConsoleEl.style.transform = '';
   } else {
-    sig.style.transition = '';
-    sig.style.transform = '';
-    // The base transition rule on #signature-box (`transition: transform 500ms cubic-bezier(...)`) takes over.
+    commandConsoleEl.style.transition = '';
+    commandConsoleEl.style.transform = '';
+    // The base transition rule on #command-console (`transition: transform 500ms cubic-bezier(...)`) takes over.
   }
 
   localStorage.setItem('navVert', to.vert);
   localStorage.setItem('navHorz', to.horz);
   updateTopSpacer(to.vert);
   updateCornerPicker(toCode);
+  document.dispatchEvent(new CustomEvent('rj:signature-moved', { detail: to }));
 }
 
 function requestShift(toCode) {
@@ -341,11 +460,69 @@ function shiftCommand(button) {
       localStorage.setItem('navHorz', 'left');
       nowHorz = 'left';
     }
-    sig.classList.add(nowVert, nowHorz);
+    commandConsoleEl.classList.add(nowVert, nowHorz);
     updateTopSpacer(nowVert);
     updateCornerPicker(cornerCode(nowVert, nowHorz));
+    syncPageConsoleCorner({ vert: nowVert, horz: nowHorz });
   }
 }
+
+// Mirror the command-console corner classes onto #page-console (same vert, opposite horz)
+// and apply the persisted contracted state. Called on initial load and after every
+// SPA navigation (since #page-console is now injected by the page template).
+function syncPageConsoleCorner(to) {
+  const pc = document.getElementById('page-console');
+  if (!pc) return;
+  const vert = to?.vert || localStorage.getItem('navVert') || 'top';
+  const horz = to?.horz || localStorage.getItem('navHorz') || 'left';
+  const mirror = horz === 'left' ? 'right' : 'left';
+  pc.classList.remove('top', 'bottom', 'left', 'right');
+  pc.classList.add(vert, mirror);
+  // Default to contracted on mobile (≤768px) if no user preference is stored;
+  // respect explicit toggle on either platform otherwise.
+  const stored = localStorage.getItem('rj_page_console_contracted');
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const shouldContract = stored === '1' || (stored === null && isMobile);
+  if (shouldContract) {
+    pc.classList.add('contracted');
+    const btn = document.getElementById('page-console-toggle');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+
+  // ── Chapter-strip-panel collapsed-state init ─────────────────────────
+  // Adaptive default: mobile (≤768px) starts collapsed, desktop expanded.
+  // User override persisted to localStorage under `rj_chapter_strip_collapsed`.
+  // Mirrors the page-console contracted-state pattern above.
+  const strip = document.getElementById('chapter-strip-panel');
+  if (strip) {
+    const stripStored = localStorage.getItem('rj_chapter_strip_collapsed');
+    const stripCollapsed =
+      stripStored === '1' || (stripStored === null && isMobile);
+    if (stripCollapsed) {
+      strip.classList.add('collapsed');
+      const stripBtn = document.getElementById('chapter-strip-toggle');
+      if (stripBtn) {
+        stripBtn.setAttribute('aria-expanded', 'false');
+        stripBtn.setAttribute('aria-label', 'Expand chapter strip');
+      }
+    }
+    // Bind click handler (idempotent — replace any prior listener after SPA nav)
+    const stripBtn = document.getElementById('chapter-strip-toggle');
+    if (stripBtn && !stripBtn.dataset.rjBound) {
+      stripBtn.dataset.rjBound = '1';
+      stripBtn.addEventListener('click', () => {
+        const collapsed = strip.classList.toggle('collapsed');
+        stripBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        stripBtn.setAttribute(
+          'aria-label',
+          collapsed ? 'Expand chapter strip' : 'Collapse chapter strip'
+        );
+        localStorage.setItem('rj_chapter_strip_collapsed', collapsed ? '1' : '0');
+      });
+    }
+  }
+}
+document.addEventListener('rj:signature-moved', (e) => syncPageConsoleCorner(e.detail));
 
 // __________________________________________________________________________________________________________________
 // ============================================== Corner-target hints (drag affordance) ==============================
@@ -373,6 +550,7 @@ function attachCornerPickerHandlers() {
   document.querySelectorAll('.corner-dot').forEach(dot => {
     dot.addEventListener('click', (e) => {
       e.stopPropagation();
+      tapHaptic();
       requestShift(dot.dataset.corner);
     });
   });
@@ -382,7 +560,7 @@ function attachCornerPickerHandlers() {
 // ============================================== Keyboard navigation ==============================================
 
 function attachKeyboardHandler() {
-  sig.addEventListener('keydown', (e) => {
+  commandConsoleEl.addEventListener('keydown', (e) => {
     const axis = { ArrowUp: ['top', null], ArrowDown: ['bottom', null], ArrowLeft: [null, 'left'], ArrowRight: [null, 'right'] }[e.key];
     if (!axis) return;
     e.preventDefault();
@@ -401,33 +579,33 @@ let dragState = null;   // null | 'pending' | 'dragging'
 let dragStart = null;
 
 function attachDragHandlers() {
-  sig.addEventListener('pointerdown', (e) => {
+  commandConsoleEl.addEventListener('pointerdown', (e) => {
     // Don't start a drag from inside the command box (nav links, theme toggle, corner-picker)
-    if (e.target.closest('#commandBox')) return;
+    if (e.target.closest('#command-box')) return;
     if (e.button !== undefined && e.button !== 0) return;
 
     dragState = 'pending';
     dragStart = { x: e.clientX, y: e.clientY, t: performance.now(), pointerId: e.pointerId };
     clearTimeout(hoverTimer);
-    try { sig.setPointerCapture(e.pointerId); } catch (_) {}
+    try { commandConsoleEl.setPointerCapture(e.pointerId); } catch (_) {}
   });
 
-  sig.addEventListener('pointermove', (e) => {
+  commandConsoleEl.addEventListener('pointermove', (e) => {
     if (!dragState) return;
     const dx = e.clientX - dragStart.x;
     const dy = e.clientY - dragStart.y;
 
     if (dragState === 'pending' && Math.hypot(dx, dy) > DRAG_THRESHOLD_PX) {
       dragState = 'dragging';
-      sig.classList.add('dragging');
-      sig.blur();
+      commandConsoleEl.classList.add('dragging');
+      commandConsoleEl.blur();
       closeNavPanel();
       showCornerTargets();
     }
 
     if (dragState === 'dragging') {
-      sig.style.transition = 'none';
-      sig.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+      commandConsoleEl.style.transition = 'none';
+      commandConsoleEl.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
     }
   });
 
@@ -444,10 +622,18 @@ function attachDragHandlers() {
 
       let targetCode;
       if (velocity > THROW_VELOCITY_PX_PER_MS) {
-        // Throw: target corner = direction of velocity vector
-        const vert = dy > 0 ? 'bottom' : 'top';
-        const horz = dx > 0 ? 'right' : 'left';
-        targetCode = cornerCode(vert, horz);
+        // Throw locks to a single axis — whichever component of the velocity
+        // vector has greater magnitude. The orthogonal axis keeps its
+        // current value, so a fast diagonal toss only moves the pill on
+        // one axis instead of jumping to the opposite corner. To reach the
+        // opposite corner, the user can drag (release with low velocity)
+        // or perform two consecutive throws.
+        const current = cornerFromCode(currentCornerCode());
+        if (Math.abs(dx) > Math.abs(dy)) {
+          targetCode = cornerCode(current.vert, dx > 0 ? 'right' : 'left');
+        } else {
+          targetCode = cornerCode(dy > 0 ? 'bottom' : 'top', current.horz);
+        }
       } else {
         // Snap to quadrant of release point
         targetCode = cornerCode(
@@ -456,36 +642,43 @@ function attachDragHandlers() {
         );
       }
 
-      sig.classList.remove('dragging');
+      commandConsoleEl.classList.remove('dragging');
       hideCornerTargets();
 
       // Clear drag transform without transition so FLIP measurement is clean
-      sig.style.transition = 'none';
-      sig.style.transform = '';
-      void sig.offsetWidth;
+      commandConsoleEl.style.transition = 'none';
+      commandConsoleEl.style.transform = '';
+      void commandConsoleEl.offsetWidth;
 
       const fromCode = currentCornerCode();
       if (fromCode !== targetCode) {
         shiftSignature(fromCode, targetCode);
       }
     } else {
-      // Tap (no drag) — pin the panel open until outside tap/click
-      pinnedOpen = true;
-      sig.focus();
+      // Tap (no drag) — toggle: close if already open, otherwise pin open
+      const panelIsOpen = !commandBox.classList.contains('hide');
+      if (panelIsOpen) {
+        pinnedOpen = false;
+        commandConsoleEl.blur();
+      } else {
+        tapHaptic();
+        pinnedOpen = true;
+        commandConsoleEl.focus();
+      }
     }
 
-    try { sig.releasePointerCapture(dragStart.pointerId); } catch (_) {}
+    try { commandConsoleEl.releasePointerCapture(dragStart.pointerId); } catch (_) {}
     dragState = null;
     dragStart = null;
   }
 
-  sig.addEventListener('pointerup', finishDrag);
-  sig.addEventListener('pointercancel', () => {
+  commandConsoleEl.addEventListener('pointerup', finishDrag);
+  commandConsoleEl.addEventListener('pointercancel', () => {
     if (dragState === 'dragging') {
-      sig.classList.remove('dragging');
+      commandConsoleEl.classList.remove('dragging');
       hideCornerTargets();
-      sig.style.transition = 'none';
-      sig.style.transform = '';
+      commandConsoleEl.style.transition = 'none';
+      commandConsoleEl.style.transform = '';
     }
     dragState = null;
     dragStart = null;
@@ -496,11 +689,12 @@ function attachDragHandlers() {
 (function () {
   let abortController = null;
 
-  function updateActiveNav(activeNavId) {
+  function updateActiveNav(activeNavKey) {
     document.querySelectorAll('.nav-link.active').forEach(el => el.classList.remove('active'));
-    const panel = document.getElementById('navPanel');
-    if (activeNavId) {
-      const el = document.querySelector(activeNavId);
+    const panel = document.getElementById('nav-panel');
+    if (activeNavKey) {
+      const el = [...document.querySelectorAll('[data-nav-key]')]
+        .find(nav => nav.dataset.navKey === activeNavKey);
       if (el) el.classList.add('active');
       // refreshActiveRail reads .nav-link.active + applies --y-offset
       if (typeof refreshActiveRail === 'function') refreshActiveRail();
@@ -511,20 +705,41 @@ function attachDragHandlers() {
 
   // Hover rail: glides to whichever nav-item the pointer is over
   document.addEventListener('mouseover', (e) => {
-    const item = e.target.closest('#navPanel .nav-item');
-    const panel = document.getElementById('navPanel');
+    const item = e.target.closest('#nav-panel .nav-item');
+    const panel = document.getElementById('nav-panel');
     if (!item || !panel) return;
     panel.style.setProperty('--hover-y', item.offsetTop + 'px');
     panel.style.setProperty('--hover-shown', '1');
   });
   document.addEventListener('mouseout', (e) => {
-    const panel = document.getElementById('navPanel');
+    const panel = document.getElementById('nav-panel');
     if (!panel) return;
     // Hide when leaving panel entirely
-    if (e.target.closest('#navPanel') && !e.relatedTarget?.closest('#navPanel')) {
+    if (e.target.closest('#nav-panel') && !e.relatedTarget?.closest('#nav-panel')) {
       panel.style.setProperty('--hover-shown', '0');
     }
   });
+
+  function showNavLoader() {
+    let loader = document.getElementById('rj-page-loader');
+    if (!loader) {
+      loader = document.createElement('div');
+      loader.id = 'rj-page-loader';
+      loader.setAttribute('aria-hidden', 'true');
+      loader.innerHTML = '<div class="rj-spinner"></div>';
+      document.body.appendChild(loader);
+    } else {
+      // Re-activate if it was dismissed by the initial-load sequence
+      loader.classList.remove('dismissed');
+    }
+  }
+
+  function hideNavLoader() {
+    const loader = document.getElementById('rj-page-loader');
+    if (!loader) return;
+    loader.classList.add('dismissed');
+    setTimeout(() => { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 500);
+  }
 
   async function navigateTo(url, pushState, restoreScrollY) {
     // Cancel any in-flight fetch
@@ -535,12 +750,13 @@ function attachDragHandlers() {
 
     // Run page-specific cleanup (e.g. clear homeScript timers)
     if (typeof window.__pageCleanup === 'function') {
-      window.__pageCleanup();
+      try { window.__pageCleanup(); } catch (e) { console.error('pageCleanup error:', e); }
       window.__pageCleanup = null;
     }
 
-    // Fade out
+    // Fade out current content and show spinner (both start together)
     content.classList.add('page-leaving');
+    showNavLoader();
 
     // Separate path+search from hash fragment
     let urlHash = '';
@@ -555,8 +771,8 @@ function attachDragHandlers() {
       finalUrl = new URL(res.url).pathname;
       html = await res.text();
     } catch (err) {
-      if (err.name === 'AbortError') return;
-      // Fallback: hard navigate
+      if (err.name === 'AbortError') { hideNavLoader(); return; }
+      // Fallback: hard navigate (loader stays — the browser will unload the page)
       location.href = url;
       return;
     }
@@ -594,6 +810,13 @@ function attachDragHandlers() {
 
     // Fade in — do this before script loading so content is never blocked
     content.classList.remove('page-leaving');
+    hideNavLoader();
+
+    // Position #page-console (if present in new content) to mirror command-console corner
+    syncPageConsoleCorner();
+    if (typeof window.__initScrollArc === 'function') window.__initScrollArc();
+    // Mark already-cached images as loaded; start shimmer on new in-flight ones
+    if (typeof window.__initImages === 'function') window.__initImages(content);
 
     if (pushState) {
       // Save current scroll before stamping new entry
@@ -614,8 +837,8 @@ function attachDragHandlers() {
     }
 
     // Re-highlight code blocks (Prism) if loaded
-    if (typeof Prism !== 'undefined') {
-      Prism.highlightAllUnder(content);
+    if (typeof Prism !== 'undefined' && typeof Prism.highlightElement === 'function') {
+      content.querySelectorAll('code[class*="language-"]').forEach(el => Prism.highlightElement(el));
     }
 
     // Swap page-specific script (fire-and-forget — never block the fade-in)

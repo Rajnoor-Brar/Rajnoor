@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Ellipsoidal Channel"
-active_nav: "#project-nav"
+active_nav: "projects"
 pageScript: "/js/projectScript.js"
 pageStyle: "/css/projectStyle.css"
 url: "/projects/ellipsoidal-channel"
@@ -9,15 +9,6 @@ url: "/projects/ellipsoidal-channel"
 description: "Plot an ellipsoidal channel in MATLAB"
 math: true
 code: true
-
-cardImage: "/resources/Ellipsoidal_Channel/Shadowed_Tunnel.png"
-cardTitle: "Ellipsoidal Channel"
-cardText: "Plotting a channel of ellipsoidal profile wrapped about two directrices in 3D space via MATLAB"
-
-weight: 10
-show: true
-tags: ["MATLAB", "Physics", "Visualisation"]
-group: "simulations"
 
 longTitle: "Plotting an ellipsoidal channel surface using two directrices as foci of ellipsoids and an axis length in MATLAB"
 subtitle: "A detailed analysis of Theory and Code"
@@ -83,8 +74,8 @@ To simplify the mathematics of a channel, we will make an analogy to one of its 
 A right cylindrical surface is a channel formed by a series of spheres, with their directrix being a line. Alternatively, a solid cylinder can be thought of as the result of integrating circular discs oriented perpendicular to the directrix. A cylindrical surface, on the other hand, is the result of integrating circles or the perimeters of the discs.
 
 <div class="figure">
-  <img src="/resources/Ellipsoidal_Channel/Cylinder_Stack_Left.png" class="col-10 col-lg-5" alt="Cylinder as Integration of Circular Sheets">
-  <img src="/resources/Ellipsoidal_Channel/Cylinder_Stack_Right.png" class="col-10 col-lg-5" alt="Cylinder as Integration of Circular Sheets">
+  <img src="/resources/Ellipsoidal_Channel/Cylinder_Stack_Left.png" class="col-10 col-lg-5" alt="Cylinder as Integration of Circular Sheets" loading="lazy">
+  <img src="/resources/Ellipsoidal_Channel/Cylinder_Stack_Right.png" class="col-10 col-lg-5" alt="Cylinder as Integration of Circular Sheets" loading="lazy">
   <p class="text-muted">Cylinder as Integration of Circular Sheets</p>
 </div>
 
