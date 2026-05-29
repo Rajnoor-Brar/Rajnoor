@@ -179,6 +179,7 @@ pre{
     text-decoration: none;
     color: inherit;
     cursor: pointer;
+    padding: 0;
     transition: transform var(--motion-fast) ease, box-shadow var(--motion-base) ease;
 }
 .project-card:hover,
@@ -197,6 +198,28 @@ pre{
 }
 .project-card:hover .card-title {
     color: var(--my-black);
+}
+
+.project-card__media {
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin:0;
+    background: transparent;
+    border-bottom: 1px solid var(--my-border-color);
+    overflow: hidden;
+}
+
+.project-card__media .card-img-top {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 0;
+    margin: 0;
+    background: transparent;
 }
 
 /* Inline GitHub icon button in article footer (Ellipsoidal Channel) */
@@ -320,10 +343,9 @@ pre{
 .figure {
     width: calc(100% + 2rem);
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
+    flex-direction: column;
     align-items: center;
+    gap: 0.75rem;
     padding: 12px 12px;
     margin-left: -1em;
     margin-right: -1em;
@@ -332,15 +354,46 @@ pre{
     border-radius: 0.45em;
 }
 
-.figure img {
-    justify-items: center;
+.figure-media {
+    width: var(--rj-article-figure-width, 75%);
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    max-width: var(--rj-article-img-size, 96%);
-    height: auto;
-    border-radius: 0.25rem;
-    transition: max-width var(--motion-base) ease;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.35rem;
+    background: transparent;
+    transition: width var(--motion-base) ease;
 }
 
+.figure-image {
+    --rj-figure-image-basis: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 1 var(--rj-figure-image-basis);
+    max-width: 100%;
+}
+
+.figure-image--small  { --rj-figure-image-basis: calc(25% - 0.75rem); }
+.figure-image--medium { --rj-figure-image-basis: calc(50% - 0.5rem); }
+.figure-image--large  { --rj-figure-image-basis: 75%; }
+.figure-image--full   { --rj-figure-image-basis: 100%; }
+
+.figure-image img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    max-height: min(72vh, 42rem);
+    height: auto;
+    object-fit: contain;
+    background: transparent;
+    border-radius: 0.25rem;
+}
+
+.figure figcaption,
 .figure p {
     width:100%;
     font-size: 0.9em;
@@ -435,13 +488,12 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
 }
 
 /* Article width token — updated at each Bootstrap breakpoint.
-   Consumers: .header, .article, .figure img. Set once here, used everywhere. */
+   Consumers: .header and .article. Set once here, used everywhere. */
 @media (max-width: 992px) {
     :root { --rj-article-width: 95%; }
 
     .header  { max-width: var(--rj-article-width); }
     .article { max-width: var(--rj-article-width); }
-    .figure img { max-width: var(--rj-article-width); }
 
     .abstract {
         padding: 1.5rem;
@@ -461,10 +513,11 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
         padding: 1rem;
     }
 
-    /* Figures go full-width one step earlier than article text */
-    .figure img {
-        max-width: 100%;
-    }
+    .figure-media { gap: 0.75rem; }
+    .figure-image--small  { --rj-figure-image-basis: calc(50% - 0.375rem); }
+    .figure-image--medium { --rj-figure-image-basis: 75%; }
+    .figure-image--large,
+    .figure-image--full   { --rj-figure-image-basis: 100%; }
 }
 
 @media (max-width: 576px) {
@@ -498,9 +551,8 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
         font-size: 0.9rem;
     }
 
-    .figure img {
-        max-width: var(--rj-article-width);
-    }
+    .figure { width: 100%; margin-left: 0; margin-right: 0; }
+    .figure-media { width: min(var(--rj-article-figure-width, 75%), 100%); }
 }
 
 /* ── Filter toggle button ───────────────────────────────────────────────── */
@@ -508,6 +560,7 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 0.35rem;
     background: none;
     border: none;
     padding: 0.3rem 0.5rem 0.3rem 0.25rem;
@@ -526,8 +579,25 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
     color: var(--my-black);
 }
 
-.filter-toggle.active .bi-funnel::before {
+.filter-toggle.active:not(.has-filter) .bi-funnel::before {
     content: "\F2F1";   /* bi-funnel-fill codepoint */
+}
+
+.filter-toggle__count,
+.filter-toggle__divider {
+    display: none;
+    font-family: var(--my-font-ui);
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+.filter-toggle.has-filter .filter-toggle__icon {
+    display: none;
+}
+
+.filter-toggle.has-filter .filter-toggle__count,
+.filter-toggle.has-filter .filter-toggle__divider {
+    display: inline-flex;
 }
 
 /* ── Collapsible filter panel ─────────────────────────────────────────────
@@ -611,6 +681,7 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
 }
 
 .project-card-wrap {
+    padding: 0;
     transition: opacity var(--motion-base) ease, transform var(--motion-base) ease;
 }
 
@@ -751,7 +822,7 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
 #toc-toggle[data-mode="l1"]   .toc-icon--l1,
 #toc-toggle[data-mode="l2"]   .toc-icon--l2  { display: block; }
 
-/* ── Text & image size panel (summoned by #text-size-toggle) ─────────────── */
+/* ── Text size & figure width panel (summoned by #text-size-toggle) ──────── */
 #text-size-panel {
   display: none;
   flex-direction: column;

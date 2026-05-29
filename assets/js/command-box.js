@@ -11,6 +11,7 @@
   // ── State ──────────────────────────────────────────────────────────────────
   let pages       = null;   // fetched once, cached
   let activeIndex = -1;
+  let searchReadyAnnounced = false;
 
   // ── Open / close ──────────────────────────────────────────────────────────
   function open() {
@@ -32,7 +33,10 @@
   }
 
   // ── Index fetch ────────────────────────────────────────────────────────────
-  async function fetchIndex() {
+  async function fetchIndex(isRetry) {
+    if (isRetry && typeof showToast === 'function') {
+      showToast('Retrying search', { duration: 'short', variant: 'info' });
+    }
     list.innerHTML = '<li class="command-palette__status">Loading…</li>';
     const controller = new AbortController();
     const timeoutId  = setTimeout(() => controller.abort('timeout'), 8000);
@@ -42,6 +46,10 @@
       if (!res.ok) throw new Error(res.status);
       pages = await res.json();
       renderResults(input.value);
+      if (!searchReadyAnnounced && typeof showToast === 'function') {
+        showToast('Search ready', { duration: 'short', variant: 'success' });
+        searchReadyAnnounced = true;
+      }
     } catch (e) {
       clearTimeout(timeoutId);
       if (e.name === 'AbortError') {
@@ -52,10 +60,21 @@
           '<button class="command-palette__retry">Retry</button>' +
           '</li>';
         list.querySelector('.command-palette__retry')
-            ?.addEventListener('click', () => fetchIndex(), { once: true });
+            ?.addEventListener('click', () => fetchIndex(true), { once: true });
+        if (typeof showToast === 'function') {
+          showToast('Search took too long', { duration: 'long', variant: 'warning' });
+        }
       } else {
         list.innerHTML =
-          '<li class="command-palette__status command-palette__status--error">Could not load index.</li>';
+          '<li class="command-palette__status command-palette__status--error">' +
+          'Could not load index. ' +
+          '<button class="command-palette__retry">Retry</button>' +
+          '</li>';
+        list.querySelector('.command-palette__retry')
+            ?.addEventListener('click', () => fetchIndex(true), { once: true });
+        if (typeof showToast === 'function') {
+          showToast('Search unavailable', { duration: 'long', variant: 'error' });
+        }
       }
     }
   }

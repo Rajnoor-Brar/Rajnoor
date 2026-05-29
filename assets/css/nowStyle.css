@@ -58,6 +58,7 @@
 .now-item__phrase {
     font-family: var(--my-font-article-alt);
     font-size: 1.05rem;
+    font-weight: 550;
     color: var(--bs-body-color);
     flex: 1 1 auto;
 }

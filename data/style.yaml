@@ -1,0 +1,116 @@
+tokens:
+  - name: bb-color-mode
+    light: "99"
+    dark: "00"
+  - name: bs-body-bg
+    light: "#f9f9f9"
+    dark: "#181818"
+  - name: my-background
+    light: "#f9f9f9"
+    dark: "#181818"
+  - name: bs-body-color
+    light: "#222"
+    dark: "#fbfbfb"
+  - name: my-white
+    light: "#fff"
+    dark: "#111"
+  - name: my-white-rgb
+    light: "255, 255, 255"
+    dark: "17, 17, 17"
+  - name: my-black
+    light: "#111"
+    dark: "#fff"
+  - name: my-silver-1
+    light: "#ddd"
+    dark: "#2d2d2d"
+  - name: my-silver-2
+    light: "#f5f5f5"
+    dark: "#222"
+  - name: my-gray-1
+    light: "#777"
+    dark: "#ccc"
+  - name: my-gray-2
+    light: "#555"
+    dark: "#bbb"
+  - name: my-gray-3
+    light: "#333"
+    dark: "#aaa"
+  - name: my-border-color
+    light: "#22222222"
+    dark: "#fbfbfb22"
+  - name: my-shadow-color
+    light: "#11111133"
+    dark: "#fdfdfd33"
+  - name: my-theme-accent
+    light: "#0047AB"
+    dark: "#6B9EFF"
+  - name: my-theme-night
+    light: "#7EB2FF"
+    dark: "#7EB2FF"
+  - name: my-theme-day
+    light: "#FCA61C"
+    dark: "#FCA61C"
+
+  - name: my-error
+    light: "#c0392b"
+    dark: "#e85d50"
+
+fonts:
+  - token: my-font-title
+    typeface: '"Spectral", serif'
+  - token: my-font-subtitle
+    typeface: '"Instrument Serif", serif'
+  - token: my-font-subtitle-alt
+    typeface: '"Edu SA Beginner", cursive'
+  - token: my-font-article
+    typeface: '"Slabo 27px", serif'
+  - token: my-font-article-alt
+    typeface: '"Quicksand", sans-serif'
+  - token: my-font-ui
+    typeface: '"Montserrat", sans-serif'
+  - token: my-font-code
+    typeface: '"Inconsolata", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
+  - token: my-font-hero
+    typeface: 'var(--my-font-title)'
+  - token: my-font-nav
+    typeface: 'var(--my-font-title)'
+  - token: my-font-button
+    typeface: 'var(--my-font-ui)'
+  - token: my-font-date
+    typeface: 'var(--my-font-ui)'
+  - token: my-font-form
+    typeface: 'var(--my-font-ui)'
+  - token: my-font-lede
+    typeface: 'var(--my-font-subtitle-alt)'
+  - token: my-font-caption
+    typeface: 'var(--my-font-ui)'
+
+motion:
+  fast: 120ms
+  base: 200ms
+  slow: 350ms
+  loader: 1.2s
+
+z_index:
+  rail: 1
+  pill: 8
+  fixed: 10
+  overlay: 1400
+  toast: 1500
+  critical: 9000
+
+shadows:
+  - size: sm
+    value: '0 0 8px 0 var(--my-shadow-color)'
+  - size: md
+    value: '0 0 10px 0 var(--my-shadow-color)'
+  - size: lg
+    value: '0 12px 48px var(--my-shadow-color)'
+
+glows:
+  - size: sm
+    value: 'var(--my-theme-accent) 0 0 1px'
+  - size: md
+    value: 'var(--my-theme-accent) 0 0 4px'
+  - size: lg
+    value: 'var(--my-theme-accent) 0 0 8px'

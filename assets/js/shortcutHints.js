@@ -12,7 +12,7 @@
 
   document.addEventListener('keydown', (e) => {
     // ? key — ignore when user is typing in an input / textarea
-    if (e.key === '?' && !e.ctrlKey && !e.metaKey &&
+    if (e.key === '?' && !e.ctrlKey && !e.metaKey && !e.altKey &&
         !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
       e.preventDefault();
       toggle();

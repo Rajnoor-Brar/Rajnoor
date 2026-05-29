@@ -1,101 +1,28 @@
 :root{
-  --bb-color-mode: 99;
-  --bs-body-bg: #f9f9f9;
-;
-  --my-background: #f9f9f9;
-  --bs-body-color: #222;
-  --my-white:#fff;
-  --my-white-rgb:255, 255, 255;
-  --my-black: #111;
-  --my-silver-1:#ddd;
-  --my-silver-2: #f5f5f5;
-  --my-gray-1:#777;
-  --my-gray-2:#555;
-  --my-gray-3:#333;
-  --my-border-color:#22222222;
-  --my-shadow-color:#11111133;
-  --my-theme-accent: #0047AB;
-  --my-theme-day: #FCA61C;
-  --my-error: #c0392b;
+{{- range site.Data.style.tokens }}{{ printf "\n  --%s: %s;" .name .light }}{{- end }}
+{{- range site.Data.style.fonts }}{{ printf "\n  --%s: %s;" .token .typeface }}{{- end }}
   --radius-pill: 999px;
   --nav-height: calc(4.5rem + env(safe-area-inset-bottom));
-
-  /* ── Motion duration scale ───────────────────────────────────────────────
-     Use these tokens for all transition-duration values. Never hard-code ms.
-     Intentional outliers (signature draw, hero typing, page loader) are exempt. */
-  --motion-fast:   120ms;  /* colour, text, small state flips          */
-  --motion-base:   200ms;  /* transform, opacity, hover                */
-  --motion-slow:   350ms;  /* panel choreography, corner-shift         */
-  --motion-loader: 1.2s;   /* spinner + shimmer — tuned as one knob    */
-
-  /* ── Z-index scale ───────────────────────────────────────────────────────
-     See CLAUDE.md for full documentation. */
-  --z-rail:     1;     /* active/hover indicator rails inside nav-panel  */
-  --z-pill:     8;     /* signature island (#signature-panel)            */
-  --z-fixed:    10;    /* always-on-screen fixed islands (consoles)      */
-  --z-overlay:  1400;  /* command palette backdrop                       */
-  --z-toast:    1500;  /* shortcut-hints overlay                         */
-  --z-critical: 9000;  /* full-screen page loader                        */
-
-  /* ── Shadow scale ────────────────────────────────────────────────────────
-     Three elevation tiers for box-shadow; three glow tiers for text-shadow
-     on icon buttons. Never hard-code shadow values — reference these tokens. */
-  --shadow-sm:  0 0 8px 0 var(--my-shadow-color);   /* interactive button hover    */
-  --shadow-md:  0 0 10px 0 var(--my-shadow-color);  /* card hover, panel hover     */
-  --shadow-lg:  0 12px 48px var(--my-shadow-color); /* overlay panels (modal-like) */
-
-  --glow-sm: var(--my-theme-accent) 0 0 1px;  /* subtle — utility toggles    */
-  --glow-md: var(--my-theme-accent) 0 0 4px;  /* standard — interactive icons */
-  --glow-lg: var(--my-theme-accent) 0 0 8px;  /* prominent — dark-mode use   */
-
-  /* ── Typography ─────────────────────────────────────────────────────── */
-  /* Base font families */
-  --my-font-title:         "Spectral", serif;
-  --my-font-subtitle:      "Instrument Serif", serif;        /* literary */
-  --my-font-subtitle-alt:  "Edu SA Beginner", cursive;       /* casual hand */
-  --my-font-article:       "Slabo 27px", serif;              /* /projects/ */
-  --my-font-article-alt:   "Quicksand", sans-serif;          /* /notebook/ */
-  --my-font-ui:            "Montserrat", sans-serif;
-  --my-font-code:          "Inconsolata", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-
-  /* Context aliases — same family, separate role so any context can
-     diverge later by changing one line here, not every selector. */
-  --my-font-hero:    var(--my-font-title);
-  --my-font-nav:     var(--my-font-title);
-  --my-font-button:  var(--my-font-ui);
-  --my-font-date:    var(--my-font-ui);
-  --my-font-form:    var(--my-font-ui);
-  --my-font-lede:    var(--my-font-subtitle-alt);
-  --my-font-caption: var(--my-font-ui);
+{{- range $k, $v := site.Data.style.motion }}{{ printf "\n  --motion-%s: %s;" $k $v }}{{- end }}
+{{- range $k, $v := site.Data.style.z_index }}{{ printf "\n  --z-%s: %s;" $k $v }}{{- end }}
+{{- range site.Data.style.shadows }}{{ printf "\n  --shadow-%s: %s;" .size .value }}{{- end }}
+{{- range site.Data.style.glows }}{{ printf "\n  --glow-%s: %s;" .size .value }}{{- end }}
 }
 
 html[data-bs-theme="dark"] {
-  --bb-color-mode: 00;
-  --bs-body-bg: #181818;
-  --my-background: #181818;
-  --bs-body-color: #fbfbfb;
-  --my-white: #111;
-  --my-white-rgb:17, 17, 17;
-  --my-black: #fff;
-  --my-silver-1: #2d2d2d;
-  --my-silver-2: #222;
-  --my-gray-1: #ccc;
-  --my-gray-2: #bbb;
-  --my-gray-3: #aaa;
-  --my-border-color: #fbfbfb22;
-  --my-theme-accent: #6B9EFF;
-  --my-theme-night: #7EB2FF;
-  --my-shadow-color: #fdfdfd33;
-  --my-error: #e85d50;
+{{- range site.Data.style.tokens }}{{ printf "\n  --%s: %s;" .name .dark }}{{- end }}
 }
 
-/* Theme colour transition only fires while the user is actively toggling —
-   not on every hover, focus, or class change. JS adds/removes .theme-transitioning. */
 html.theme-transitioning *,
 html.theme-transitioning *::before,
 html.theme-transitioning *::after {
   transition: background-color var(--motion-base) ease-in, color 0.1s ease-out;
 }
+
+
+html[data-bs-theme="dark"]  .theme-img--light { display: none; }
+html[data-bs-theme="light"] .theme-img--dark  { display: none; }
+
 body {
   --signture-height:80px;
   --signature-bg-duration:0.25s;
@@ -119,23 +46,16 @@ body {
   height: 0;
 }
 
-/* State classes — compound ID selectors give specificity (1,1,0) which beats
-   any base display rule on these elements, so !important is not needed. */
 #command-box.hide,
 #nav-panel.hide,
 #action-panel.hide,
 #toc-panel.hide { display: none; }
 
-/* ── Global :focus-visible baseline ─────────────────────────────────────────
-   Single source of truth for keyboard focus rings across the site. Elements
-   that need a different focus treatment (e.g. .corner-dot, #command-console)
-   declare their own :focus-visible rule which shadows this one. */
 :focus-visible {
-  outline: 2px solid var(--my-theme-accent);
+  outline: 1px solid var(--my-theme-accent);
   outline-offset: 2px;
   border-radius: 2px; /* softens corners on rectangular controls */
 }
-/* Suppress the baseline ring on elements that paint their own focus treatment */
 .corner-dot:focus-visible,
 #command-console:focus-visible {
   outline: none;
@@ -199,6 +119,12 @@ body {
 
 #command-console:focus{
   outline: none;
+}
+
+#command-console:focus-visible #signature-panel {
+  box-shadow:
+    var(--my-border-color) 0px 3px 6px,
+    0 0 8px 1px color-mix(in srgb, var(--my-theme-accent) 10%, transparent);
 }
 
 #signature-panel{
@@ -304,7 +230,6 @@ body {
   border-radius: calc(var(--signture-height)*0.4) !important;
 }
 
-/* Transform-origin: panels expand/collapse away from the signature pill */
 #command-console.top.left    .command-panel { transform-origin: top left; }
 #command-console.top.right   .command-panel { transform-origin: top right; }
 #command-console.bottom.left  .command-panel { transform-origin: bottom left; }
@@ -330,10 +255,6 @@ body {
   animation-fill-mode: both;
 }
 
-/* Active + hover rails — vertical line segments that glide along the panel's
-   left edge to indicate the active nav item (full thickness) and the
-   currently-hovered item (half thickness). Positions are driven by
-   --active-y / --hover-y CSS vars set from JS. */
 #nav-panel{
   --y-offset: calc(0.15 * var(--signture-height));
 }
@@ -542,7 +463,6 @@ html[data-bs-theme="dark"] #theme-toggle:hover {
   background: transparent;
 }
 
-/* Shortcut-hints "?" button */
 #shortcut-hints-toggle {
   background-color: transparent !important;
   border: none;
@@ -562,9 +482,6 @@ html[data-bs-theme="dark"] #theme-toggle:hover {
 html[data-bs-theme="dark"] #shortcut-hints-toggle:hover {
   text-shadow: var(--glow-lg);
 }
-
-/* (Text-size & image-size panel/slider styles moved to projectStyle.css —
-   page-specific page-console content.) */
 
 #corner-targets {
   position: fixed;
@@ -633,7 +550,6 @@ button {
   animation: rotateAnim 1s;
 }
 
-/* Icon swap animation for auto-theme system changes (no inline transform needed) */
 @keyframes iconSwap {
   0%   { opacity: 1; transform: scale(1) rotate(0deg); }
   40%  { opacity: 0; transform: scale(0.7) rotate(90deg); }
@@ -644,22 +560,23 @@ button {
   animation: iconSwap var(--motion-slow) ease;
 }
 
-/* ── Signature-pill first-visit discoverability pulse ─────────────────────
-   Triggered once per session from homeScript.js after the hero+typing
-   completes. Non-layout (box-shadow + filter only) so it composites cheaply
-   over the existing pill backdrop. */
 @keyframes discoverPulse {
   0%   { box-shadow: 0 0 0   0   var(--my-theme-accent); }
   35%  { box-shadow: 0 0 22px 6px var(--my-theme-accent); }
   70%  { box-shadow: 0 0 10px 2px var(--my-theme-accent); }
   100% { box-shadow: 0 0 0   0   transparent; }
 }
-.discover-pulse {
-  animation: discoverPulse 2.4s ease-out 1;
+/* #signature-panel has animation: fadeIn on the ID rule (specificity 1,0,0).
+   A plain .discover-pulse class (0,1,0) would lose the cascade and never run.
+   Combining ID + class (1,1,0) wins, and listing fadeIn with a negative delay
+   equal to its duration instantly completes it — keeping opacity at 1 via
+   the forwards fill — while discoverPulse runs freely on box-shadow. */
+#signature-panel.discover-pulse {
+  animation:
+    fadeIn 1.75s ease-in-out -1.75s forwards,
+    discoverPulse 2.4s ease-out 1;
 }
 
-/* Active/hover rails are drawn on #nav-panel via ::before / ::after (see above);
-   .nav-link.active no longer needs its own border. */
 
 .card {
   transition: box-shadow var(--motion-base) ease, transform var(--motion-base) ease;
@@ -669,7 +586,6 @@ button {
   transform: translateY(-2px);
 }
 
-/* Page transition */
 #page-content {
   transition: opacity var(--motion-fast) ease, transform var(--motion-fast) ease;
 }
@@ -687,7 +603,6 @@ button {
   }
 }
 
-/* ── Command Palette (⌘K palette) ───────────────────────────────────────── */
 .command-palette {
   display: none;
   position: fixed;
@@ -815,7 +730,6 @@ button {
   }
 }
 
-/* ── Scroll Arc ─────────────────────────────────────────────────────────── */
 :root {
   --scroll-progress: 0;
   --scroll-arc-opacity: 0;
@@ -833,7 +747,6 @@ button {
   z-index: calc(var(--z-pill) + 1);
 }
 
-/* Hold arc hidden during transient state changes (JS adds/removes this class) */
 .scroll-arc.arc-suppressed {
   opacity: 0 !important;
   transition-duration: 0s !important;
@@ -855,7 +768,6 @@ button {
   }
 }
 
-/* ── Shortcut Hints overlay ─────────────────────────────────────────────── */
 .shortcut-hints {
   display: none;
   position: fixed;
@@ -981,13 +893,56 @@ button {
   }
 }
 
-/* ══════════════════════════════════════════════════════════════════════════ */
-/* ── Page loader ──────────────────────────────────────────────────────────  */
-/* Created via JS so no-JS users never see it.                               */
+#rj-toast {
+  position: fixed;
+  bottom: calc(2rem + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%) translateY(0.75rem);
+  z-index: var(--z-critical);
+  --rj-toast-shadow: var(--shadow-md);
+  background: rgba(var(--my-white-rgb), 0.92);
+  color: var(--bs-body-color);
+  border: 1px solid var(--my-border-color);
+  border-radius: var(--radius-pill);
+  padding: 0.45rem 1.1rem;
+  font-family: var(--my-font-ui);
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+  max-width: min(28rem, calc(100vw - 2rem));
+  box-shadow: var(--rj-toast-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--motion-base) ease,
+    transform var(--motion-base) ease;
+}
+#rj-toast.rj-toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+#rj-toast.rj-toast--hiding {
+  opacity: 0;
+  transform: translateX(-50%) translateY(0.5rem);
+}
+{{ range site.Data.toast.variants -}}
+#rj-toast.rj-toast--{{ .name }} {
+  --rj-toast-shadow: {{ .shadow }};
+}
+{{ end -}}
+@media (prefers-reduced-motion: reduce) {
+  #rj-toast { transition-duration: 0.01ms !important; }
+}
+
 #rj-page-loader {
   position: fixed;
   inset: 0;
-  z-index: var(--z-critical);
+  z-index: calc(var(--z-pill) - 1); /* below pill + page-console; chrome stays reachable */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1015,27 +970,21 @@ button {
   }
 }
 
-/* ── Image shimmer placeholder ────────────────────────────────────────────  */
-/* The CSS background is visible through the img element while it downloads. */
 
-/* Reserve space so the shimmer is visible before image metadata arrives     */
 .card-img-top {
-  min-height: 140px;
-  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
 }
 .certificate img {
   min-height: 40px;
 }
 
-/* Pulse while loading */
-.card-img-top,
-.figure img,
-.certificate img {
+.card-img-top {
   background-color: var(--my-silver-2);
 }
-.card-img-top:not(.img-loaded):not(.img-error),
-.figure img:not(.img-loaded):not(.img-error),
-.certificate img:not(.img-loaded):not(.img-error) {
+.card-img-top:not(.img-loaded):not(.img-error) {
   animation: rj-shimmer var(--motion-loader) ease-in-out infinite;
 }
 @keyframes rj-shimmer {
@@ -1043,10 +992,9 @@ button {
   50%       { background-color: var(--my-silver-1); }
 }
 
-/* Fade in smoothly when load fires (graceful via @starting-style)           */
 .card-img-top.img-loaded,
 .figure img.img-loaded {
-  background: none;
+  background: transparent;
   animation: none;
   opacity: 1;
   transition: opacity var(--motion-slow) ease;
@@ -1058,13 +1006,6 @@ button {
   }
 }
 
-/* Certificate icons: just stop shimmer, no opacity fade (small decorative)  */
-.certificate img.img-loaded {
-  background: none;
-  animation: none;
-}
-
-/* Error state: replace with placeholder graphic                              */
 .img-error {
   background-color: var(--my-silver-2) !important;
   background-image: url('/resources/img_placeholder.svg') !important;
@@ -1073,16 +1014,15 @@ button {
   background-size: clamp(28px, 35%, 56px) auto !important;
   animation: none !important;
   min-height: 60px;
+  object-fit: contain !important;
+  padding: 0.75rem;
   opacity: 1 !important;
 }
-/* Dark mode: invert the black-stroke placeholder so it reads on dark surface */
 html[data-bs-theme="dark"] .img-error {
   filter: invert(1) brightness(0.85);
 }
 @media (prefers-reduced-motion: reduce) {
-  .card-img-top:not(.img-loaded):not(.img-error),
-  .figure img:not(.img-loaded):not(.img-error),
-  .certificate img:not(.img-loaded):not(.img-error) {
+  .card-img-top:not(.img-loaded):not(.img-error) {
     animation: none;
   }
   .card-img-top.img-loaded,
@@ -1091,13 +1031,6 @@ html[data-bs-theme="dark"] .img-error {
   }
 }
 
-/* ───────────────────────────────────────────────────────────────────────────
-   Page-console: mirror island on the opposite horizontal corner from
-   #command-console. This block defines the GENERIC skeleton only — the
-   structural island, head-panel pill, generic .head-item button shape, and
-   .page-summoned card template. Page-specific content (text-size sliders,
-   ToC list styling, etc.) lives in the relevant <page>Style.css.
-   ─────────────────────────────────────────────────────────────────────────── */
 #page-console {
   position: fixed;
   z-index: var(--z-fixed);
@@ -1124,11 +1057,8 @@ html[data-bs-theme="dark"] .img-error {
   -webkit-backdrop-filter: blur(10px);
   transition: width 0.25s ease, padding-inline 0.25s ease;
 }
-/* Flex flow puts #page-console-toggle on the edge-side (screen corner side) */
 #page-console.right #head-panel { flex-direction: row-reverse; }
 
-/* Head-panel action buttons — base skeleton; page-specific .active / icon-swap
-   styles live in the relevant <page>Style.css. */
 .head-item {
   display: flex;
   background: transparent !important;
@@ -1146,34 +1076,30 @@ html[data-bs-theme="dark"] .img-error {
 }
 .head-item:hover { text-shadow: var(--glow-md); }
 
-/* Utility toggles sit alongside primary actions but carry less visual weight —
-   use the subtle glow so they don't compete with theme-toggle. */
 #text-size-toggle:hover,
 #page-console-toggle:hover { text-shadow: var(--glow-sm); }
 /* #toc-toggle glow is filter: drop-shadow on .toc-icon — text-shadow has no
    effect on SVG content. See projectStyle.css #toc-toggle:hover .toc-icon. */
 
-/* Contract toggle — always pinned to the edge-side of head-panel.
-   Chevron points "outward" (toward the panel content) when expanded; flips
-   when contracted (toward where the content would re-appear). */
 #page-console-toggle .bi { transition: transform var(--motion-base) ease; }
 #page-console.left:not(.contracted)  #page-console-toggle .bi { transform: scaleX(1);  }
 #page-console.right:not(.contracted) #page-console-toggle .bi { transform: scaleX(-1); }
 #page-console.left.contracted  #page-console-toggle .bi { transform: scaleX(-1); }
 #page-console.right.contracted #page-console-toggle .bi { transform: scaleX(1);  }
 
-/* ── Contracted state: only #page-console-toggle remains; head-panel shrinks
-   to a square at the edge corner; summoned panels are forced shut. ── */
 #page-console.contracted #head-panel {
   width: var(--signture-height);
   padding-inline: 0;
   justify-content: center;
 }
+/* Expand the toggle's hit area to the full contracted pill — no dead zone. */
+#page-console.contracted #page-console-toggle {
+  width: 100%;
+  height: 100%;
+}
 #page-console.contracted .head-item:not(#page-console-toggle) { display: none !important; }
 #page-console.contracted .page-summoned                       { display: none !important; }
 
-/* Summoned panels — children of #page-console, positioned in flow alongside head-panel.
-   This is the generic card template; page-specific layout lives elsewhere. */
 .page-summoned {
   border-radius: calc(var(--signture-height) * 0.4);
   background-color: rgba(var(--my-white-rgb), 0.8);
@@ -1183,25 +1109,19 @@ html[data-bs-theme="dark"] .img-error {
   box-sizing: border-box;
 }
 
-/* Mobile (≤768px): start in contracted state via JS in script.js. In that
-   state, strip the head-panel pill background + arc so only the chevron
-   icon shows tucked to the edge. Tapping the chevron expands to the
-   normal pill (background + buttons + arc). */
 @media (max-width: 768px) {
   #page-console.contracted #head-panel {
-    background-color: transparent;
-    box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    width: auto;
-    padding-inline: 0;
-    margin-inline: -12px !important;
+    width: calc(0.7 * var(--signture-height));
+    padding-inline: calc(0.08 * var(--signture-height));
+    background-color: rgba(var(--my-white-rgb), 0.8);
+    box-shadow: var(--my-border-color) 0px 3px 6px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(10px);
+    margin-inline: 0 !important;
+    border-radius: calc(var(--signture-height) * 0.34);
   }
+  #page-console.right.contracted #head-panel { margin-right: -26px !important; }
+  #page-console.left.contracted #head-panel  { margin-left:  -26px !important; }
   #page-console.contracted .scroll-arc { visibility: hidden; }
 }
 
-/* ── Theme-aware dual images ─────────────────────────────────────────────
-   Use .theme-img--light / .theme-img--dark on paired <img> elements.
-   The correct variant is shown based on data-bs-theme on <html>. */
-html[data-bs-theme="dark"]  .theme-img--light { display: none; }
-html[data-bs-theme="light"] .theme-img--dark  { display: none; }

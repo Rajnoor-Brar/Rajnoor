@@ -53,7 +53,7 @@
   border-color: var(--my-gray-2);
   box-shadow: 0 0 10px 0 var(--my-shadow-color);
   transform: translateY(-2px);
-  text-shadow: var(--my-theme-accent) 0 0 4px;
+  text-shadow: var(--my-theme-accent) 0 0 1px;
 }
 
 /* Credits */

@@ -155,7 +155,7 @@ All colours are CSS custom properties. **Always reference `var(--my-*)`, never h
 | `--z-fixed` | `10` | Always-visible fixed islands (`#command-console`, `#page-console`) |
 | `--z-overlay` | `1400` | Command-palette backdrop |
 | `--z-toast` | `1500` | Shortcut-hints overlay |
-| `--z-critical` | `9000` | Full-screen page loader |
+| `--z-critical` | `9000` | Reserved — above all chrome (unused currently) |
 
 Between `--z-pill` (8) and `--z-fixed` (10), drag-targets and the scroll-arc sit at `calc(var(--z-pill) + 1)`.
 

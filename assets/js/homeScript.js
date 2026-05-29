@@ -114,7 +114,7 @@ function initHomePage() {
           // Discover-pulse on the signature pill. Also gated by a 12h TTL so it
           // can fire again after the user's been away. Skipped under reduced motion.
           const signatureFresh = isFresh("rj_signature_seen_at");
-          const pill = document.getElementById("command-console");
+          const pill = document.getElementById("signature-panel");
           if (!signatureFresh && pill && !reduceMotion) {
             const tPulse = setTimeout(() => {
               pill.classList.add("discover-pulse");

@@ -1,8 +1,34 @@
-{{- $src  := .Get "src" -}}
-{{- $alt  := .Get "alt" | default "" -}}
-{{- $cap  := .Get "caption" | default "" -}}
-{{- $size := .Get "size" | default "col-11" -}}
-<div class="figure">
-  <img src="{{ $src }}" class="{{ $size }}" alt="{{ $alt }}" loading="lazy">
-  {{ with $cap }}<p>{{ . }}</p>{{ end }}
-</div>
+{{- $srcs := split (.Get "src" | default "") "," -}}
+{{- $alts := split (.Get "alt" | default "") "," -}}
+{{- $sizes := split (.Get "size" | default "large") "," -}}
+{{- $cap := .Get "caption" | default "" -}}
+{{- $validSizes := slice "small" "medium" "large" "full" -}}
+<figure class="figure">
+  <div class="figure-media">
+    {{- range $index, $src := $srcs }}
+      {{- $imgSrc := trim $src " \n\r\t" -}}
+      {{- if $imgSrc -}}
+        {{- $size := "" -}}
+        {{- if eq (len $sizes) 1 -}}
+          {{- $size = index $sizes 0 -}}
+        {{- else if lt $index (len $sizes) -}}
+          {{- $size = index $sizes $index -}}
+        {{- end -}}
+        {{- $size = lower (trim $size " \n\r\t") -}}
+        {{- if not (in $validSizes $size) -}}
+          {{- $size = "large" -}}
+        {{- end -}}
+        {{- $alt := "" -}}
+        {{- if eq (len $alts) 1 -}}
+          {{- $alt = index $alts 0 -}}
+        {{- else if lt $index (len $alts) -}}
+          {{- $alt = index $alts $index -}}
+        {{- end -}}
+        <span class="figure-image figure-image--{{ $size }}">
+          <img src="{{ $imgSrc }}" alt="{{ trim $alt " \n\r\t" }}" loading="lazy">
+        </span>
+      {{- end -}}
+    {{- end }}
+  </div>
+  {{ with $cap }}<figcaption>{{ . }}</figcaption>{{ end }}
+</figure>

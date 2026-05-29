@@ -3,13 +3,17 @@
   <div class="h-100 p-0 container-fluid">
     <div class="row g-0">
 
-      <div class="container-fluid col-12 col-md-4 justify-content-center d-flex align-items-center p-3">
+      <div class="container-fluid col-12 col-md-4 justify-content-center d-flex align-items-center p-0">
         {{ $hasThemed := and .icon_light .icon_dark }}
-        {{ if $hasThemed }}
-          <img src="{{ printf "/resources/creds/%s" .icon_light }}" class="img-fluid rounded publication-icon theme-img--light" alt="Publication Icon" loading="lazy">
-          <img src="{{ printf "/resources/creds/%s" .icon_dark }}" class="img-fluid rounded publication-icon theme-img--dark" alt="Publication Icon" loading="lazy">
-        {{ else if .icon }}
-          <img src="{{ printf "/resources/creds/%s" .icon }}" class="img-fluid rounded publication-icon" alt="Publication Icon" loading="lazy">
+        {{ if or $hasThemed .icon }}
+          <div class="publication-icon-frame">
+            {{ if $hasThemed }}
+              <img src="{{ printf "/resources/creds/%s" .icon_light }}" class="img-fluid rounded publication-icon theme-img--light" alt="Publication Icon" loading="lazy">
+              <img src="{{ printf "/resources/creds/%s" .icon_dark }}" class="img-fluid rounded publication-icon theme-img--dark" alt="Publication Icon" loading="lazy">
+            {{ else }}
+              <img src="{{ printf "/resources/creds/%s" .icon }}" class="img-fluid rounded publication-icon" alt="Publication Icon" loading="lazy">
+            {{ end }}
+          </div>
         {{ end }}
       </div>
 

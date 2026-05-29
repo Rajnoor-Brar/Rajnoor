@@ -1,0 +1,11 @@
+{{- $src := .src | default "" -}}
+{{- $path := strings.TrimPrefix "/" $src -}}
+{{- if and $path (not (hasPrefix $path "css/")) -}}
+  {{- $path = printf "css/%s" $path -}}
+{{- end -}}
+{{- $asset := resources.Get $path -}}
+{{- if not $asset -}}
+  {{- errorf "CSS asset not found: %q (from %q)" $path $src -}}
+{{- end -}}
+{{- $asset = $asset | resources.ExecuteAsTemplate (printf "generated/%s" $path) site -}}
+<link{{ with .id }} id="{{ . }}"{{ end }} rel="stylesheet" href="{{ $asset.RelPermalink }}">

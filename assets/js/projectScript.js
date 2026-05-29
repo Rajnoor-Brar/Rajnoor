@@ -1,8 +1,8 @@
-// ── Project detail: range-slider factory (font-size + image-size) ───────────
+// ── Project detail: range-slider factory (font-size + figure-width) ─────────
 // Shared shape: hydrate from localStorage with clamp, write to a CSS var on
 // :root (and optionally a mirror style on .article), persist on input,
 // reset via dot button (left-click) + slider (right-click).
-function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValue, min, max, unit, articleStyleProp }) {
+function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValue, min, max, unit, articleStyleProp, toastLabel }) {
     const slider   = document.getElementById(sliderId);
     const resetBtn = document.getElementById(resetBtnId);
     const article  = document.querySelector('.article');
@@ -29,6 +29,9 @@ function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValu
         if (e) e.preventDefault();
         apply(defaultValue);
         localStorage.removeItem(storageKey);
+        if (typeof showToast === 'function' && toastLabel) {
+            showToast(toastLabel + ' reset', { duration: 'short', variant: 'success' });
+        }
     }
     slider.addEventListener('contextmenu', doReset);
     if (resetBtn) resetBtn.addEventListener('click', doReset);
@@ -39,12 +42,14 @@ initRangeSlider({
     storageKey: 'rj_doc_font_size', cssVar: '--rj-article-fs',
     defaultValue: 1.1, min: 0.8, max: 1.6, unit: 'rem',
     articleStyleProp: 'fontSize',
+    toastLabel: 'Text size',
 });
 
 initRangeSlider({
     sliderId: 'img-size-slider', resetBtnId: 'img-size-reset',
-    storageKey: 'rj_doc_img_size', cssVar: '--rj-article-img-size',
-    defaultValue: 96, min: 40, max: 100, unit: '%',
+    storageKey: 'rj_doc_figure_width', cssVar: '--rj-article-figure-width',
+    defaultValue: 75, min: 45, max: 100, unit: '%',
+    toastLabel: 'Figure width',
 });
 
 // ── Project list: filter toggle + tag chips ──────────────────────────────────
@@ -55,6 +60,24 @@ initRangeSlider({
   const cards       = document.querySelectorAll('.project-card-wrap');
   const groups      = document.querySelectorAll('.project-group');
   const empty       = document.getElementById('project-empty-state');
+  const countEl     = toggleBtn?.querySelector('.filter-toggle__count');
+  const activeTags  = new Set();
+
+  function projectLabel(count) {
+    return count === 1 ? 'project' : 'projects';
+  }
+
+  function updateToggleState(totalVisible, hasActiveFilters) {
+    if (!toggleBtn) return;
+    toggleBtn.classList.toggle('has-filter', hasActiveFilters);
+    if (countEl) countEl.textContent = hasActiveFilters ? totalVisible : '';
+    toggleBtn.setAttribute(
+      'aria-label',
+      hasActiveFilters
+        ? `${totalVisible} ${projectLabel(totalVisible)} shown. Toggle tag filters`
+        : 'Toggle tag filters'
+    );
+  }
 
   // ── Filter panel toggle ────────────────────────────────────────────────────
   if (toggleBtn && filtersWrap) {
@@ -73,9 +96,6 @@ initRangeSlider({
   }
 
   if (!chips.length) return;
-
-  // ── Tag filtering (AND logic) ──────────────────────────────────────────────
-  const activeTags = new Set();
 
   function applyFilter() {
     let totalVisible = 0;
@@ -96,6 +116,8 @@ initRangeSlider({
     });
 
     if (empty) empty.style.display = totalVisible === 0 ? '' : 'none';
+    updateToggleState(totalVisible, activeTags.size > 0);
+    return totalVisible;
   }
 
   chips.forEach(chip => {
@@ -109,7 +131,16 @@ initRangeSlider({
         activeTags.add(tag);
         chip.classList.add('active');
       }
-      applyFilter();
+      const totalVisible = applyFilter();
+      if (typeof showToast === 'function') {
+        if (activeTags.size === 0) {
+          showToast('Filters cleared', { duration: 'short', variant: 'info' });
+        } else if (totalVisible === 0) {
+          showToast('No matching projects', { duration: 'normal', variant: 'warning' });
+        } else {
+          showToast(`${totalVisible} ${projectLabel(totalVisible)} shown`, { duration: 'short', variant: 'info' });
+        }
+      }
     });
   });
 })();
@@ -243,4 +274,3 @@ initRangeSlider({
     toggle.classList.remove('active');
   });
 })();
-

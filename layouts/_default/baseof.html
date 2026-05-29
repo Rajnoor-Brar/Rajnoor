@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-
     <script>
       (function(){
         var t = localStorage.getItem("theme");
@@ -35,8 +34,23 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Edu+SA+Beginner:wght@400..700&family=Inconsolata:wght@200..900&family=Instrument+Serif:ital@0;1&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Quicksand:wght@300..700&family=Slabo+27px&family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100,1&icon_names=brightness_4,brightness_5,dark_mode,east,format_size,image,light_mode,north,south,west&display=block" />
+    {{ $activeNav := .Params.active_nav | default "" }}
+    {{ $isHome := eq $activeNav "home" }}
+    {{ $isAbout := eq $activeNav "about" }}
+    {{ $isNow := eq $activeNav "now" }}
+    {{ $isProject := eq $activeNav "projects" }}
+    {{ $isNotebook := eq .Section "notebook" }}
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    {{ if or $isHome $isAbout $isNow $isProject }}
+    <link href="https://fonts.googleapis.com/css2?family=Edu+SA+Beginner:wght@400..700&display=swap" rel="stylesheet">
+    {{ end }}
+    {{ if or $isNow $isNotebook }}
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    {{ end }}
+    {{ if or $isProject $isNotebook }}
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400..700&family=Instrument+Serif:ital@0;1&family=Slabo+27px&display=swap" rel="stylesheet">
+    {{ end }}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100,1&icon_names=brightness_4,brightness_5,dark_mode{{ if $isProject }},format_size,image{{ end }},light_mode&display=block" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL@20..48,100..600,0..1&icon_names=keyboard_arrow_down,keyboard_arrow_left,keyboard_arrow_right,keyboard_arrow_up,question_mark,shift&display=block" />
 
     <link rel="icon" type="image/png" href="/sparks.png">
@@ -47,8 +61,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="/css/style.css">
-    {{ with .Params.pageStyle }}<link id="page-style" rel="stylesheet" href="{{ . }}">{{ end }}
+    {{ partial "assets/css.html" (dict "src" "css/style.css") }}
+    {{ with .Params.pageStyle }}{{ partial "assets/css.html" (dict "src" . "id" "page-style") }}{{ end }}
 
     <noscript><style>#rj-page-loader{display:none!important}</style></noscript>
 
@@ -157,9 +171,9 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js" integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-matlab.min.js" integrity="sha512-pSQLsop+Wkom6bc8uIln7cByTC3Egn966aRfLrbP6oPgEdVGcmID85DdNkLP5NvEy4baIHgEv0IsK2gW/CYw1Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <script src="/js/script.js"></script>
+    {{ partial "assets/js.html" (dict "src" "js/script.js") }}
 
-    {{ with .Params.pageScript }}<script id="page-script" src="{{ . }}"></script>{{ end }}
+    {{ with .Params.pageScript }}{{ partial "assets/js.html" (dict "src" . "id" "page-script") }}{{ end }}
 
     {{ if site.Params.features.commandPalette }}
     <div id="command-palette" class="command-palette" role="dialog" aria-modal="true" aria-label="Command palette">
@@ -176,11 +190,11 @@
         <ul id="command-palette-list" class="command-palette__list" role="listbox" aria-label="Results"></ul>
       </div>
     </div>
-    <script src="/js/command-box.js" defer></script>
+    {{ partial "assets/js.html" (dict "src" "js/command-box.js" "defer" true) }}
     {{ end }}
 
     {{ if site.Params.features.scrollArc }}
-    <script src="/js/scrollArc.js" defer></script>
+    {{ partial "assets/js.html" (dict "src" "js/scrollArc.js" "defer" true) }}
     {{ end }}
 
     {{ if site.Params.features.shortcutHints }}
@@ -210,8 +224,10 @@
         <button class="shortcut-hints__close" aria-label="Close shortcuts">✕</button>
       </div>
     </div>
-    <script src="/js/shortcutHints.js" defer></script>
+    {{ partial "assets/js.html" (dict "src" "js/shortcutHints.js" "defer" true) }}
     {{ end }}
+
+    <div id="rj-toast" aria-live="polite" aria-atomic="true"></div>
 
     {{ block "body-extra" . }}{{ end }}
   </body>

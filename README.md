@@ -20,6 +20,6 @@ hugo --minify --baseURL "https://rajnoor.in/"          # production build (match
 
 - `content/` — page content (HTML with YAML frontmatter, not Markdown)
 - `layouts/` — templates, partials, shortcodes
-- `static/css/`, `static/js/` — per-page asset pairs (e.g. `homeStyle.css` + `homeScript.js`)
+- `assets/css/`, `assets/js/` — Hugo Pipes-managed global and per-page asset pairs
+- `static/` — passthrough files such as resources, favicon, and `CNAME`
 - `data/` — YAML data files (`credentials.yaml`, `now.yaml`, `projectGroups.yaml`) rendered into pages via shortcodes/partials
-

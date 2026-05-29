@@ -26,7 +26,7 @@ disableKinds = ["taxonomy", "term"]
 [params.features]
   notebook           = false
   nowPage            = true
-  nowExpanded = true   # true → <details open> on /now/ page; false → collapsed by default
+  nowExpanded =   true   # true → <details open> on /now/ page; false → collapsed by default
   commandPalette     = true
   scrollArc          = true
   shortcutHints      = true

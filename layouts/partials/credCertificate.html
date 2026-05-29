@@ -38,21 +38,25 @@
   <hr class="mt-2">
 
   <div class="d-flex flex-wrap certificate-footer">
+    {{/* {{ $linkedId := cond (and .id .link) " linked-id" }} */}}
+    {{/* {{ idCopy := cond (.id_copy) .id_copy}}{{ $idCopy := cond .id_copy "certificate-copy" "" }} */}}
+    {{ $idCopy := cond (default true .id_copy) "certificate-copy" "" }}
+    {{ $linkCols := cond (not .marks) "col-lg-12" "col-lg-8" }}
     {{ if .link }}
-      <div class="certificate-link col-12 col-lg-6">
+      <div class="certificate-link linked-id col-12 {{ $linkCols }}">
         <a href="{{ .link }}" target="_blank" rel="noopener noreferrer" class="btn">
           {{ if .id }}{{ .id }}{{ else }}{{ .link }}{{ end }}
         </a>
       </div>
     {{ else if .id }}
-      <div class="certificate-link col-12 col-lg-6">
-        <a href="javascript:void(0)" class="btn">
+      <div class="certificate-link col-12 {{ $linkCols }}">
+        <button type="button" class="btn {{ $idCopy }}" data-rj-copy="{{ .id }}">
           {{ .id }}
-        </a>
+        </button>
       </div>
     {{ end }}
 
-    <div class="certificate-extra col-12 col-lg-6 d-flex flex-wrap">
+    <div class="certificate-extra col-12 col-lg-4 d-flex flex-wrap">
       {{ with .marks }}
         <div class="certificate-marks col-6 col-lg-12 d-flex btn justify-content-lg-end"><span>{{ . }}</span></div>
       {{ end }}

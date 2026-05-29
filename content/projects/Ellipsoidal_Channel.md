@@ -18,7 +18,7 @@ language: "matlab"
 
 ## Introduction
 
-{{< fig src="/resources/Ellipsoidal_Channel/Channel_Construction.png" alt="Channel as a sweep of sphere" caption="Channel as a sweep of sphere" size="col-11 col-lg-6" >}}
+{{< fig src="/resources/Ellipsoidal_Channel/Channel_Construction.png" alt="Channel as a sweep of sphere" caption="Channel as a sweep of sphere" size="medium" >}}
 
 A channel is a surface formed as the envelope of a family of spheres, each with its center on a space curve called the directrix. We'll generalize this definition to ellipsoids for our specific case. Channel surfaces in topology are formed by sweeping a sphere along a directrix. The directrix determines whether the channel surface is open or closed.
 
@@ -49,7 +49,7 @@ $$
 \end{bmatrix}
 $$
 
-{{< fig src="/resources/Ellipsoidal_Channel/Sphere_Mesh_Gray.png" alt="Sphere as mesh of various densities" caption="Sphere as mesh of various densities" size="col-12 col-lg-10" >}}
+{{< fig src="/resources/Ellipsoidal_Channel/Sphere_Mesh_Gray.png" alt="Sphere as mesh of various densities" caption="Sphere as mesh of various densities" size="full" >}}
 
 A "sheet" of points, used by MATLAB to create a mesh of a surface for plotting, consists of columns and rows that form intersecting curves which create a net that MATLAB fills.
 
@@ -73,11 +73,7 @@ To simplify the mathematics of a channel, we will make an analogy to one of its 
 
 A right cylindrical surface is a channel formed by a series of spheres, with their directrix being a line. Alternatively, a solid cylinder can be thought of as the result of integrating circular discs oriented perpendicular to the directrix. A cylindrical surface, on the other hand, is the result of integrating circles or the perimeters of the discs.
 
-<div class="figure">
-  <img src="/resources/Ellipsoidal_Channel/Cylinder_Stack_Left.png" class="col-10 col-lg-5" alt="Cylinder as Integration of Circular Sheets" loading="lazy">
-  <img src="/resources/Ellipsoidal_Channel/Cylinder_Stack_Right.png" class="col-10 col-lg-5" alt="Cylinder as Integration of Circular Sheets" loading="lazy">
-  <p class="text-muted">Cylinder as Integration of Circular Sheets</p>
-</div>
+{{< fig src="/resources/Ellipsoidal_Channel/Cylinder_Stack_Left.png,/resources/Ellipsoidal_Channel/Cylinder_Stack_Right.png" alt="Cylinder as Integration of Circular Sheets,Cylinder as Integration of Circular Sheets" caption="Cylinder as Integration of Circular Sheets" size="medium,medium" >}}
 
 We can visualize a channel as a cylinder with varying cross-sectional radii. This allows us to calculate the position of points on elliptical cross-sections to create a mesh of the channel.
 
@@ -212,7 +208,7 @@ end
 
 ### Central Finite Difference
 
-{{< fig src="/resources/Ellipsoidal_Channel/Mean Value Tangent.png" alt="Line connecting two points approximates the slope" caption="Line connecting two points is the slope at some point between them" size="col-10 col-lg-6" >}}
+{{< fig src="/resources/Ellipsoidal_Channel/Mean Value Tangent.png" alt="Line connecting two points approximates the slope" caption="Line connecting two points is the slope at some point between them" size="medium" >}}
 
 This method is based on Lagrange's mean value theorem which states that in any interval $\lbrack a,b\rbrack$, there is some $c$ for which:
 
@@ -253,7 +249,7 @@ Data that we use as test data is very dense and smooth. Therefore, we will use t
 
 ## The Ellipses
 
-{{< fig src="/resources/Ellipsoidal_Channel/Ellipse.png" alt="Special points and parameters of an ellipse" caption="Special points and parameters of an ellipse" size="col-10 col-lg-6" >}}
+{{< fig src="/resources/Ellipsoidal_Channel/Ellipse.png" alt="Special points and parameters of an ellipse" caption="Special points and parameters of an ellipse" size="medium" >}}
 
 An ellipse is a locus of points in a plane whose distances from two focal points have a constant sum. Let the focal points be $C_{1}$ and $C_{2}$, with $O$ as their midpoint (the ellipse's center). For any point $P$ on the ellipse, $C_{1}P + C_{2}P = k$.
 
@@ -376,7 +372,7 @@ d             = -1 * helix_rad * sin(1.1*x/helix_stretch - pi/4);
 save("curves.txt", "x", "a", "b", "x", "c", "d", "rad", "-ascii");
 ```
 
-{{< fig src="/resources/Ellipsoidal_Channel/Uncharted_Tunnel.png" alt="Rendering of Calculated Mesh" caption="Rendering of Calculated Mesh" size="col-11" >}}
+{{< fig src="/resources/Ellipsoidal_Channel/Uncharted_Tunnel.png" alt="Rendering of Calculated Mesh" caption="Rendering of Calculated Mesh" size="full" >}}
 
 ### Cross-sections
 
@@ -391,11 +387,11 @@ g_cross = plot3(cyl_x(:, 1:1+cross_density:end), ...
             'LineWidth', 1);
 ```
 
-{{< fig src="/resources/Ellipsoidal_Channel/Skeleton.png" alt="Plots of Cross-sections only" caption="Plots of Cross-sections only" size="col-11" >}}
+{{< fig src="/resources/Ellipsoidal_Channel/Skeleton.png" alt="Plots of Cross-sections only" caption="Plots of Cross-sections only" size="full" >}}
 
 `plot3` plots each column as an individual curve when given a matrix.
 
-{{< fig src="/resources/Ellipsoidal_Channel/Charted_Tunnel_Right.png" alt="Channel with sparsely marked cross-sections" caption="Channel with sparsely marked cross-sections" size="col-11" >}}
+{{< fig src="/resources/Ellipsoidal_Channel/Charted_Tunnel_Right.png" alt="Channel with sparsely marked cross-sections" caption="Channel with sparsely marked cross-sections" size="full" >}}
 
 ### Shadows
 
@@ -422,7 +418,7 @@ shadow_yz.FaceLighting = "gouraud";
 shadow_yz.FaceAlpha = 0.15;
 ```
 
-{{< fig src="/resources/Ellipsoidal_Channel/Shadowed_Tunnel.png" alt="Channel with cross-sections and shadows" caption="Channel with cross-sections and shadows" size="col-11" >}}
+{{< fig src="/resources/Ellipsoidal_Channel/Shadowed_Tunnel.png" alt="Channel with cross-sections and shadows" caption="Channel with cross-sections and shadows" size="full" >}}
 
 ---
 

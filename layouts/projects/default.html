@@ -1,184 +1,187 @@
 {{ define "main" }}
 
-{{- $ctx := partial "project-page-context.html" . -}}
+  {{- $ctx := partial "project-page-context.html" . -}}
 
-{{/* ── Page-console: mirror island (text-size, ToC, scroll arc, chapter strip) ── */}}
-<div id="page-console">
-  <div id="head-panel">
-    {{ if site.Params.features.scrollArc }}
-    <svg id="scroll-arc" class="scroll-arc" viewBox="0 0 80 80" aria-hidden="true" focusable="false" preserveAspectRatio="none">
-      <path id="scroll-arc-path"
-            d="M 40,1 H 48 A 31,31 0 0 1 79,32 V 48 A 31,31 0 0 1 48,79 H 32 A 31,31 0 0 1 1,48 V 32 A 31,31 0 0 1 32,1 H 40"
-            class="scroll-arc__path"
-            pathLength="1"
-            fill="none"
-            stroke="var(--my-black)"
-            stroke-width="2"
-            stroke-linecap="round"
-            vector-effect="non-scaling-stroke"/>
-    </svg>
-    {{ end }}
-    <button id="page-console-toggle" type="button" aria-label="Contract page console" class="head-item hover-grow" aria-expanded="true">
-      <i class="bi bi-chevron-left" aria-hidden="true"></i>
-    </button>
-    <button id="text-size-toggle" type="button" aria-label="Adjust text size" class="head-item hover-grow">
-      <span class="material-symbols-outlined" aria-hidden="true">format_size</span>
-    </button>
-    <button id="toc-toggle"
-            class="head-item hover-grow"
-            type="button"
-            aria-label="Toggle table of contents"
-            aria-controls="toc-panel"
-            data-mode="none"
-            hidden>
-      {{/* none: text-align-justify — three full-width lines */}}
-      <svg class="toc-icon toc-icon--none" aria-hidden="true"
-           xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 5h18"/><path d="M3 12h18"/><path d="M3 19h18"/>
+  {{/* ── Page-console: mirror island (text-size, ToC, scroll arc, chapter strip) ── */}}
+  <div id="page-console">
+    <div id="head-panel">
+    
+      {{ if site.Params.features.scrollArc }}
+      <svg id="scroll-arc" class="scroll-arc" viewBox="0 0 80 80" aria-hidden="true" focusable="false" preserveAspectRatio="none">
+        <path id="scroll-arc-path"
+              d="M 40,1 H 48 A 31,31 0 0 1 79,32 V 48 A 31,31 0 0 1 48,79 H 32 A 31,31 0 0 1 1,48 V 32 A 31,31 0 0 1 32,1 H 40"
+              class="scroll-arc__path"
+              pathLength="1"
+              fill="none"
+              stroke="var(--my-black)"
+              stroke-width="2"
+              stroke-linecap="round"
+              vector-effect="non-scaling-stroke"/>
       </svg>
-      {{/* l1: list — dot markers + lines (h2 headings only) */}}
-      <svg class="toc-icon toc-icon--l1" aria-hidden="true"
-           xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/>
-        <path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/>
-      </svg>
-      {{/* l2: logs — two dot columns + lines (h2 + h3 headings) */}}
-      <svg class="toc-icon toc-icon--l2" aria-hidden="true"
-           xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-           fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 5h1"/><path d="M3 12h1"/><path d="M3 19h1"/>
-        <path d="M8 5h1"/><path d="M8 12h1"/><path d="M8 19h1"/>
-        <path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/>
-      </svg>
-    </button>
-  </div>
-
-  {{/* Chapter strip — always visible on multi-page projects; collapse
-       toggle inside the panel shrinks it to head-panel-shape. */}}
-  {{ if $ctx.isPartOfMultipageProject }}
-  <aside id="chapter-strip-panel"
-         class="page-summoned chapter-strip-panel"
-         aria-label="Chapters in this project">
-    <button id="chapter-strip-toggle"
-            type="button"
-            class="chapter-strip-toggle"
-            aria-label="Collapse chapter strip"
-            aria-expanded="true">
-      <i class="bi bi-chevron-up" aria-hidden="true"></i>
-    </button>
-    <ol class="chapter-strip-list">
-      <li class="chapter-strip__item{{ if $ctx.isBundleLanding }} active{{ end }}">
-        <a class="chapter-strip__link" href="{{ $ctx.bundleRoot.RelPermalink }}">{{ $ctx.bundleRoot.Title }}</a>
-      </li>
-      {{ range $ctx.chapters.ByWeight }}
-      <li class="chapter-strip__item{{ if eq .RelPermalink $.RelPermalink }} active{{ end }}">
-        <a class="chapter-strip__link" href="{{ .RelPermalink }}">{{ .Title }}</a>
-      </li>
       {{ end }}
-    </ol>
-  </aside>
-  {{ end }}
 
-  <div id="text-size-panel" class="page-summoned" aria-label="Text and image size">
-    <div class="size-row">
-      <button id="text-size-reset" type="button" class="size-reset-dot" aria-label="Reset text size" title="Reset"></button>
-      <span class="text-size-label text-size-label--sm" aria-hidden="true">A</span>
-      <input id="text-size-slider" type="range" min="0.8" max="1.6" step="0.05" value="1.1" aria-label="Article text size">
-      <span class="text-size-label text-size-label--lg" aria-hidden="true">A</span>
+      <button id="page-console-toggle" type="button" aria-label="Contract page console" class="head-item hover-grow" aria-expanded="true">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+      </button>
+      <button id="text-size-toggle" type="button" aria-label="Adjust text size" class="head-item hover-grow">
+        <span class="material-symbols-outlined" aria-hidden="true">format_size</span>
+      </button>
+      <button id="toc-toggle" class="head-item hover-grow" type="button"
+              aria-label="Toggle table of contents" aria-controls="toc-panel" data-mode="none" hidden>
+        {{/* none: text-align-justify — three full-width lines */}}
+        <svg class="toc-icon toc-icon--none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 5h18"/><path d="M3 12h18"/><path d="M3 19h18"/>
+        </svg>
+        {{/* l1: list — dot markers + lines (h2 headings only) */}}
+        <svg class="toc-icon toc-icon--l1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/>
+          <path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/>
+        </svg>
+        {{/* l2: logs — two dot columns + lines (h2 + h3 headings) */}}
+        <svg class="toc-icon toc-icon--l2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 5h1"/><path d="M3 12h1"/><path d="M3 19h1"/>
+          <path d="M8 5h1"/><path d="M8 12h1"/><path d="M8 19h1"/>
+          <path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/>
+        </svg>
+      </button>
     </div>
-    <div class="size-row">
-      <button id="img-size-reset" type="button" class="size-reset-dot" aria-label="Reset image size" title="Reset"></button>
-      <span class="img-size-label img-size-label--sm material-symbols-outlined" aria-hidden="true">image</span>
-      <input id="img-size-slider" type="range" min="40" max="100" step="5" value="96" aria-label="Article image size">
-      <span class="img-size-label img-size-label--lg material-symbols-outlined" aria-hidden="true">image</span>
-    </div>
-  </div>
 
-  <aside id="toc-panel" class="toc-panel page-summoned hide" aria-label="Table of contents">
-    <ol class="toc-list" id="toc-list"></ol>
-  </aside>
-</div>
-
-<script>(function(){var fs=parseFloat(localStorage.getItem('rj_doc_font_size'));if(fs>=0.8&&fs<=1.6)document.documentElement.style.setProperty('--rj-article-fs',fs+'rem');var is=parseFloat(localStorage.getItem('rj_doc_img_size'));if(is>=40&&is<=100)document.documentElement.style.setProperty('--rj-article-img-size',is+'%');})();</script>
-<div class="container-fluid top-spacer"></div>
-
-<div class="container-fluid justify-content-center d-flex">
-  <div class="col-12 col-lg-6 d-flex mx-0 px-1 px-lg-3 py-4 my-2 align-items-center">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb align-items-center d-flex mb-0">
-        <li class="breadcrumb-item d-flex align-items-center">
-          <a class="btn page-nav" href="/projects">Projects</a>
+    {{/* Chapter strip — always visible on multi-page projects; collapse
+        toggle inside the panel shrinks it to head-panel-shape. */}}
+    {{ if $ctx.isPartOfMultipageProject }}
+    <aside id="chapter-strip-panel"
+          class="page-summoned chapter-strip-panel"
+          aria-label="Chapters in this project">
+      <button id="chapter-strip-toggle"
+              type="button"
+              class="chapter-strip-toggle"
+              aria-label="Collapse chapter strip"
+              aria-expanded="true">
+        <i class="bi bi-chevron-up" aria-hidden="true"></i>
+      </button>
+      <ol class="chapter-strip-list">
+        <li class="chapter-strip__item{{ if $ctx.isBundleLanding }} active{{ end }}">
+          <a class="chapter-strip__link" href="{{ $ctx.bundleRoot.RelPermalink }}">{{ $ctx.bundleRoot.Title }}</a>
         </li>
-        {{ if $ctx.isChapter }}
-        <li class="breadcrumb-item d-flex align-items-center">
-          <a class="btn page-nav" href="{{ .Parent.RelPermalink }}">{{ .Parent.Title }}</a>
+        {{ range $ctx.chapters.ByWeight }}
+        <li class="chapter-strip__item{{ if eq .RelPermalink $.RelPermalink }} active{{ end }}">
+          <a class="chapter-strip__link" href="{{ .RelPermalink }}">{{ .Title }}</a>
         </li>
         {{ end }}
-        <li class="breadcrumb-item d-flex align-items-center">
-          <a class="btn page-nav active">{{ .Title }}</a>
-        </li>
       </ol>
-    </nav>
+    </aside>
+    {{ end }}
+
+    <div id="text-size-panel" class="page-summoned" aria-label="Text size and figure width">
+      <div class="size-row">
+        <button id="text-size-reset" type="button" class="size-reset-dot" aria-label="Reset text size" title="Reset"></button>
+        <span class="text-size-label text-size-label--sm" aria-hidden="true">A</span>
+        <input id="text-size-slider" type="range" min="0.8" max="1.6" step="0.05" value="1.1" aria-label="Article text size">
+        <span class="text-size-label text-size-label--lg" aria-hidden="true">A</span>
+      </div>
+      <div class="size-row">
+        <button id="img-size-reset" type="button" class="size-reset-dot" aria-label="Reset figure width" title="Reset"></button>
+        <span class="img-size-label img-size-label--sm material-symbols-outlined" aria-hidden="true">image</span>
+        <input id="img-size-slider" type="range" min="45" max="100" step="5" value="75" aria-label="Article figure width">
+        <span class="img-size-label img-size-label--lg material-symbols-outlined" aria-hidden="true">image</span>
+      </div>
+    </div>
+
+    <aside id="toc-panel" class="toc-panel page-summoned hide" aria-label="Table of contents">
+      <ol class="toc-list" id="toc-list"></ol>
+    </aside>
   </div>
-</div>
 
-{{ with .Params.longTitle }}
-<div class="page{{ with $.Params.language }} language-{{ . }}{{ end }} line-numbers">
-  <div class="header col-7">
-    <div class="title">{{ . }}</div>
-    {{ with $.Params.subtitle }}<div class="subtitle">{{ . }}</div>{{ end }}
-    {{ with $.Params.author }}<div class="author">{{ . }}</div>{{ end }}
+  <script>
+      (function(){
+          var fs=parseFloat(localStorage.getItem('rj_doc_font_size'));
+          if(fs>=0.8&&fs<=1.6)document.documentElement.style.setProperty('--rj-article-fs',fs+'rem');
+          var fw=parseFloat(localStorage.getItem('rj_doc_figure_width'));
+          if(fw>=45&&fw<=100)document.documentElement.style.setProperty('--rj-article-figure-width',fw+'%');
+      })();
+  </script>
+
+  <div class="container-fluid top-spacer"></div>
+
+  {{/* Project Nav Path */}}
+
+  <div class="container-fluid justify-content-center d-flex">
+    <div class="col-12 col-lg-6 d-flex mx-0 px-1 px-lg-3 py-4 my-2 align-items-center">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb align-items-center d-flex mb-0">
+          <li class="breadcrumb-item d-flex align-items-center">
+            <a class="btn page-nav" href="/projects">Projects</a>
+          </li>
+          {{ if $ctx.isChapter }}
+          <li class="breadcrumb-item d-flex align-items-center">
+            <a class="btn page-nav" href="{{ .Parent.RelPermalink }}">{{ .Parent.Title }}</a>
+          </li>
+          {{ end }}
+          <li class="breadcrumb-item d-flex align-items-center">
+            <a class="btn page-nav active">{{ .Title }}</a>
+          </li>
+        </ol>
+      </nav>
+    </div>
   </div>
-  <div class="article col-lg-8 col-12">
-    {{ $.Content }}
+
+{{/* Article */}}
+
+  {{ with .Params.longTitle }}
+  <div class="page{{ with $.Params.language }} language-{{ . }}{{ end }} line-numbers">
+    <div class="header col-7">
+      <div class="title">{{ . }}</div>
+      {{ with $.Params.subtitle }}<div class="subtitle">{{ . }}</div>{{ end }}
+      {{ with $.Params.author }}<div class="author">{{ . }}</div>{{ end }}
+    </div>
+    <div class="article col-lg-8 col-12">
+      {{ $.Content }}
+    </div>
   </div>
-</div>
-{{ else }}
-{{ .Content }}
-{{ end }}
+  {{ else }}
+  {{ .Content }}
+  {{ end }}
 
-{{/* ── Four-button bottom nav: outer = prev/next project across the
-     gallery, inner = prev/next chapter within current bundle. ── */}}
-<nav class="project-nav-quad" aria-label="Project navigation">
-  {{ if $ctx.projPrev }}
-  <a class="project-nav-quad__btn project-nav-quad__btn--outer-prev"
-     href="{{ $ctx.projPrev.RelPermalink }}"
-     aria-label="Previous project: {{ $ctx.projPrev.Title }}">
-    <span class="project-nav-quad__arrow" aria-hidden="true">«</span>
-    <span class="project-nav-quad__label">{{ $ctx.projPrev.Title }}</span>
-  </a>
-  {{ else }}<span class="project-nav-quad__btn project-nav-quad__btn--placeholder" aria-hidden="true"></span>{{ end }}
+  {{/* ── Four-button bottom nav: outer = prev/next project across the
+      gallery, inner = prev/next chapter within current bundle. ── */}}
+  <nav class="project-nav-quad" aria-label="Project navigation">
+    {{ if $ctx.projPrev }}
+    <a class="project-nav-quad__btn project-nav-quad__btn--outer-prev"
+      href="{{ $ctx.projPrev.RelPermalink }}"
+      aria-label="Previous project: {{ $ctx.projPrev.Title }}">
+      <span class="project-nav-quad__arrow" aria-hidden="true">«</span>
+      <span class="project-nav-quad__label">{{ $ctx.projPrev.Title }}</span>
+    </a>
+    {{ else }}<span class="project-nav-quad__btn project-nav-quad__btn--placeholder" aria-hidden="true"></span>{{ end }}
 
-  {{ if $ctx.chapterPrev }}
-  <a class="project-nav-quad__btn project-nav-quad__btn--inner-prev"
-     href="{{ $ctx.chapterPrev.RelPermalink }}"
-     aria-label="Previous chapter: {{ $ctx.chapterPrev.Title }}">
-    <span class="project-nav-quad__arrow" aria-hidden="true">‹</span>
-    <span class="project-nav-quad__label">{{ $ctx.chapterPrev.Title }}</span>
-  </a>
-  {{ else if $ctx.isPartOfMultipageProject }}<span class="project-nav-quad__btn project-nav-quad__btn--placeholder" aria-hidden="true"></span>{{ end }}
+    {{ if $ctx.chapterPrev }}
+    <a class="project-nav-quad__btn project-nav-quad__btn--inner-prev"
+      href="{{ $ctx.chapterPrev.RelPermalink }}"
+      aria-label="Previous chapter: {{ $ctx.chapterPrev.Title }}">
+      <span class="project-nav-quad__arrow" aria-hidden="true">‹</span>
+      <span class="project-nav-quad__label">{{ $ctx.chapterPrev.Title }}</span>
+    </a>
+    {{ else if $ctx.isPartOfMultipageProject }}<span class="project-nav-quad__btn project-nav-quad__btn--placeholder" aria-hidden="true"></span>{{ end }}
 
-  {{ if $ctx.chapterNext }}
-  <a class="project-nav-quad__btn project-nav-quad__btn--inner-next"
-     href="{{ $ctx.chapterNext.RelPermalink }}"
-     aria-label="Next chapter: {{ $ctx.chapterNext.Title }}">
-    <span class="project-nav-quad__label">{{ $ctx.chapterNext.Title }}</span>
-    <span class="project-nav-quad__arrow" aria-hidden="true">›</span>
-  </a>
-  {{ else if $ctx.isPartOfMultipageProject }}<span class="project-nav-quad__btn project-nav-quad__btn--placeholder" aria-hidden="true"></span>{{ end }}
+    {{ if $ctx.chapterNext }}
+    <a class="project-nav-quad__btn project-nav-quad__btn--inner-next"
+      href="{{ $ctx.chapterNext.RelPermalink }}"
+      aria-label="Next chapter: {{ $ctx.chapterNext.Title }}">
+      <span class="project-nav-quad__label">{{ $ctx.chapterNext.Title }}</span>
+      <span class="project-nav-quad__arrow" aria-hidden="true">›</span>
+    </a>
+    {{ else if $ctx.isPartOfMultipageProject }}<span class="project-nav-quad__btn project-nav-quad__btn--placeholder" aria-hidden="true"></span>{{ end }}
 
-  {{ if $ctx.projNext }}
-  <a class="project-nav-quad__btn project-nav-quad__btn--outer-next"
-     href="{{ $ctx.projNext.RelPermalink }}"
-     aria-label="Next project: {{ $ctx.projNext.Title }}">
-    <span class="project-nav-quad__label">{{ $ctx.projNext.Title }}</span>
-    <span class="project-nav-quad__arrow" aria-hidden="true">»</span>
-  </a>
-  {{ else }}<span class="project-nav-quad__btn project-nav-quad__btn--placeholder" aria-hidden="true"></span>{{ end }}
-</nav>
+    {{ if $ctx.projNext }}
+    <a class="project-nav-quad__btn project-nav-quad__btn--outer-next"
+      href="{{ $ctx.projNext.RelPermalink }}"
+      aria-label="Next project: {{ $ctx.projNext.Title }}">
+      <span class="project-nav-quad__label">{{ $ctx.projNext.Title }}</span>
+      <span class="project-nav-quad__arrow" aria-hidden="true">»</span>
+    </a>
+    {{ else }}<span class="project-nav-quad__btn project-nav-quad__btn--placeholder" aria-hidden="true"></span>{{ end }}
+  </nav>
 {{ end }}

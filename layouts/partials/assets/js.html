@@ -1,0 +1,16 @@
+{{- $src := .src | default "" -}}
+{{- $path := strings.TrimPrefix "/" $src -}}
+{{- if and $path (not (hasPrefix $path "js/")) -}}
+  {{- $path = printf "js/%s" $path -}}
+{{- end -}}
+{{- $bundleGlob := printf "%s/*.js" (strings.TrimSuffix ".js" $path) -}}
+{{- $bundleParts := sort (resources.Match $bundleGlob) "Name" -}}
+{{- $asset := resources.Get $path -}}
+{{- if gt (len $bundleParts) 0 -}}
+  {{- $asset = $bundleParts | resources.Concat $path -}}
+{{- end -}}
+{{- if not $asset -}}
+  {{- errorf "JS asset not found: %q (from %q)" $path $src -}}
+{{- end -}}
+{{- $asset = $asset | resources.ExecuteAsTemplate (printf "generated/%s" $path) site -}}
+<script{{ with .id }} id="{{ . }}"{{ end }} src="{{ $asset.RelPermalink }}"{{ if .defer }} defer{{ end }}></script>

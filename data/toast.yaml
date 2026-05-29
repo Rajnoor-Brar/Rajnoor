@@ -1,0 +1,41 @@
+defaultDuration: normal
+defaultVariant: neutral
+
+durations:
+  short: 1200
+  normal: 1800
+  long: 3200
+
+variants:
+  - name: neutral
+    shadow: "var(--shadow-md)"
+
+  - name: info
+    shadow: |-
+      0 0 0 1px color-mix(in srgb, var(--my-theme-accent) 28%, transparent),
+      0 8px 24px color-mix(in srgb, var(--my-theme-accent) 22%, transparent)
+
+  - name: success
+    shadow: |-
+      0 0 0 1px rgba(46, 160, 87, 0.28),
+      0 8px 24px rgba(46, 160, 87, 0.24)
+
+  - name: warning
+    shadow: |-
+      0 0 0 1px rgba(217, 119, 6, 0.3),
+      0 8px 24px rgba(217, 119, 6, 0.24)
+
+  - name: error
+    shadow: |-
+      0 0 0 1px rgba(192, 57, 43, 0.32),
+      0 8px 24px rgba(192, 57, 43, 0.26)
+
+  - name: theme-day
+    shadow: |-
+      0 0 0 1px color-mix(in srgb, var(--my-theme-day) 28%, transparent),
+      0 8px 24px color-mix(in srgb, var(--my-theme-day) 22%, transparent)
+
+  - name: theme-night
+    shadow: |-
+      0 0 0 1px color-mix(in srgb, var(--my-theme-night) 28%, transparent),
+      0 8px 24px color-mix(in srgb, var(--my-theme-night) 22%, transparent)
