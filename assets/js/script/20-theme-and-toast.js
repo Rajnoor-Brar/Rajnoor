@@ -93,28 +93,28 @@ function showToast(message, options) {
   var variant = settings.variant || settings.tone || TOAST_DEFAULT_VARIANT;
   if (!TOAST_VARIANTS.includes(variant)) variant = TOAST_DEFAULT_VARIANT;
 
-  var pill = document.getElementById('rj-toast');
+  var pill = document.getElementById('toast');
   if (!pill) return;
 
   pill.textContent = message;
   pill.classList.remove.apply(
     pill.classList,
-    TOAST_VARIANTS.map(function (name) { return 'rj-toast--' + name; })
+    TOAST_VARIANTS.map(function (name) { return 'toast--' + name; })
   );
-  pill.classList.add('rj-toast--' + variant);
+  pill.classList.add('toast--' + variant);
 
   // Cancel any pending auto-dismiss
-  clearTimeout(pill._rjTimer);
+  clearTimeout(pill._toastTimer);
 
   // Reset to base state, force reflow so the transition fires cleanly
-  pill.classList.remove('rj-toast--visible', 'rj-toast--hiding');
+  pill.classList.remove('toast--visible', 'toast--hiding');
   void pill.offsetWidth;
 
-  pill.classList.add('rj-toast--visible');
+  pill.classList.add('toast--visible');
 
-  pill._rjTimer = setTimeout(function () {
-    pill.classList.remove('rj-toast--visible');
-    pill.classList.add('rj-toast--hiding');
+  pill._toastTimer = setTimeout(function () {
+    pill.classList.remove('toast--visible');
+    pill.classList.add('toast--hiding');
   }, ms);
 }
 

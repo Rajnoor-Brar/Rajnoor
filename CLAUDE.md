@@ -27,7 +27,7 @@ Deployment: GitHub Actions pushes to GitHub Pages on every merge to `main` (`.gi
   - `layouts/projects/default.html` — single-project page (TOC, abstract, code-block layout, project-nav-quad)
   - `layouts/notebook/list.html` — notebook index
   - `layouts/notebook/single.html` — single notebook entry
-- **Search index template:** `layouts/index.json` — builds `/index.json` for the command palette; joins each project page to `data/projects.yaml` for tags/show.
+- **Search index template:** `layouts/index.json` — builds `/index.json` for spotlight (the search overlay); joins each project page to `data/projects.yaml` for tags/show.
 
 ### Content Convention
 All content files are **HTML** (not Markdown — except `.md` for code-heavy projects with code-block parsing) with YAML front matter. Recommended keys:
@@ -46,28 +46,32 @@ layout: default               # OPTIONAL — only when forcing a non-default; se
 
 Project pages no longer carry card metadata in frontmatter — that lives in `data/projects.yaml`.
 
-### Static Assets
-Page-specific files live in parallel pairs under `static/`:
-- `static/css/<page>Style.css` + `static/js/<page>Script.js`
-- `static/css/style.css` + `static/js/script.js` — loaded on every page
+### Page Assets
+Page-specific files live in parallel pairs under `assets/` and run through Hugo's asset pipeline (`resources.ExecuteAsTemplate`, so JS/CSS can embed `{{ }}` templating that injects `site.Data.*`); processed output lands in `public/generated/`. `static/` now holds only un-processed files (`CNAME`, `sparks.png`, `resources/`).
+- `assets/css/<page>Style.css` + `assets/js/<page>Script.js`
+- `assets/css/style.css` + `assets/js/script.js` — loaded on every page. The global JS bundle is assembled by `partials/assets/js.html`: when a `js/<name>/` directory exists, its numbered parts are `resources.Concat`'d in name order. `js/script` therefore bundles `assets/js/script/*.js` (`00-page-loader`, `01-images`, `02-features`, `10-command-console-init`, `11-page-console-toggle`, `20-theme-and-toast`, `30-command-console-core`, `31-nav-position`, `32-interactions`, `60-spa-navigation`).
 
 ### `data/` directory
 YAML data drives several surfaces — prefer adding to a data file over hand-writing markup that repeats a pattern.
 
 | File | Drives | Consumers |
 |---|---|---|
-| `data/credentials.yaml` | Credentials page sections + entries (each section has a `type` of `publication` or `certificate`) | `shortcodes/credentialsList.html` + `partials/credCertificate.html` + `partials/credPublish.html` |
+| `data/credentials.yaml` | Credentials page sections + entries (each section has a `type` of `publication`, `certificate`, or `skill`) | `shortcodes/credentialsList.html` + `partials/credCertificate.html` + `partials/credPublish.html` + `partials/credSkill.html` |
 | `data/now.yaml` | `/now/` page list + home-page snippet | `shortcodes/nowList.html` |
 | `data/projects.yaml` | Project gallery cards (`cardImage`/`cardTitle`/`cardText`/`weight`/`group`/`show`/`tags`), keyed by slug, with `path` for `site.GetPage` resolution | `layouts/projects/list.html`, `layouts/projects/default.html` (prev/next nav), `layouts/index.json` (search-index tags) |
 | `data/projectGroups.yaml` | Project gallery section headers (`name`, `description`, `weight`) | `layouts/projects/list.html` |
+| `data/script.yaml` | JS-injected config & **single source of truth**: home hero text (`home.hero.header`/`lines`) + animation timings, project slider configs, console animation durations, search-toast copy | `shortcodes/heroAbout.html`, `assets/js/homeScript.js`, `assets/js/projectScript.js`, `assets/js/spotlight.js` (all via `resources.ExecuteAsTemplate`) |
+| `data/heroPhrases.yaml` | Home GTD hero SVG phrases (`id`, `viewBox`, `transform`, `pathData`, `ariaLabel`) | `shortcodes/heroPhrase.html` |
 
 ### Shortcodes
 Under `layouts/shortcodes/`:
 
 | Shortcode | Purpose |
 |---|---|
-| `credentialsList.html` | Iterates `data/credentials.yaml`, dispatches each entry to `partials/credCertificate.html` or `partials/credPublish.html` |
+| `credentialsList.html` | Iterates `data/credentials.yaml`, dispatches each entry to `partials/credCertificate.html`, `partials/credPublish.html`, or `partials/credSkill.html` by section `type` (skill sections render with a tighter row gap) |
 | `nowList.html` | Renders `data/now.yaml`. Positional arg: `"full"` (full `/now/` page) or `"snippet"` (home page slice, gated by `features.nowPage`) |
+| `heroPhrase.html` | Renders the GTD hero SVG phrases from `data/heroPhrases.yaml` |
+| `heroAbout.html` | Renders the home hero "about" block (`#about-header` + `.about-line` items) from `data/script.yaml › home.hero` — single source of truth shared with `assets/js/homeScript.js`'s typed animation |
 | `fig.html` | Inline figure: `{{< fig src="…" alt="…" caption="…" size="col-11" >}}` |
 
 ### Partials
@@ -78,17 +82,17 @@ Under `layouts/partials/`:
 | `project-card.html` | Renders one gallery card. Takes a dict `{href, cardImage, cardTitle, cardText, tags, group, show}`. Called from `layouts/projects/list.html` |
 | `credCertificate.html` | Certificate card. Takes one entry from `data/credentials.yaml` as context |
 | `credPublish.html` | Publication card. Same |
+| `credSkill.html` | Skill badge — a compact pill (`.skill-badge`). Optional icon (theme-aware), `note` 2nd line, `level` 1–5 → dot meter, and `link` (pill → `<a>`). Sizing/font via `--skill-badge-*` tokens in `credStyle.css` |
 
 ### JS module map
-- **Global** (loaded by `baseof.html` on every page):
-  - `static/js/script.js` — theme cycle (`setTheme(mode)`), signature corner-drag/keyboard/mini-map, command-box open/close, SPA `navigateTo` + `__pageCleanup` invocation. Exposes `clearAllTimeouts(arr)` helper.
-  - `static/js/command-box.js` — `Shift+Space` command palette (search index from `/index.json`)
-  - `static/js/shortcutHints.js` — `?` overlay
-  - `static/js/scrollArc.js` — corner scroll-progress arc (gated by `features.scrollArc`)
+- **Global** (bundled into `js/script.js` from `assets/js/script/*.js`, loaded by `baseof.html` on every page): theme cycle (`setTheme(mode)`), signature corner-drag/keyboard/mini-map, command-console open/close, SPA `navigateTo` + `__pageCleanup` invocation, page-loader, image handling, feature-flag parsing, theme + toast, page-console toggle. Exposes `clearAllTimeouts(arr)` helper.
+  - `assets/js/spotlight.js` — `Shift+Space` spotlight search overlay (`#spotlight-overlay`; search index from `/index.json`)
+  - `assets/js/shortcutHints.js` — `?` overlay (`#shortcuts-overlay`)
+  - `assets/js/scrollArc.js` — corner scroll-progress arc (gated by `features.scrollArc`)
 - **Per-page** (loaded only when frontmatter sets `pageScript`):
-  - `static/js/homeScript.js` — typed hero, GTD undraw, about lines
-  - `static/js/projectScript.js` — text/image-size sliders (`initRangeSlider` factory), TOC heading-mode cycle, filter chips
-  - `static/js/404.js` — error page bits
+  - `assets/js/homeScript.js` — typed hero, GTD undraw, about lines (hero text from `data/script.yaml › home.hero`)
+  - `assets/js/projectScript.js` — text/image-size sliders (`initRangeSlider` factory), TOC heading-mode cycle, filter chips
+  - `assets/js/404.js` — error page bits
 
 #### SPA cleanup contract
 Modules that attach listeners or start timers must register a callback via the chain pattern:
@@ -105,7 +109,9 @@ window.__pageCleanup = (function (prev) {
 })(window.__pageCleanup);
 ```
 
-The chain is invoked from `script.js`'s `navigateTo` before each content swap. Each `prev()` call is wrapped in `try/catch` so one bad cleanup can't orphan the rest. Registered in `script.js` (timer arrays), `projectScript.js` (TOC + text-size toggle), `command-box.js`, `shortcutHints.js`, `scrollArc.js`, `homeScript.js` (timers).
+In practice modules register via the `window.__registerCleanup(fn)` helper (defined in `assets/js/script/30-command-console-core.js`), which wraps `fn` into the chain shown above. The chain is invoked from `script.js`'s `navigateTo` before each content swap and is **consume-once** — it nulls itself after running, so a cleanup registered only once at load (i.e. by a global-bundle script) does not re-arm on later navigations. Registered via the helper in: `projectScript.js` (TOC + text-size toggle), `spotlight.js`, `shortcutHints.js`, `scrollArc.js` (re-arms every nav, since its `init()` re-runs), `homeScript.js` (timers).
+
+The command-console open/close timer arrays are NOT registered through this chain — because it is consume-once and the global bundle registers only once, `navigateTo` clears them directly (`clearAllTimeouts`) on every navigation instead.
 
 ### Theming
 Three-mode cycle: **Light → Dark → Auto** (system `prefers-color-scheme`). Persisted in `localStorage` as `theme`. A blocking inline script at the top of `baseof.html` applies the saved theme before first paint to avoid flash. `data-bs-theme` on `<html>` drives all theme-dependent CSS — no JS-set inline colours anywhere.
@@ -118,7 +124,7 @@ KaTeX auto-render is included when `params.math = true` in `hugo.toml` (currentl
 ## Design System Rules
 
 ### CSS Tokens — never use raw hex
-All colours are CSS custom properties. **Always reference `var(--my-*)`, never hard-code hex.** Tokens are defined in `static/css/style.css` at `:root` (light) and `html[data-bs-theme="dark"]` (dark).
+All colours are CSS custom properties. **Always reference `var(--my-*)`, never hard-code hex.** Tokens are defined in `assets/css/style.css` at `:root` (light) and `html[data-bs-theme="dark"]` (dark).
 
 | Token | Light | Dark | Use |
 |---|---|---|---|
@@ -153,9 +159,9 @@ All colours are CSS custom properties. **Always reference `var(--my-*)`, never h
 | `--z-rail` | `1` | Active/hover indicator rails inside panels |
 | `--z-pill` | `8` | Signature island (`#signature-panel`) |
 | `--z-fixed` | `10` | Always-visible fixed islands (`#command-console`, `#page-console`) |
-| `--z-overlay` | `1400` | Command-palette backdrop |
-| `--z-hints` | `1500` | Shortcut-hints overlay (`?` panel) |
-| `--z-toast` | `1501` | Notification toast pill (`#rj-toast`) |
+| `--z-overlay` | `1400` | Spotlight backdrop |
+| `--z-hints` | `1500` | Shortcuts overlay (`#shortcuts-overlay`, `?` panel) |
+| `--z-toast` | `1501` | Notification toast pill (`#toast`) |
 | `--z-critical` | `9000` | Reserved — above all chrome (unused currently) |
 
 Between `--z-pill` (8) and `--z-fixed` (10), drag-targets and the scroll-arc sit at `calc(var(--z-pill) + 1)`.
@@ -168,17 +174,17 @@ Elevation (`box-shadow`) — always references `--my-shadow-color`:
 |---|---|---|
 | `--shadow-sm` | `0 0 8px 0 var(--my-shadow-color)` | Interactive button hover (nav-quad, small pills) |
 | `--shadow-md` | `0 0 10px 0 var(--my-shadow-color)` | Card hover, project-card hover |
-| `--shadow-lg` | `0 12px 48px var(--my-shadow-color)` | Overlay panels (command palette, shortcut hints) |
+| `--shadow-lg` | `0 12px 48px var(--my-shadow-color)` | Overlay panels (spotlight, shortcut hints) |
 
 Glow (`text-shadow` for icon buttons) — always references `--my-theme-accent`:
 
 | Token | Value | Use |
 |---|---|---|
-| `--glow-sm` | `var(--my-theme-accent) 0 0 1px` | Utility toggles (`#text-size-toggle`, `#page-console-toggle`, chevrons) |
+| `--glow-sm` | `var(--my-theme-accent) 0 0 1px` | Utility toggles (`#pg-text-size-toggle`, `#page-console-toggle`, chevrons) |
 | `--glow-md` | `var(--my-theme-accent) 0 0 4px` | Standard interactive icons (`.head-item`, nav links) |
-| `--glow-lg` | `var(--my-theme-accent) 0 0 8px` | Prominent glow — dark-mode `#shortcut-hints-toggle` |
+| `--glow-lg` | `var(--my-theme-accent) 0 0 8px` | Prominent glow — dark-mode `#shortcuts-toggle` |
 
-Exceptions that intentionally do not use these tokens: structural panel shadows (`var(--my-border-color) 0 3px 6px`), the `discoverPulse` keyframe accent glow, `.size-reset-dot` accent box-glow, and the theme-toggle day/night glow (uses `--my-theme-day` / `--my-theme-night`).
+Exceptions that intentionally do not use these tokens: structural panel shadows (`var(--my-border-color) 0 3px 6px`), the `discoverPulse` keyframe accent glow, `.pg-size-reset-dot` accent box-glow, and the theme-toggle day/night glow (uses `--my-theme-day` / `--my-theme-night`).
 
 Page-specific extension tokens (`projectStyle.css`) for code blocks: `--page-color`, `--page-border`, `--code-color`, `--punctuation`, `--string`, `--keyword`, `--function`, `--number`, `--operation`, `--comment`, `--subtitle-color`, `--abstract-bg`. All have dark-mode overrides.
 
@@ -205,7 +211,7 @@ All animations are CSS-driven. **Prefer `transform` + `opacity` over layout-trig
 | `navVert` | local | `top` \| `bottom` | Signature vertical anchor |
 | `navHorz` | local | `left` \| `right` | Signature horizontal anchor |
 | `rj_doc_font_size` | local | `0.8`–`1.6` (rem) | Project page font-size slider |
-| `rj_doc_img_size` | local | `40`–`100` (%) | Project page image-size slider |
+| `rj_doc_figure_width` | local | `45`–`100` (%) | Project page figure-width slider |
 | `rj_toc_mode` | local | `none` \| `l1` \| `l2` | Project page TOC heading mode (none / h2-only / h2+h3) |
 | `rj_page_console_contracted` | local | `0` \| `1` | Page-console contract state |
 | `rj_chapter_strip_collapsed` | local | `0` \| `1` | Chapter-strip collapse state on multi-page projects |
@@ -232,8 +238,9 @@ Site uses **only Bootstrap breakpoints** — never custom `px` values in `@media
 - JS: camelCase functions (`shiftSignature`, `openNavPanel`, `setTheme`); `rj_*` prefix for localStorage / sessionStorage keys
 
 #### CSS selector conventions
-- **BEM for sub-elements of named components**: `.chapter-strip__item`, `.toc-list__item`, `.toc-list__item--active`, `.project-nav-quad__btn--outer-prev`
-- **Flat kebab-case for standalone utilities and page-level components**: `.filter-toggle`, `.project-card`, `.home-card`, `.page-summoned`
+- **BEM for sub-elements of named components**: `.pg-chapter-strip__item`, `.pg-toc-list__item`, `.pg-toc-list__item--active`, `.project-nav-quad__btn--outer-prev`
+- **Flat kebab-case for standalone utilities and page-level components**: `.filter-toggle`, `.project-card`, `.home-card`, `.pg-summoned`
+- **Cluster prefixes**: `pg-*` for things inside `#page-console` (project-page chrome); `page-*` for body/page-level structural components; overlays carry a literal `-overlay` suffix (`#spotlight-overlay`, `#shortcuts-overlay`); invisible layout containers are `*-tray` (collapsible, e.g. `#command-console-tray`) or `*-wrap` (non-collapsible)
 - **Bootstrap conventions kept when directly overriding Bootstrap**: `.btn.page-nav`, `.breadcrumb-item`
 - **`!important` policy**: avoid it for site-authored rules. Use compound ID selectors (specificity 1,1,0) to override base element rules instead. Reserve `!important` only for Bootstrap overrides where the Bootstrap rule itself uses `!important` and a compound selector is impractical.
 
@@ -245,7 +252,7 @@ Site uses **only Bootstrap breakpoints** — never custom `px` values in `@media
 - No background fills on hover. No colour changes on hover.
 
 ### Signature navigation island
-The fixed-position signature pill (`#signature-box`) is the only global chrome. It:
-- Lives in one of four corners (`.top.left`, `.top.right`, `.bottom.left`, `.bottom.right`); the user can drag it to a corner, swipe/throw, press an arrow key while focused, or tap a dot in the 2×2 mini-map inside the action panel
+The fixed-position command console (`#command-console`) is the only global chrome. Its resting state is the signature pill (`#signature-panel`, holding the `#signature` SVG). It:
+- Lives in one of four corners (`.top.left`, `.top.right`, `.bottom.left`, `.bottom.right`); the user can drag it to a corner, swipe/throw, press an arrow key while focused, or tap a dot in the 2×2 mini-map (`.corner-picker__dot`, inside `#corner-picker`) in the action panel
 - Has stable anchor classes — corner-shifts use `transform: translate3d()` for layout-free 60fps
-- Expands on hover/focus into `#commandBox` containing `#navPanel` (page links) and `#actionPanel` (theme toggle + corner mini-map)
+- Expands on hover/focus into `#command-console-tray` containing `#navigation-panel` (page links — `.nav-link` / `.nav-link__text`) and `#action-panel` (theme toggle + corner mini-map); both are `.command-panel`

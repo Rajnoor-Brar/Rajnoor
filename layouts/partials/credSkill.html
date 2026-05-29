@@ -1,0 +1,46 @@
+{{/* Skill badge — a compact pill. Receives one entry from data/credentials.yaml
+     (a section with `type: skill`) as context.
+     Fields: label (required); icon | icon_light + icon_dark (optional, theme-aware,
+     under /resources/creds/); note (optional 2nd line); level (optional 1–5 → dots);
+     link (optional — turns the whole pill into an <a>).
+
+     NOTE: Go's html/template can't use a template action as an element's tag name
+     (`<{{ $tag }}>` renders escaped). The open/close tags are emitted via printf +
+     safeHTML; data values *inside* the element are still contextually escaped. */}}
+{{ $tag := "div" }}
+{{ $cls := "skill-badge" }}
+{{ $attrs := "" }}
+{{ with .link }}
+  {{ $tag = "a" }}
+  {{ $cls = "skill-badge skill-badge--link" }}
+  {{ $attrs = printf " href=%q target=\"_blank\" rel=\"noopener noreferrer\"" . }}
+{{ end }}
+{{ printf "<%s class=%q%s>" $tag $cls $attrs | safeHTML }}
+
+  {{ $hasThemed := and .icon_light .icon_dark }}
+  {{ if or $hasThemed .icon }}
+    <span class="skill-badge__icon" aria-hidden="true">
+      {{ if $hasThemed }}
+        <img src="{{ printf "/resources/creds/%s" .icon_light }}" class="theme-img--light" alt="" loading="lazy">
+        <img src="{{ printf "/resources/creds/%s" .icon_dark }}" class="theme-img--dark" alt="" loading="lazy">
+      {{ else }}
+        <img src="{{ printf "/resources/creds/%s" .icon }}" alt="" loading="lazy">
+      {{ end }}
+    </span>
+  {{ end }}
+
+  <span class="skill-badge__text">
+    <span class="skill-badge__label">{{ .label }}</span>
+    {{ with .note }}<span class="skill-badge__note">{{ . }}</span>{{ end }}
+  </span>
+
+  {{ with .level }}
+    {{ $n := int . }}
+    <span class="skill-badge__meter" role="img" aria-label="Proficiency: {{ $n }} of 5">
+      {{ range $i := (seq 5) }}
+        <span class="skill-badge__dot{{ if le $i $n }} skill-badge__dot--filled{{ end }}"></span>
+      {{ end }}
+    </span>
+  {{ end }}
+
+{{ printf "</%s>" $tag | safeHTML }}

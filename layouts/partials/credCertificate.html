@@ -5,7 +5,7 @@
     <div class="col-md-4 d-flex align-items-center justify-content-center p-5 p-md-3">
       {{ $hasThemed := and .icon_light .icon_dark }}
       {{ if or $hasThemed .icon }}
-        <div class="certificate-icon">
+        <div class="certificate__icon">
           {{ if $hasThemed }}
             <img src="{{ printf "/resources/creds/%s" .icon_light }}" class="theme-img--light" alt="Certificate Icon" loading="lazy">
             <img src="{{ printf "/resources/creds/%s" .icon_dark }}" class="theme-img--dark" alt="Certificate Icon" loading="lazy">
@@ -18,15 +18,15 @@
 
     <div class="col-md-8 d-flex align-items-center">
       <div class="card-body flex-wrap d-flex">
-        <div class="certificate-details col-12">
+        <div class="certificate__details col-12">
           {{ with .title }}
-            <div class="certificate-name">
+            <div class="certificate__name">
               <span><strong>{{ . }}</strong></span>
             </div>
           {{ end }}
 
           {{ with .institution }}
-            <div class="certificate-institution">
+            <div class="certificate__institution">
               <span>{{ . }}</span>
             </div>
           {{ end }}
@@ -37,33 +37,33 @@
 
   <hr class="mt-2">
 
-  <div class="d-flex flex-wrap certificate-footer">
+  <div class="d-flex flex-wrap certificate__footer">
     {{/* {{ $linkedId := cond (and .id .link) " linked-id" }} */}}
-    {{/* {{ idCopy := cond (.id_copy) .id_copy}}{{ $idCopy := cond .id_copy "certificate-copy" "" }} */}}
-    {{ $idCopy := cond (default true .id_copy) "certificate-copy" "" }}
+    {{/* {{ idCopy := cond (.id_copy) .id_copy}}{{ $idCopy := cond .id_copy "certificate__copy" "" }} */}}
+    {{ $idCopy := cond (default true .id_copy) "certificate__copy" "" }}
     {{ $linkCols := cond (not .marks) "col-lg-12" "col-lg-8" }}
     {{ if .link }}
-      <div class="certificate-link linked-id col-12 {{ $linkCols }}">
+      <div class="certificate__link linked-id col-12 {{ $linkCols }}">
         <a href="{{ .link }}" target="_blank" rel="noopener noreferrer" class="btn">
           {{ if .id }}{{ .id }}{{ else }}{{ .link }}{{ end }}
         </a>
       </div>
     {{ else if .id }}
-      <div class="certificate-link col-12 {{ $linkCols }}">
+      <div class="certificate__link col-12 {{ $linkCols }}">
         <button type="button" class="btn {{ $idCopy }}" data-rj-copy="{{ .id }}">
           {{ .id }}
         </button>
       </div>
     {{ end }}
 
-    <div class="certificate-extra col-12 col-lg-4 d-flex flex-wrap">
+    <div class="certificate__extra col-12 col-lg-4 d-flex flex-wrap">
       {{ with .marks }}
-        <div class="certificate-marks col-6 col-lg-12 d-flex btn justify-content-lg-end"><span>{{ . }}</span></div>
+        <div class="certificate__marks col-6 col-lg-12 d-flex btn justify-content-lg-end"><span>{{ . }}</span></div>
       {{ end }}
     </div>
 
     {{ with .description }}
-      <div class="certificate-description">
+      <div class="certificate__description">
         <p>{{ . }}</p>
       </div>
     {{ end }}

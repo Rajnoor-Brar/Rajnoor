@@ -4,7 +4,7 @@ title = 'Rajnoor'
 disableKinds = ["taxonomy", "term"]
 
 [outputs]
-  home    = ["html", "json"]   # json: search index for command palette (B3)
+  home    = ["html", "json"]   # json: search index for spotlight (B3)
   section = ["html", "rss"]   # rss: notebook feed
   page    = ["html"]
 
@@ -27,6 +27,6 @@ disableKinds = ["taxonomy", "term"]
   notebook           = false
   nowPage            = true
   nowExpanded =   true   # true → <details open> on /now/ page; false → collapsed by default
-  commandPalette     = true
+  spotlight          = true
   scrollArc          = true
   shortcutHints      = true

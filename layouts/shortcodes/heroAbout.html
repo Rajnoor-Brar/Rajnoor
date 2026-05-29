@@ -1,0 +1,12 @@
+{{/* Renders the home hero "about" block (header + bio lines) from
+     data/script.yaml › home.hero. Single source of truth: assets/js/homeScript.js
+     reads the same data (HERO = site.Data.script.home.hero) for the typed-in
+     animation, so the static markup and the animated text never drift.
+     Usage: {{< heroAbout >}}  — no arguments. */}}
+{{ $hero := site.Data.script.home.hero }}
+<div id="about" class="d-none">
+  <div id="about-header" class="about-heading blink-cursor">{{ $hero.header }}</div>
+  {{ range $i, $line := $hero.lines }}
+  <div id="about-line-{{ add $i 1 }}" class="about-line">{{ $line }}</div>
+  {{ end }}
+</div>

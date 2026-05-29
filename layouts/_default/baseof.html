@@ -16,7 +16,7 @@
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#fff">
     <meta name="keywords" content="Physics, Mathematics, Computer Science, Rajnoor Brar">
-    <meta name="rj-features" content='{ "notebook": {{ site.Params.features.notebook }}, "nowPage": {{ site.Params.features.nowPage }}, "commandPalette": {{ site.Params.features.commandPalette }}, "scrollArc": {{ site.Params.features.scrollArc }}, "shortcutHints": {{ site.Params.features.shortcutHints }} }'>
+    <meta name="rj-features" content='{ "notebook": {{ site.Params.features.notebook }}, "nowPage": {{ site.Params.features.nowPage }}, "spotlight": {{ site.Params.features.spotlight }}, "scrollArc": {{ site.Params.features.scrollArc }}, "shortcutHints": {{ site.Params.features.shortcutHints }} }'>
 
     <meta property="og:title" content="{{ .Title }}">
     <meta property="og:url" content="{{ .Permalink }}">
@@ -64,7 +64,7 @@
     {{ partial "assets/css.html" (dict "src" "css/style.css") }}
     {{ with .Params.pageStyle }}{{ partial "assets/css.html" (dict "src" . "id" "page-style") }}{{ end }}
 
-    <noscript><style>#rj-page-loader{display:none!important}</style></noscript>
+    <noscript><style>#page-loader{display:none!important}</style></noscript>
 
     {{ if site.Params.features.notebook }}
     <link rel="alternate" type="application/rss+xml" title="Notebook — {{ site.Title }}" href="/notebook/index.xml">
@@ -75,8 +75,8 @@
 
   <body>
 
-    <div id="rj-page-loader" aria-hidden="true">
-      <div class="rj-spinner"></div>
+    <div id="page-loader" aria-hidden="true">
+      <div class="spinner"></div>
     </div>
 
     <div id="page-container" class=" d-flex flex-column">
@@ -122,17 +122,17 @@
             </div>
 
 
-            <div id="command-box" class="hide">
-                <div  id="nav-panel" class="command-panel hide">
-                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="home-nav" data-nav-key="home" href="/"><span class="nav-text">Home</span></a></div>
-                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="project-nav" data-nav-key="projects" href="/projects"><span class="nav-text">Projects</span></a></div>
-                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="cred-nav" data-nav-key="credentials" href="/credentials"><span class="nav-text">Credentials</span></a></div>
-                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="about-nav" data-nav-key="about" href="/about"><span class="nav-text">About</span></a></div>
+            <div id="command-console-tray" class="hide">
+                <div  id="navigation-panel" class="command-panel hide">
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="home-nav" data-nav-key="home" href="/"><span class="nav-link__text">Home</span></a></div>
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="project-nav" data-nav-key="projects" href="/projects"><span class="nav-link__text">Projects</span></a></div>
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="cred-nav" data-nav-key="credentials" href="/credentials"><span class="nav-link__text">Credentials</span></a></div>
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="about-nav" data-nav-key="about" href="/about"><span class="nav-link__text">About</span></a></div>
                     {{ if site.Params.features.notebook }}
-                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="notebook-nav" data-nav-key="notebook" href="/notebook"><span class="nav-text">Notebook</span></a></div>
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="notebook-nav" data-nav-key="notebook" href="/notebook"><span class="nav-link__text">Notebook</span></a></div>
                     {{ end }}
                     {{ if site.Params.features.nowPage }}
-                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="now-nav" data-nav-key="now" href="/now"><span class="nav-text">Now</span></a></div>
+                    <div class="nav-item panel-item hover-grow"><a class="nav-link" id="now-nav" data-nav-key="now" href="/now"><span class="nav-link__text">Now</span></a></div>
                     {{ end }}
                 </div>
 
@@ -144,16 +144,16 @@
                     </button>
 
                     {{ if site.Params.features.shortcutHints }}
-                    <button id="shortcut-hints-toggle" type="button" aria-label="Show keyboard shortcuts" class="action-item panel-item hover-grow">
+                    <button id="shortcuts-toggle" type="button" aria-label="Show keyboard shortcuts" class="action-item panel-item hover-grow">
                         <span class="material-symbols-rounded" aria-hidden="true">question_mark</span>
                     </button>
                     {{ end }}
 
                     <div id="corner-picker" class="action-item panel-item" role="group" aria-label="Move signature to corner">
-                        <button class="corner-dot" data-corner="TL" type="button" aria-label="Move to top-left"></button>
-                        <button class="corner-dot" data-corner="TR" type="button" aria-label="Move to top-right"></button>
-                        <button class="corner-dot" data-corner="BL" type="button" aria-label="Move to bottom-left"></button>
-                        <button class="corner-dot" data-corner="BR" type="button" aria-label="Move to bottom-right"></button>
+                        <button class="corner-picker__dot" data-corner="TL" type="button" aria-label="Move to top-left"></button>
+                        <button class="corner-picker__dot" data-corner="TR" type="button" aria-label="Move to top-right"></button>
+                        <button class="corner-picker__dot" data-corner="BL" type="button" aria-label="Move to bottom-left"></button>
+                        <button class="corner-picker__dot" data-corner="BR" type="button" aria-label="Move to bottom-right"></button>
                     </div>
 
                 </div>
@@ -175,22 +175,22 @@
 
     {{ with .Params.pageScript }}{{ partial "assets/js.html" (dict "src" . "id" "page-script") }}{{ end }}
 
-    {{ if site.Params.features.commandPalette }}
-    <div id="command-palette" class="command-palette" role="dialog" aria-modal="true" aria-label="Command palette">
-      <div class="command-palette__panel">
-        <input id="command-palette-input"
-               class="command-palette__input"
+    {{ if site.Params.features.spotlight }}
+    <div id="spotlight-overlay" class="spotlight-overlay" role="dialog" aria-modal="true" aria-label="Spotlight search">
+      <div class="spotlight-overlay__panel">
+        <input id="spotlight-overlay-input"
+               class="spotlight-overlay__input"
                type="text"
                placeholder="Search pages…"
                autocomplete="off"
                spellcheck="false"
                aria-label="Search"
                aria-autocomplete="list"
-               aria-controls="command-palette-list">
-        <ul id="command-palette-list" class="command-palette__list" role="listbox" aria-label="Results"></ul>
+               aria-controls="spotlight-overlay-list">
+        <ul id="spotlight-overlay-list" class="spotlight-overlay__list" role="listbox" aria-label="Results"></ul>
       </div>
     </div>
-    {{ partial "assets/js.html" (dict "src" "js/command-box.js" "defer" true) }}
+    {{ partial "assets/js.html" (dict "src" "js/spotlight.js" "defer" true) }}
     {{ end }}
 
     {{ if site.Params.features.scrollArc }}
@@ -198,36 +198,36 @@
     {{ end }}
 
     {{ if site.Params.features.shortcutHints }}
-    <div id="shortcut-hints" class="shortcut-hints" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
-      <div class="shortcut-hints__panel">
-        <h2 class="shortcut-hints__title">Keyboard shortcuts</h2>
+    <div id="shortcuts-overlay" class="shortcuts-overlay" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+      <div class="shortcuts-overlay__panel">
+        <h2 class="shortcuts-overlay__title">Keyboard shortcuts</h2>
 
-        <div class="shortcut-hints__section">
-          <p class="shortcut-hints__section-label">Everywhere</p>
-          <ul class="shortcut-hints__list">
+        <div class="shortcuts-overlay__section">
+          <p class="shortcuts-overlay__section-label">Everywhere</p>
+          <ul class="shortcuts-overlay__list">
             <li><kbd>?</kbd><span>Show / hide this overlay</span></li>
             <li><kbd>Esc</kbd><span>Close panels &amp; overlays</span></li>
             <li><kbd>Alt</kbd> <kbd>T</kbd><span>Cycle theme</span></li>
-            {{ if site.Params.features.commandPalette }}
-            <li><kbd><span class="material-symbols-rounded sym-hollow" aria-hidden="true">shift</span></kbd> <kbd>Space</kbd><span>Command palette</span></li>
+            {{ if site.Params.features.spotlight }}
+            <li><kbd><span class="material-symbols-rounded sym-hollow" aria-hidden="true">shift</span></kbd> <kbd>Space</kbd><span>Spotlight</span></li>
             {{ end }}
           </ul>
         </div>
 
-        <div class="shortcut-hints__section">
-          <p class="shortcut-hints__section-label">Signature open</p>
-          <ul class="shortcut-hints__list">
+        <div class="shortcuts-overlay__section">
+          <p class="shortcuts-overlay__section-label">Signature open</p>
+          <ul class="shortcuts-overlay__list">
             <li><kbd><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_left</span></kbd> <kbd><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_right</span></kbd> <kbd><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_up</span></kbd> <kbd><span class="material-symbols-rounded" aria-hidden="true">keyboard_arrow_down</span></kbd><span>Move to corner</span></li>
           </ul>
         </div>
 
-        <button class="shortcut-hints__close" aria-label="Close shortcuts">✕</button>
+        <button class="shortcuts-overlay__close" aria-label="Close shortcuts">✕</button>
       </div>
     </div>
     {{ partial "assets/js.html" (dict "src" "js/shortcutHints.js" "defer" true) }}
     {{ end }}
 
-    <div id="rj-toast" aria-live="polite" aria-atomic="true"></div>
+    <div id="toast" aria-live="polite" aria-atomic="true"></div>
 
     {{ block "body-extra" . }}{{ end }}
   </body>

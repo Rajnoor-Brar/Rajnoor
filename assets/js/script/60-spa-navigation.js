@@ -4,7 +4,7 @@
 
   function updateActiveNav(activeNavKey) {
     document.querySelectorAll('.nav-link.active').forEach(el => el.classList.remove('active'));
-    const panel = document.getElementById('nav-panel');
+    const panel = document.getElementById('navigation-panel');
     if (activeNavKey) {
       const el = [...document.querySelectorAll('[data-nav-key]')]
         .find(nav => nav.dataset.navKey === activeNavKey);
@@ -18,28 +18,28 @@
 
   // Hover rail: glides to whichever nav-item the pointer is over
   document.addEventListener('mouseover', (e) => {
-    const item = e.target.closest('#nav-panel .nav-item');
-    const panel = document.getElementById('nav-panel');
+    const item = e.target.closest('#navigation-panel .nav-item');
+    const panel = document.getElementById('navigation-panel');
     if (!item || !panel) return;
     panel.style.setProperty('--hover-y', item.offsetTop + 'px');
     panel.style.setProperty('--hover-shown', '1');
   });
   document.addEventListener('mouseout', (e) => {
-    const panel = document.getElementById('nav-panel');
+    const panel = document.getElementById('navigation-panel');
     if (!panel) return;
     // Hide when leaving panel entirely
-    if (e.target.closest('#nav-panel') && !e.relatedTarget?.closest('#nav-panel')) {
+    if (e.target.closest('#navigation-panel') && !e.relatedTarget?.closest('#navigation-panel')) {
       panel.style.setProperty('--hover-shown', '0');
     }
   });
 
   function showNavLoader() {
-    let loader = document.getElementById('rj-page-loader');
+    let loader = document.getElementById('page-loader');
     if (!loader) {
       loader = document.createElement('div');
-      loader.id = 'rj-page-loader';
+      loader.id = 'page-loader';
       loader.setAttribute('aria-hidden', 'true');
-      loader.innerHTML = '<div class="rj-spinner"></div>';
+      loader.innerHTML = '<div class="spinner"></div>';
       document.body.appendChild(loader);
     } else {
       // Re-activate if it was dismissed by the initial-load sequence
@@ -48,7 +48,7 @@
   }
 
   function hideNavLoader() {
-    const loader = document.getElementById('rj-page-loader');
+    const loader = document.getElementById('page-loader');
     if (!loader) return;
     loader.classList.add('dismissed');
     setTimeout(() => { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 500);
@@ -66,6 +66,13 @@
       try { window.__pageCleanup(); } catch (e) { console.error('pageCleanup error:', e); }
       window.__pageCleanup = null;
     }
+
+    // Hard-clear command-console open/close timers on every navigation.
+    // The __pageCleanup chain is consume-once (it nulls itself after running),
+    // so a cleanup registered once at load is lost after the first nav — these
+    // timers live in the global bundle and must be cleared unconditionally here.
+    clearAllTimeouts(showTimeouts);
+    clearAllTimeouts(hideTimeouts);
 
     // Fade out current content immediately.
     // Delay the full-screen loader so it only appears on slow fetches (>150ms).

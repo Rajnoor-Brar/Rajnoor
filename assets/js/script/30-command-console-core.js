@@ -1,6 +1,6 @@
 // ___________________________________________________________________________________________________________________
 // ___________________________________________________________________________________________________________________
-// ============================================== Command Box Functions ==============================================
+// ============================================== Command Console Functions ==============================================
 
 let showTimeouts = [];
 let hideTimeouts = [];
@@ -24,22 +24,19 @@ window.__registerCleanup = function (fn) {
   };
 };
 
-let commandBox = document.getElementById('command-box');
+let consoleTray = document.getElementById('command-console-tray');
 let commandPanels = document.querySelectorAll('.command-panel');
 
-// Chain into SPA cleanup so mid-animation navigation can't leak phantom
-// open/close timers onto the next page.
-window.__registerCleanup(function () {
-  clearAllTimeouts(showTimeouts);
-  clearAllTimeouts(hideTimeouts);
-});
+// NOTE: these open/close timers are cleared on every SPA navigation directly
+// from navigateTo() (60-spa-navigation.js). They are NOT registered through the
+// consume-once __pageCleanup chain, which would only fire on the first nav.
 
 // --------------- Open Nav Panel ---------------
 
-// Re-sync the active-rail position on nav-panel — offsetTop is 0 while the
+// Re-sync the active-rail position on navigation-panel — offsetTop is 0 while the
 // panel is display:none, so we must refresh once it's actually laid out.
 function refreshActiveRail() {
-  const panel = document.getElementById('nav-panel');
+  const panel = document.getElementById('navigation-panel');
   if (!panel) return;
   const active = panel.querySelector('.nav-link.active');
   const item = active?.closest('.nav-item');
@@ -53,13 +50,13 @@ function openNavPanel() {
   clearAllTimeouts(hideTimeouts);
   clearAllTimeouts(showTimeouts);
 
-  commandBox.classList.remove('hide');
+  consoleTray.classList.remove('hide');
 
   commandPanels.forEach((panel, i) => {
     const t = setTimeout(() => {
       panel.classList.remove('contract', 'hide');
       panel.classList.add('show');
-      if (panel.id === 'nav-panel') refreshActiveRail();
+      if (panel.id === 'navigation-panel') refreshActiveRail();
     }, i * panelTime);
     showTimeouts.push(t);
   });
@@ -68,20 +65,20 @@ function openNavPanel() {
 function closeNavPanel() {
   clearAllTimeouts(showTimeouts);
   clearAllTimeouts(hideTimeouts);
-  commandBox.classList.remove('show');
+  consoleTray.classList.remove('show');
 
   // (Scroll-arc no longer lives inside command-console — no focus-hide to mask.)
   // (Text-size panel auto-close removed — toggle no longer lives inside command-console.)
 
-  // Collapse in reverse order (action-panel first, then nav-panel)
+  // Collapse in reverse order (action-panel first, then navigation-panel)
   const panels = [...commandPanels].reverse();
   panels.forEach((panel, i) => {
     const t = setTimeout(() => {
       panel.classList.remove('show');
       panel.classList.add('contract');
 
-      // Hide after the collapse animation completes (nav-panel: 0.18s, action-panel: 0.12s)
-      const animDuration = panel.id === 'nav-panel' ? {{ site.Data.script.console.nav_panel_anim_ms }} : {{ site.Data.script.console.panel_anim_ms }};
+      // Hide after the collapse animation completes (navigation-panel: 0.18s, action-panel: 0.12s)
+      const animDuration = panel.id === 'navigation-panel' ? {{ site.Data.script.console.navigation_panel_anim_ms }} : {{ site.Data.script.console.panel_anim_ms }};
       const tHide = setTimeout(() => {
         panel.classList.remove('contract');
         panel.classList.add('hide');
@@ -91,9 +88,9 @@ function closeNavPanel() {
     hideTimeouts.push(t);
   });
 
-  // Hide command-box once all panels have finished collapsing
+  // Hide command-console-tray once all panels have finished collapsing
   const tHideBox = setTimeout(() => {
-    commandBox.classList.add('hide');
+    consoleTray.classList.add('hide');
   }, (panels.length - 1) * panelTime + 220);
   hideTimeouts.push(tHideBox);
 }

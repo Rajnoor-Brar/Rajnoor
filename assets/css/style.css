@@ -46,17 +46,17 @@ body {
   height: 0;
 }
 
-#command-box.hide,
-#nav-panel.hide,
+#command-console-tray.hide,
+#navigation-panel.hide,
 #action-panel.hide,
-#toc-panel.hide { display: none; }
+#pg-toc-panel.hide { display: none; }
 
 :focus-visible {
   outline: 2px solid var(--my-theme-accent);
   outline-offset: 2px;
   border-radius: 2px; /* softens corners on rectangular controls */
 }
-.corner-dot:focus-visible,
+.corner-picker__dot:focus-visible,
 #command-console:focus-visible {
   outline: none;
 }
@@ -109,11 +109,11 @@ body {
 }
 
 #theme-toggle:active,
-#shortcut-hints-toggle:active {
+#shortcuts-toggle:active {
   transform: scale(0.96);
 }
 
-.corner-dot:active {
+.corner-picker__dot:active {
   transform: scale(0.88);
 }
 
@@ -203,7 +203,7 @@ body {
 #NameR2{transition-delay: 0.0s; transition-duration: var(--motion-fast);}
 #command-console:focus #NameR2{transition-delay: 0.25s; transition-duration: var(--motion-base);}
 
-#command-box{
+#command-console-tray{
   display:flex;
   position: relative;
   /* top: calc(1*var(--signture-height)/4); */
@@ -217,11 +217,11 @@ body {
   --navItemHeightFactor:0.6;
 }
 
-.top #command-box{
+.top #command-console-tray{
   flex-direction: column;
 }
 
-.bottom #command-box{
+.bottom #command-console-tray{
   flex-direction: column-reverse;
 }
 
@@ -235,7 +235,7 @@ body {
 #command-console.bottom.left  .command-panel { transform-origin: bottom left; }
 #command-console.bottom.right .command-panel { transform-origin: bottom right; }
 
-#nav-panel{
+#navigation-panel{
   overflow: hidden;
   position: relative;
   display: flex;
@@ -255,11 +255,11 @@ body {
   animation-fill-mode: both;
 }
 
-#nav-panel{
+#navigation-panel{
   --y-offset: calc(0.15 * var(--signture-height));
 }
-#nav-panel::before,
-#nav-panel::after {
+#navigation-panel::before,
+#navigation-panel::after {
   content: "";
   position: absolute;
   /* left: calc(0.01 * var(--signture-height)); */
@@ -270,25 +270,25 @@ body {
   pointer-events: none;
   transition: top var(--motion-slow) cubic-bezier(0.22, 1, 0.36, 1), opacity var(--motion-fast) ease;
 }
-#nav-panel::before {
+#navigation-panel::before {
   top: calc(var(--active-y, 0px) + var(--y-offset));
   width: 2px;
   opacity: var(--active-shown, 0);
   z-index: calc(var(--z-rail) + 1);
 }
-#nav-panel::after {
+#navigation-panel::after {
   top: calc(var(--hover-y, 0px) + var(--y-offset));
   width: 1px;
   opacity: var(--hover-shown, 0);
   z-index: var(--z-rail);
 }
 
-#nav-panel.show{
+#navigation-panel.show{
   display: flex;
   animation-name: panelExpand;
 }
 
-#nav-panel.contract{
+#navigation-panel.contract{
   animation-name: panelCollapse;
 }
 
@@ -313,7 +313,7 @@ body {
   padding-inline: calc(0.1*var(--signture-height)) !important;
   margin-left: calc(0.1*var(--signture-height));
 }
-.nav-text{
+.nav-link__text{
   position: absolute;
   top: 50%;
   /* margin-left: calc(0.1*var(--signture-height)); */
@@ -425,7 +425,7 @@ html[data-bs-theme="dark"] #theme-toggle:hover {
   /* width/height come from .action-item so all three items stay equiwidth */
 }
 
-.corner-dot {
+.corner-picker__dot {
   width: 100%;
   height: 100%;
   border-radius: 50%;
@@ -436,14 +436,14 @@ html[data-bs-theme="dark"] #theme-toggle:hover {
   transition: background-color var(--motion-base) ease, transform var(--motion-fast) ease, border-color var(--motion-base) ease;
 }
 
-.corner-dot:hover,
-.corner-dot:focus-visible {
+.corner-picker__dot:hover,
+.corner-picker__dot:focus-visible {
   transform: scale(1.25);
   outline: none;
   border-color: var(--my-black);
 }
 
-.corner-dot.active {
+.corner-picker__dot.active {
   background-color: var(--my-black);
   border-color: var(--my-black);
 }
@@ -452,10 +452,10 @@ html[data-bs-theme="dark"] #theme-toggle:hover {
    The visual size of these controls (~36 px) is intentional, so we don't
    resize them; instead we extend the hit area via an invisible ::before
    pseudo. Pointer-events fall through to the parent button. */
-.head-item, .action-item, .corner-dot { position: relative; }
-.head-item::before,
+.pg-head__item, .action-item, .corner-picker__dot { position: relative; }
+.pg-head__item::before,
 .action-item::before,
-.corner-dot::before {
+.corner-picker__dot::before {
   content: "";
   position: absolute;
   inset: -4px;          /* 36 + 4 + 4 = 44 px hit area */
@@ -463,7 +463,7 @@ html[data-bs-theme="dark"] #theme-toggle:hover {
   background: transparent;
 }
 
-#shortcut-hints-toggle {
+#shortcuts-toggle {
   background-color: transparent !important;
   border: none;
   padding: 0;
@@ -473,13 +473,13 @@ html[data-bs-theme="dark"] #theme-toggle:hover {
   touch-action: manipulation;
   transition: text-shadow var(--motion-fast) ease, transform var(--motion-fast) ease;
 }
-#shortcut-hints-toggle .material-symbols-rounded {
+#shortcuts-toggle .material-symbols-rounded {
   font-variation-settings: 'wght' 300;
 }
-#shortcut-hints-toggle:hover {
+#shortcuts-toggle:hover {
   text-shadow: var(--glow-sm);
 }
-html[data-bs-theme="dark"] #shortcut-hints-toggle:hover {
+html[data-bs-theme="dark"] #shortcuts-toggle:hover {
   text-shadow: var(--glow-lg);
 }
 
@@ -603,7 +603,7 @@ button {
   }
 }
 
-.command-palette {
+.spotlight-overlay {
   display: none;
   position: fixed;
   inset: 0;
@@ -616,11 +616,11 @@ button {
   padding-top: 20vh;
 }
 
-.command-palette--open {
+.spotlight-overlay--open {
   display: flex;
 }
 
-.command-palette__panel {
+.spotlight-overlay__panel {
   background: var(--my-white);
   border: 1px solid var(--my-border-color);
   border-radius: 12px;
@@ -630,7 +630,7 @@ button {
   overflow: hidden;
 }
 
-.command-palette__input {
+.spotlight-overlay__input {
   width: 100%;
   padding: 1rem 1.25rem;
   font-family: var(--my-font-ui);
@@ -643,12 +643,12 @@ button {
   outline: none;
 }
 
-.command-palette__input::placeholder {
+.spotlight-overlay__input::placeholder {
   color: var(--my-gray-1);
   font-weight: 400;
 }
 
-.command-palette__list {
+.spotlight-overlay__list {
   list-style: none;
   margin: 0;
   padding: 0.4rem 0;
@@ -656,7 +656,7 @@ button {
   overflow-y: auto;
 }
 
-.command-palette__item {
+.spotlight-overlay__item {
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -665,12 +665,12 @@ button {
   transition: background-color 0.1s ease;
 }
 
-.command-palette__item.active,
-.command-palette__item:hover {
+.spotlight-overlay__item.active,
+.spotlight-overlay__item:hover {
   background: var(--my-silver-2);
 }
 
-.command-palette__title {
+.spotlight-overlay__title {
   font-family: var(--my-font-title);
   font-size: 0.95rem;
   font-weight: 400;
@@ -682,7 +682,7 @@ button {
   text-overflow: ellipsis;
 }
 
-.command-palette__kind {
+.spotlight-overlay__kind {
   font-family: var(--my-font-ui);
   font-size: 0.65rem;
   font-weight: 600;
@@ -696,18 +696,18 @@ button {
   flex-shrink: 0;
 }
 
-.command-palette__status {
+.spotlight-overlay__status {
   padding: 0.75rem 1.25rem;
   font-family: var(--my-font-ui);
   font-size: 0.82rem;
   color: var(--my-gray-1);
 }
 
-.command-palette__status--error {
+.spotlight-overlay__status--error {
   color: var(--my-error);
 }
 
-.command-palette__retry {
+.spotlight-overlay__retry {
   background: none;
   border: 1px solid currentColor;
   border-radius: var(--radius-pill);
@@ -719,11 +719,11 @@ button {
   margin-left: 0.4rem;
   transition: opacity var(--motion-fast) ease;
 }
-.command-palette__retry:hover { opacity: 0.75; }
+.spotlight-overlay__retry:hover { opacity: 0.75; }
 
 @media (prefers-reduced-motion: reduce) {
-  .command-palette,
-  .command-palette__item {
+  .spotlight-overlay,
+  .spotlight-overlay__item {
     transition: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -768,7 +768,7 @@ button {
   }
 }
 
-.shortcut-hints {
+.shortcuts-overlay {
   display: none;
   position: fixed;
   inset: 0;
@@ -780,11 +780,11 @@ button {
   justify-content: center;
 }
 
-.shortcut-hints--open {
+.shortcuts-overlay--open {
   display: flex;
 }
 
-.shortcut-hints__panel {
+.shortcuts-overlay__panel {
   position: relative;
   background: var(--my-white);
   border: 1px solid var(--my-border-color);
@@ -796,7 +796,7 @@ button {
   width: 90vw;
 }
 
-.shortcut-hints__title {
+.shortcuts-overlay__title {
   font-family: var(--my-font-title);
   font-size: 1.1rem;
   font-weight: 400;
@@ -804,13 +804,13 @@ button {
   margin-bottom: 1.25rem;
 }
 
-.shortcut-hints__section + .shortcut-hints__section {
+.shortcuts-overlay__section + .shortcuts-overlay__section {
   margin-top: 1.1rem;
   padding-top: 1.1rem;
   border-top: 1px solid var(--my-border-color);
 }
 
-.shortcut-hints__section-label {
+.shortcuts-overlay__section-label {
   font-family: var(--my-font-ui);
   font-size: 0.65rem;
   font-weight: 600;
@@ -820,7 +820,7 @@ button {
   margin: 0 0 0.6rem;
 }
 
-.shortcut-hints__list {
+.shortcuts-overlay__list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -829,7 +829,7 @@ button {
   gap: 0.75rem;
 }
 
-.shortcut-hints__list li {
+.shortcuts-overlay__list li {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -838,12 +838,12 @@ button {
   color: var(--my-gray-2);
 }
 
-.shortcut-hints__list li span {
+.shortcuts-overlay__list li span {
   margin-left: auto;
   text-align: right;
 }
 
-.shortcut-hints__list kbd {
+.shortcuts-overlay__list kbd {
   font-family: var(--my-font-ui);
   font-size: 0.72rem;
   font-weight: 700;
@@ -854,21 +854,21 @@ button {
   padding: 0.15rem 0.45rem;
   white-space: nowrap;
 }
-.shortcut-hints__list kbd .material-symbols-rounded {
+.shortcuts-overlay__list kbd .material-symbols-rounded {
   font-size: 1rem;
   vertical-align: -0.15em;
   line-height: 1;
   display: inline-block;
   font-variation-settings: 'wght' 500;
 }
-.shortcut-hints__list kbd .sym-hollow {
+.shortcuts-overlay__list kbd .sym-hollow {
   font-variation-settings: 'wght' 500, 'FILL' 0;
 }
-.shortcut-hints__list kbd:has(.material-symbols-rounded) {
+.shortcuts-overlay__list kbd:has(.material-symbols-rounded) {
   padding: 0.1rem 0.15rem;
 }
 
-.shortcut-hints__close {
+.shortcuts-overlay__close {
   position: absolute;
   top: 0.75rem;
   right: 1rem;
@@ -882,24 +882,24 @@ button {
   transition: color var(--motion-fast) ease;
 }
 
-.shortcut-hints__close:hover {
+.shortcuts-overlay__close:hover {
   color: var(--bs-body-color);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shortcut-hints {
+  .shortcuts-overlay {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
 }
 
-#rj-toast {
+#toast {
   position: fixed;
   bottom: calc(2rem + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%) translateY(0.75rem);
   z-index: var(--z-toast);
-  --rj-toast-shadow: var(--shadow-md);
+  --toast-shadow: var(--shadow-md);
   background: rgba(var(--my-white-rgb), 0.92);
   color: var(--bs-body-color);
   border: 1px solid var(--my-border-color);
@@ -913,7 +913,7 @@ button {
   overflow-wrap: anywhere;
   text-align: center;
   max-width: min(28rem, calc(100vw - 2rem));
-  box-shadow: var(--rj-toast-shadow);
+  box-shadow: var(--toast-shadow);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   opacity: 0;
@@ -922,24 +922,24 @@ button {
     opacity var(--motion-base) ease,
     transform var(--motion-base) ease;
 }
-#rj-toast.rj-toast--visible {
+#toast.toast--visible {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
-#rj-toast.rj-toast--hiding {
+#toast.toast--hiding {
   opacity: 0;
   transform: translateX(-50%) translateY(0.5rem);
 }
 {{ range site.Data.toast.variants -}}
-#rj-toast.rj-toast--{{ .name }} {
-  --rj-toast-shadow: {{ .shadow }};
+#toast.toast--{{ .name }} {
+  --toast-shadow: {{ .shadow }};
 }
 {{ end -}}
 @media (prefers-reduced-motion: reduce) {
-  #rj-toast { transition-duration: 0.01ms !important; }
+  #toast { transition-duration: 0.01ms !important; }
 }
 
-#rj-page-loader {
+#page-loader {
   position: fixed;
   inset: 0;
   z-index: calc(var(--z-pill) - 1); /* below pill + page-console; chrome stays reachable */
@@ -949,23 +949,23 @@ button {
   background: var(--my-background);
   transition: opacity 0.45s ease;
 }
-#rj-page-loader.dismissed {
+#page-loader.dismissed {
   opacity: 0;
   pointer-events: none;
 }
-.rj-spinner {
+.spinner {
   width: 26px;
   height: 26px;
   border-radius: 50%;
   border: 2.5px solid var(--my-silver-1);
   border-top-color: var(--my-black);
-  animation: rj-spin var(--motion-loader) linear infinite;
+  animation: spin var(--motion-loader) linear infinite;
 }
-@keyframes rj-spin {
+@keyframes spin {
   to { transform: rotate(360deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .rj-spinner {
+  .spinner {
     animation-duration: 3s;
   }
 }
@@ -1045,7 +1045,17 @@ html[data-bs-theme="dark"] .img-error {
 #page-console.top    { flex-direction: column;          top:    2.5vw; }
 #page-console.bottom { flex-direction: column-reverse; bottom: calc(2.5vw + 4.5vh); }
 
-#head-panel {
+/* Shared surface for all four page-console panels (parallel to .command-panel
+   on the command-console). Individual panels add their own layout/sizing. */
+.page-panel {
+  border-radius: calc(var(--signture-height) * 0.4);
+  background-color: rgba(var(--my-white-rgb), 0.8);
+  box-shadow: var(--my-border-color) 0px 3px 6px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+#pg-head-panel {
   position: relative;
   display: flex;
   gap: calc(0.15 * var(--signture-height));
@@ -1053,16 +1063,11 @@ html[data-bs-theme="dark"] .img-error {
   justify-content: space-evenly;
   height: var(--signture-height);
   padding-inline: calc(0.3 * var(--signture-height));
-  border-radius: calc(var(--signture-height) * 0.4);
-  background-color: rgba(var(--my-white-rgb), 0.8);
-  box-shadow: var(--my-border-color) 0px 3px 6px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(10px);
   transition: width 0.25s ease, padding-inline 0.25s ease;
 }
-#page-console.right #head-panel { flex-direction: row-reverse; }
+#page-console.right #pg-head-panel { flex-direction: row-reverse; }
 
-.head-item {
+.pg-head__item {
   display: flex;
   background: transparent !important;
   border: none;
@@ -1077,12 +1082,12 @@ html[data-bs-theme="dark"] .img-error {
   touch-action: manipulation;
   transition: color var(--motion-fast) ease, text-shadow var(--motion-fast) ease, transform var(--motion-fast) ease;
 }
-.head-item:hover { text-shadow: var(--glow-md); }
+.pg-head__item:hover { text-shadow: var(--glow-md); }
 
-#text-size-toggle:hover,
+#pg-text-size-toggle:hover,
 #page-console-toggle:hover { text-shadow: var(--glow-sm); }
-/* #toc-toggle glow is filter: drop-shadow on .toc-icon — text-shadow has no
-   effect on SVG content. See projectStyle.css #toc-toggle:hover .toc-icon. */
+/* #pg-toc-toggle glow is filter: drop-shadow on .pg-toc-icon — text-shadow has no
+   effect on SVG content. See projectStyle.css #pg-toc-toggle:hover .pg-toc-icon. */
 
 #page-console-toggle .bi { transition: transform var(--motion-base) ease; }
 #page-console.left:not(.contracted)  #page-console-toggle .bi { transform: scaleX(1);  }
@@ -1090,7 +1095,7 @@ html[data-bs-theme="dark"] .img-error {
 #page-console.left.contracted  #page-console-toggle .bi { transform: scaleX(-1); }
 #page-console.right.contracted #page-console-toggle .bi { transform: scaleX(1);  }
 
-#page-console.contracted #head-panel {
+#page-console.contracted #pg-head-panel {
   width: var(--signture-height);
   padding-inline: 0;
   justify-content: center;
@@ -1100,20 +1105,15 @@ html[data-bs-theme="dark"] .img-error {
   width: 100%;
   height: 100%;
 }
-#page-console.contracted .head-item:not(#page-console-toggle) { display: none !important; }
-#page-console.contracted .page-summoned                       { display: none !important; }
+#page-console.contracted .pg-head__item:not(#page-console-toggle) { display: none !important; }
+#page-console.contracted .pg-summoned                       { display: none !important; }
 
-.page-summoned {
-  border-radius: calc(var(--signture-height) * 0.4);
-  background-color: rgba(var(--my-white-rgb), 0.8);
-  box-shadow: var(--my-border-color) 0px 3px 6px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(10px);
+.pg-summoned {
   box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
-  #page-console.contracted #head-panel {
+  #page-console.contracted #pg-head-panel {
     width: calc(0.7 * var(--signture-height));
     padding-inline: calc(0.08 * var(--signture-height));
     background-color: rgba(var(--my-white-rgb), 0.8);
@@ -1123,8 +1123,8 @@ html[data-bs-theme="dark"] .img-error {
     margin-inline: 0 !important;
     border-radius: calc(var(--signture-height) * 0.34);
   }
-  #page-console.right.contracted #head-panel { margin-right: -26px !important; }
-  #page-console.left.contracted #head-panel  { margin-left:  -26px !important; }
+  #page-console.right.contracted #pg-head-panel { margin-right: -26px !important; }
+  #page-console.left.contracted #pg-head-panel  { margin-left:  -26px !important; }
   #page-console.contracted .scroll-arc { visibility: hidden; }
 }
 

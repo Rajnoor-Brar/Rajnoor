@@ -3,12 +3,12 @@
 (function () {
   if (!window.__features?.shortcutHints) return;
 
-  const dialog = document.getElementById('shortcut-hints');
+  const dialog = document.getElementById('shortcuts-overlay');
   if (!dialog) return;
 
-  function open()  { dialog.classList.add('shortcut-hints--open');  }
-  function close() { dialog.classList.remove('shortcut-hints--open'); }
-  function toggle(){ dialog.classList.toggle('shortcut-hints--open'); }
+  function open()  { dialog.classList.add('shortcuts-overlay--open');  }
+  function close() { dialog.classList.remove('shortcuts-overlay--open'); }
+  function toggle(){ dialog.classList.toggle('shortcuts-overlay--open'); }
 
   document.addEventListener('keydown', (e) => {
     // ? key — ignore when user is typing in an input / textarea
@@ -26,7 +26,7 @@
   });
 
   // Action-panel "?" toggle button
-  const toggleBtn = document.getElementById('shortcut-hints-toggle');
+  const toggleBtn = document.getElementById('shortcuts-toggle');
   if (toggleBtn) {
     toggleBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -35,7 +35,7 @@
   }
 
   // Close button inside the overlay
-  const closeBtn = dialog.querySelector('.shortcut-hints__close');
+  const closeBtn = dialog.querySelector('.shortcuts-overlay__close');
   if (closeBtn) closeBtn.addEventListener('click', close);
 
   // Expose cleanup for SPA navigation

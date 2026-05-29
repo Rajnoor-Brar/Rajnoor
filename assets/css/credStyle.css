@@ -1,6 +1,22 @@
 /* ── Credentials page tokens ─────────────────────────────────────────────── */
 :root {
     --cred-icon-max-h: 7.5rem; /* publication icon height — 120px equivalent */
+
+    /* Skill badge — font/sizing knobs (tune the whole pill family here) */
+    --skill-badge-font:         var(--my-font-ui);
+    --skill-badge-label-weight: 600;
+    --skill-badge-label-size:   0.95rem;
+    --skill-badge-note-size:    0.7rem;
+    --skill-badge-icon-size:    1.25rem;
+    --skill-badge-gap:          0.5rem;
+    --skill-badge-pad-y:        0.4rem;
+    --skill-badge-pad-x:        0.9rem;
+    --skill-badge-dot-size:     0.4rem;
+    /* Keep pills a consistent footprint over typical content; the meter is pushed
+       to the trailing edge so text↔proficiency always reads as one clear gap. */
+    --skill-badge-min-width:    11rem;
+    --skill-badge-min-height:   2.75rem;
+    --skill-badge-meter-gap:    1rem;
 }
 
 /* Section heading (Publications / Academic / Certifications).
@@ -22,12 +38,12 @@
     font-family: var(--my-font-ui);
     font-size: 0.8em;
 }
-.certificate-link{
+.certificate__link{
     font-family: var(--my-font-ui);
     font-size: 0.8em;
 }
 
-/* .certificate-link .btn {
+/* .certificate__link .btn {
     white-space: normal;
     word-break: break-all;
     word-wrap: ellipsis;
@@ -35,7 +51,7 @@
     text-underline-offset: 0.18em;
 } */
 
-.certificate-link .btn {
+.certificate__link .btn {
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
@@ -45,23 +61,23 @@
     text-underline-offset: 0.18em;
 }
 
-.certificate-link.linked-id a.btn:hover,
-.certificate-link.linked-id a.btn:focus-visible,
-.citation-doi a:hover,
-.citation-doi a:focus-visible {
+.certificate__link.linked-id a.btn:hover,
+.certificate__link.linked-id a.btn:focus-visible,
+.citation__doi a:hover,
+.citation__doi a:focus-visible {
     text-decoration: underline;
 }
 
-.certificate-copy:hover,
-.certificate-copy:focus-visible {
+.certificate__copy:hover,
+.certificate__copy:focus-visible {
     text-decoration: underline;
 }
 
-.certificate-footer{
+.certificate__footer{
     justify-content: end;
 }
 
-.certificate-marks{
+.certificate__marks{
     text-align: right;
 }
 
@@ -71,7 +87,7 @@
     }
 }
 
-.certificate-icon{
+.certificate__icon{
     width:100%;
     aspect-ratio:1/1;
     display:flex;
@@ -82,14 +98,14 @@
     border-radius: 0.5rem;
     background: transparent;
 }
-.certificate-icon img {
+.certificate__icon img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     background: transparent;
 }
 
-.publication-icon-frame {
+.publication__icon-frame {
     width: min(100%, 9rem);
     aspect-ratio: 1 / 1;
     display: flex;
@@ -100,10 +116,112 @@
     background: transparent;
 }
 
-.publication-icon {
+.publication__icon {
     width: 100%;
     height: 100%;
     max-height: var(--cred-icon-max-h);
     object-fit: contain;
     background: transparent;
+}
+
+/* ── Skill badge (credentials `type: skill`) ─────────────────────────────── */
+.skill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--skill-badge-gap);
+    min-width: var(--skill-badge-min-width);
+    min-height: var(--skill-badge-min-height);
+    max-width: 100%;
+    padding: var(--skill-badge-pad-y) var(--skill-badge-pad-x);
+    border-radius: var(--radius-pill);
+    background: var(--my-white);
+    border: 1px solid var(--my-border-color);
+    color: var(--bs-body-color);
+    text-decoration: none;
+    transition: box-shadow var(--motion-base) ease, transform var(--motion-base) ease;
+}
+
+/* Card-style lift on hover for every pill (linked or not). */
+.skill-badge:hover,
+.skill-badge:focus-visible {
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+}
+
+/* Linked pills additionally underline their label on hover. */
+.skill-badge--link {
+    cursor: pointer;
+}
+.skill-badge--link:hover .skill-badge__label,
+.skill-badge--link:focus-visible .skill-badge__label {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+}
+
+.skill-badge__icon {
+    flex: 0 0 auto;
+    width: var(--skill-badge-icon-size);
+    height: var(--skill-badge-icon-size);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.skill-badge__icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.skill-badge__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.15;
+}
+
+.skill-badge__label {
+    font-family: var(--skill-badge-font);
+    font-weight: var(--skill-badge-label-weight);
+    font-size: var(--skill-badge-label-size);
+    color: var(--my-black);
+    white-space: nowrap;
+}
+
+.skill-badge__note {
+    font-family: var(--skill-badge-font);
+    font-size: var(--skill-badge-note-size);
+    color: var(--my-gray-1);
+    white-space: nowrap;
+}
+
+.skill-badge__meter {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    /* Pin to the trailing edge; padding-left guarantees a gap even when the
+       label/note is long enough to consume the pill's min-width. */
+    margin-left: auto;
+    padding-left: var(--skill-badge-meter-gap);
+}
+.skill-badge__dot {
+    width: var(--skill-badge-dot-size);
+    height: var(--skill-badge-dot-size);
+    border-radius: 50%;
+    background: var(--my-silver-1);
+}
+.skill-badge__dot--filled {
+    background: var(--my-black);
+}
+
+/* Mobile: stack the pills one-per-row (full width) instead of wrapping. With
+   the meter pinned right, each pill reads as a label-left / proficiency-right row. */
+@media (max-width: 575.98px) {
+    .cred-skill-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .cred-skill-row .skill-badge {
+        min-width: 0;
+    }
 }

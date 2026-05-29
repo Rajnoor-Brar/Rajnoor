@@ -21,7 +21,7 @@ function hideCornerTargets() { if (cornerTargetsEl) cornerTargetsEl.classList.re
 // ============================================== Mini-map dot clicks ==============================================
 
 function attachCornerPickerHandlers() {
-  document.querySelectorAll('.corner-dot').forEach(dot => {
+  document.querySelectorAll('.corner-picker__dot').forEach(dot => {
     dot.addEventListener('click', (e) => {
       e.stopPropagation();
       tapHaptic();
@@ -55,7 +55,7 @@ let dragStart = null;
 function attachDragHandlers() {
   commandConsoleEl.addEventListener('pointerdown', (e) => {
     // Don't start a drag from inside the command box (nav links, theme toggle, corner-picker)
-    if (e.target.closest('#command-box')) return;
+    if (e.target.closest('#command-console-tray')) return;
     if (e.button !== undefined && e.button !== 0) return;
 
     dragState = 'pending';
@@ -130,7 +130,7 @@ function attachDragHandlers() {
       }
     } else {
       // Tap (no drag) — toggle: close if already open, otherwise pin open
-      const panelIsOpen = !commandBox.classList.contains('hide');
+      const panelIsOpen = !consoleTray.classList.contains('hide');
       if (panelIsOpen) {
         pinnedOpen = false;
         commandConsoleEl.blur();

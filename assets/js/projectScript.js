@@ -138,9 +138,9 @@ function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValu
 // This IIFE only manages: heading extraction, 3-state cycle, scroll spy,
 // and visibility (.shown on toggle, .hide on panel).
 (function () {
-  const toggle  = document.getElementById('toc-toggle');
-  const panel   = document.getElementById('toc-panel');
-  const list    = document.getElementById('toc-list');
+  const toggle  = document.getElementById('pg-toc-toggle');
+  const panel   = document.getElementById('pg-toc-panel');
+  const list    = document.getElementById('pg-toc-list');
   const article = document.querySelector('.article');
   if (!toggle || !panel || !list || !article) return;
 
@@ -154,9 +154,9 @@ function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValu
   let liByHeading = new Map();
 
   function setActive(li) {
-    list.querySelectorAll('.toc-list__item--active').forEach(el => el.classList.remove('toc-list__item--active'));
+    list.querySelectorAll('.pg-toc-list__item--active').forEach(el => el.classList.remove('pg-toc-list__item--active'));
     if (!li) { panel.style.setProperty('--toc-indicator-shown', '0'); return; }
-    li.classList.add('toc-list__item--active');
+    li.classList.add('pg-toc-list__item--active');
     const indH = Math.round(li.offsetHeight * 0.7);
     panel.style.setProperty('--toc-active-y',        (li.offsetTop + Math.round((li.offsetHeight - indH) / 2)) + 'px');
     panel.style.setProperty('--toc-active-h',        indH + 'px');
@@ -170,7 +170,7 @@ function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValu
     const selector = mode === 'l1' ? 'h2[id]' : 'h2[id], h3[id]';
     article.querySelectorAll(selector).forEach(h => {
       const li = document.createElement('li');
-      li.className = 'toc-list__item ' + (h.tagName === 'H3' ? 'toc-list__item--h3' : 'toc-list__item--h2');
+      li.className = 'pg-toc-list__item ' + (h.tagName === 'H3' ? 'pg-toc-list__item--h3' : 'pg-toc-list__item--h2');
       const a  = document.createElement('a');
       a.href = '#' + h.id;
       a.textContent = h.textContent;
@@ -239,13 +239,13 @@ function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValu
   });
 })();
 
-// ── Project detail: text-size toggle button (head-panel) ─────────────────
-// Wires the #text-size-toggle click to open/close #text-size-panel. Element
+// ── Project detail: pg-text-size toggle button (pg-head-panel) ─────────────────
+// Wires the #pg-text-size-toggle click to open/close #pg-text-size-panel. Element
 // lives in #page-console, which only exists on project pages, so this IIFE
 // re-runs (and re-attaches the handler) on every SPA navigation hit.
 (function () {
-  const toggle = document.getElementById('text-size-toggle');
-  const panel  = document.getElementById('text-size-panel');
+  const toggle = document.getElementById('pg-text-size-toggle');
+  const panel  = document.getElementById('pg-text-size-panel');
   if (!toggle || !panel) return;
 
   function onClick(e) {

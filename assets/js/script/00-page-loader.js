@@ -6,7 +6,7 @@
   function dismiss() {
     if (dismissed) return;
     dismissed = true;
-    var el = document.getElementById('rj-page-loader');
+    var el = document.getElementById('page-loader');
     if (!el) return;
     el.classList.add('dismissed');
     setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 500);

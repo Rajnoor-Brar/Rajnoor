@@ -33,7 +33,7 @@ function updateTopSpacer(vert) {
 }
 
 function updateCornerPicker(code) {
-  document.querySelectorAll('.corner-dot').forEach(d => {
+  document.querySelectorAll('.corner-picker__dot').forEach(d => {
     d.classList.toggle('active', d.dataset.corner === code);
   });
 }
@@ -79,7 +79,7 @@ function requestShift(toCode) {
   const fromCode = currentCornerCode();
   if (fromCode === toCode) return;
 
-  const panelOpen = !commandBox.classList.contains('hide');
+  const panelOpen = !consoleTray.classList.contains('hide');
   if (panelOpen) {
     closeNavPanel();
     setTimeout(() => shiftSignature(fromCode, toCode), 350);
@@ -136,21 +136,21 @@ function syncPageConsoleCorner(to) {
   // Adaptive default: mobile (≤768px) starts collapsed, desktop expanded.
   // User override persisted to localStorage under `rj_chapter_strip_collapsed`.
   // Mirrors the page-console contracted-state pattern above.
-  const strip = document.getElementById('chapter-strip-panel');
+  const strip = document.getElementById('pg-chapter-strip-panel');
   if (strip) {
     const stripStored = localStorage.getItem('rj_chapter_strip_collapsed');
     const stripCollapsed =
       stripStored === '1' || (stripStored === null && isMobile);
     if (stripCollapsed) {
       strip.classList.add('collapsed');
-      const stripBtn = document.getElementById('chapter-strip-toggle');
+      const stripBtn = document.getElementById('pg-chapter-strip-toggle');
       if (stripBtn) {
         stripBtn.setAttribute('aria-expanded', 'false');
         stripBtn.setAttribute('aria-label', 'Expand chapter strip');
       }
     }
     // Bind click handler (idempotent — replace any prior listener after SPA nav)
-    const stripBtn = document.getElementById('chapter-strip-toggle');
+    const stripBtn = document.getElementById('pg-chapter-strip-toggle');
     if (stripBtn && !stripBtn.dataset.rjBound) {
       stripBtn.dataset.rjBound = '1';
       stripBtn.addEventListener('click', () => {

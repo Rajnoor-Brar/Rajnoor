@@ -56,12 +56,12 @@ pre{
     color:var(--my-gray-1);
 }
 
-/* ── Chapter-strip panel (lives inside #page-console, below #head-panel) ──
+/* ── Chapter-strip panel (lives inside #page-console, below #pg-head-panel) ──
    Always visible when console is expanded; has its own collapse toggle
-   that shrinks it to head-panel-shape. Inherits .page-summoned base
+   that shrinks it to pg-head-panel-shape. Inherits .pg-summoned base
    (background, blur, shadow, radius) plus existing visibility rules
    (hidden when console is contracted). */
-.chapter-strip-panel {
+.pg-chapter-strip-panel {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -76,7 +76,7 @@ pre{
         padding 0.25s ease;
 }
 
-.chapter-strip-toggle {
+.pg-chapter-strip-toggle {
     align-self: flex-start;
     width: calc(0.45 * var(--signture-height));
     height: calc(0.45 * var(--signture-height));
@@ -91,14 +91,14 @@ pre{
     color: var(--bs-body-color);
     transition: color var(--motion-fast) ease, text-shadow var(--motion-fast) ease;
 }
-.chapter-strip-toggle:hover {
+.pg-chapter-strip-toggle:hover {
     text-shadow: var(--glow-sm);
 }
-.chapter-strip-toggle .bi {
+.pg-chapter-strip-toggle .bi {
     transition: transform 0.25s ease;
 }
 
-.chapter-strip-list {
+.pg-chapter-strip-list {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -107,31 +107,31 @@ pre{
     gap: 0.35rem;
 }
 
-.chapter-strip__item {
+.pg-chapter-strip__item {
     padding-left: 0.4rem;
     border-left: 2px solid transparent;
     transition: border-color var(--motion-fast) ease;
 }
-.chapter-strip__item.active {
+.pg-chapter-strip__item.active {
     border-left-color: var(--my-black);
 }
 
-.chapter-strip__link {
+.pg-chapter-strip__link {
     color: var(--my-gray-1);
     text-decoration: none;
     font-size: 0.9rem;
     transition: color var(--motion-fast) ease;
 }
-.chapter-strip__link:hover {
+.pg-chapter-strip__link:hover {
     color: var(--my-black);
 }
-.chapter-strip__item.active .chapter-strip__link {
+.pg-chapter-strip__item.active .pg-chapter-strip__link {
     color: var(--my-black);
     font-weight: 600;
 }
 
-/* Collapsed: shrink to head-panel-shape pill — only toggle visible */
-.chapter-strip-panel.collapsed {
+/* Collapsed: shrink to pg-head-panel-shape pill — only toggle visible */
+.pg-chapter-strip-panel.collapsed {
     min-width: var(--signture-height);
     max-width: var(--signture-height);
     height: var(--signture-height);
@@ -139,38 +139,38 @@ pre{
     align-items: center;
     justify-content: center;
 }
-.chapter-strip-panel.collapsed .chapter-strip-toggle {
+.pg-chapter-strip-panel.collapsed .pg-chapter-strip-toggle {
     /* align-self: auto !important; */
     /* margin-bottom: 0; */
 }
-.chapter-strip-panel.collapsed .chapter-strip-toggle .bi {
+.pg-chapter-strip-panel.collapsed .pg-chapter-strip-toggle .bi {
     transform: rotate(180deg);
 }
-.chapter-strip-panel.collapsed .chapter-strip-list {
+.pg-chapter-strip-panel.collapsed .pg-chapter-strip-list {
     display: none;
 }
 
 /* Right-corner mirror: align contents flush to the right edge */
-#page-console.right .chapter-strip-toggle {
+#page-console.right .pg-chapter-strip-toggle {
     align-self: flex-end;
 }
 
-#page-console.right .chapter-strip__item {
+#page-console.right .pg-chapter-strip__item {
     padding-left: 0;
     padding-right: 0.4rem;
     border-left: none;
     border-right: 2px solid transparent;
     text-align: right;
 }
-#page-console.right .chapter-strip__item.active {
+#page-console.right .pg-chapter-strip__item.active {
     border-right-color: var(--my-black);
 }
 
-/* Spacing alongside head-panel — match existing .page-summoned pattern */
-#page-console:not(.bottom) #chapter-strip-panel {
+/* Spacing alongside pg-head-panel — match existing .pg-summoned pattern */
+#page-console:not(.bottom) #pg-chapter-strip-panel {
     margin-top: calc(0.25 * var(--signture-height));
 }
-#page-console.bottom #chapter-strip-panel {
+#page-console.bottom #pg-chapter-strip-panel {
     margin-bottom: calc(0.25 * var(--signture-height));
 }
 
@@ -758,54 +758,54 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Page-console content (project-page-specific):
-     • #text-size-toggle — active state when its panel is open
-     • #text-size-panel  — slider container summoned by the toggle
-     • #toc-toggle       — 3-state cycle icon swap
-     • #toc-panel        — table-of-contents list rendering
-   The generic skeleton (#page-console positioning, #head-panel pill,
-   .head-item base styling, .page-summoned card template, contraction)
+     • #pg-text-size-toggle — active state when its panel is open
+     • #pg-text-size-panel  — slider container summoned by the toggle
+     • #pg-toc-toggle       — 3-state cycle icon swap
+     • #pg-toc-panel        — table-of-contents list rendering
+   The generic skeleton (#page-console positioning, #pg-head-panel pill,
+   .pg-head__item base styling, .pg-summoned card template, contraction)
    lives in style.css.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* head-panel sized to fit the three project buttons + arc */
-#head-panel { width: calc(2.25 * var(--signture-height)); }
+/* pg-head-panel sized to fit the three project buttons + arc */
+#pg-head-panel { width: calc(2.25 * var(--signture-height)); }
 
-/* Active state of text-size toggle (panel open) */
-#text-size-toggle.active { color: var(--my-black); }
+/* Active state of pg-text-size toggle (panel open) */
+#pg-text-size-toggle.active { color: var(--my-black); }
 
 /* 3-state ToC toggle: cycles none → l1 → l2; active states use full-contrast ink */
-#toc-toggle[data-mode="l1"],
-#toc-toggle[data-mode="l2"] { color: var(--my-black); }
+#pg-toc-toggle[data-mode="l1"],
+#pg-toc-toggle[data-mode="l2"] { color: var(--my-black); }
 
 /* Lucide icon visibility: one icon shown per data-mode state.
    Lucide's createIcons() replaces each <i data-lucide> with an <svg> that
    inherits all original classes, so these selectors work both before and
    after icon rendering. */
-#toc-toggle .toc-icon {
+#pg-toc-toggle .pg-toc-icon {
   display: none;
   width: 1em;
   height: 1em;
   pointer-events: none;     /* let clicks fall through to the button */
   transition: filter var(--motion-fast) ease;
 }
-#toc-toggle:hover .toc-icon {
+#pg-toc-toggle:hover .pg-toc-icon {
   filter: drop-shadow(0 0 1px color-mix(in srgb, var(--my-theme-accent) 60%, transparent));
 }
-#toc-toggle[data-mode="none"] .toc-icon--none,
-#toc-toggle[data-mode="l1"]   .toc-icon--l1,
-#toc-toggle[data-mode="l2"]   .toc-icon--l2  { display: block; }
+#pg-toc-toggle[data-mode="none"] .pg-toc-icon--none,
+#pg-toc-toggle[data-mode="l1"]   .pg-toc-icon--l1,
+#pg-toc-toggle[data-mode="l2"]   .pg-toc-icon--l2  { display: block; }
 
-/* ── Text size & figure width panel (summoned by #text-size-toggle) ──────── */
-#text-size-panel {
+/* ── Text size & figure width panel (summoned by #pg-text-size-toggle) ──────── */
+#pg-text-size-panel {
   display: none;
   flex-direction: column;
   gap: calc(0.12 * var(--signture-height));
   padding: calc(0.25 * var(--signture-height));
   width: calc(2.25 * var(--signture-height));
 }
-#text-size-panel.open { display: flex; }
+#pg-text-size-panel.open { display: flex; }
 
-.size-row {
+.pg-size-row {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -817,7 +817,7 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
    Tiny visible affordance — clicking resets the row's slider to default
    and clears its localStorage key. Right-click on the slider still works
    as a power-user shortcut (both bind to the same reset function in JS). */
-.size-reset-dot {
+.pg-size-reset-dot {
   flex: 0 0 auto;
   width: 8px;
   height: 8px;
@@ -829,38 +829,38 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
   position: relative;
   transition: background-color var(--motion-fast) ease, transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
 }
-.size-reset-dot::before {
+.pg-size-reset-dot::before {
   content: "";
   position: absolute;
   inset: -8px;            /* extend hit area to ~24px square */
 }
-.size-reset-dot:hover {
+.pg-size-reset-dot:hover {
   background: var(--my-black);
   transform: scale(1.4);
   box-shadow: 0 0 6px var(--my-theme-accent);
 }
 
-.text-size-label {
+.pg-text-size-label {
   font-family: var(--my-font-ui);
   font-weight: 600;
   color: var(--my-gray-1);
   line-height: 1;
   user-select: none;
 }
-.text-size-label--sm { font-size: 0.65rem; }
-.text-size-label--lg { font-size: 1rem; }
+.pg-text-size-label--sm { font-size: 0.65rem; }
+.pg-text-size-label--lg { font-size: 1rem; }
 
-.img-size-label {
+.pg-img-size-label {
   color: var(--my-gray-1);
   line-height: 1;
   user-select: none;
   font-variation-settings: 'FILL' 1, 'wght' 200, 'GRAD' 0, 'opsz' 20;
 }
-.img-size-label--sm { font-size: 0.7rem; }
-.img-size-label--lg { font-size: 1.05rem; }
+.pg-img-size-label--sm { font-size: 0.7rem; }
+.pg-img-size-label--lg { font-size: 1.05rem; }
 
-#text-size-slider,
-#img-size-slider {
+#pg-text-size-slider,
+#pg-img-size-slider {
   -webkit-appearance: none;
   appearance: none;
   flex: 1;
@@ -874,8 +874,8 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
   margin: 0;
   padding: 0;
 }
-#text-size-slider::-webkit-slider-thumb,
-#img-size-slider::-webkit-slider-thumb {
+#pg-text-size-slider::-webkit-slider-thumb,
+#pg-img-size-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 8px;
@@ -885,8 +885,8 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
   cursor: pointer;
   transition: transform var(--motion-fast) ease;
 }
-#text-size-slider::-moz-range-thumb,
-#img-size-slider::-moz-range-thumb {
+#pg-text-size-slider::-moz-range-thumb,
+#pg-img-size-slider::-moz-range-thumb {
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -895,20 +895,20 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
   cursor: pointer;
   transition: transform var(--motion-fast) ease;
 }
-#text-size-slider::-webkit-slider-thumb:hover,
-#img-size-slider::-webkit-slider-thumb:hover { transform: scale(1.5); }
-#text-size-slider::-moz-range-thumb:hover,
-#img-size-slider::-moz-range-thumb:hover     { transform: scale(1.5); }
+#pg-text-size-slider::-webkit-slider-thumb:hover,
+#pg-img-size-slider::-webkit-slider-thumb:hover { transform: scale(1.5); }
+#pg-text-size-slider::-moz-range-thumb:hover,
+#pg-img-size-slider::-moz-range-thumb:hover     { transform: scale(1.5); }
 
-#text-size-slider:focus-visible,
-#img-size-slider:focus-visible {
+#pg-text-size-slider:focus-visible,
+#pg-img-size-slider:focus-visible {
     outline: 2px solid var(--my-theme-accent);
     outline-offset: 4px;
     border-radius: 4px;
 }
 
-/* ── Floating ToC panel (summoned by #toc-toggle) ────────────────────────── */
-#toc-panel {
+/* ── Floating ToC panel (summoned by #pg-toc-toggle) ────────────────────────── */
+#pg-toc-panel {
   width: calc(2.25 * var(--signture-height));
   max-height: 60vh;
   overflow-y: auto;
@@ -916,8 +916,8 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
   position: relative;
 }
 
-/* Sliding active indicator — mirrors #nav-panel::before, sits at panel edge */
-#toc-panel::before {
+/* Sliding active indicator — mirrors #navigation-panel::before, sits at panel edge */
+#pg-toc-panel::before {
   content: "";
   position: absolute;
   left: 0;
@@ -932,21 +932,21 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
               height var(--motion-slow) cubic-bezier(0.22, 1, 0.36, 1),
               opacity var(--motion-fast) ease;
 }
-#toc-panel.hide { display: none !important; }
+#pg-toc-panel.hide { display: none !important; }
 
-#toc-panel .toc-list {
+#pg-toc-panel .pg-toc-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.toc-list__item {
+.pg-toc-list__item {
   font-family: var(--my-font-title);
   line-height: 1.25;
   padding: 0.35em 0.6em;
   transition: color var(--motion-fast) ease, transform var(--motion-fast) ease;
 }
-.toc-list__item a {
+.pg-toc-list__item a {
   display: block;
   color: var(--my-gray-2);
   text-decoration: none;
@@ -955,35 +955,35 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.toc-list__item:hover     { transform: translateX(2px); }
-.toc-list__item:hover a   { color: var(--my-black); }
-.toc-list__item--h2       { font-size: 0.95rem; padding-top: 1em; font-weight: 500; }
-.toc-list__item--h3       { font-size: 0.7rem;  padding-top: 0.35em; }
-.toc-list__item--active a { color: var(--my-black); font-weight: 600; }
-.toc-list__item a:focus-visible {
+.pg-toc-list__item:hover     { transform: translateX(2px); }
+.pg-toc-list__item:hover a   { color: var(--my-black); }
+.pg-toc-list__item--h2       { font-size: 0.95rem; padding-top: 1em; font-weight: 500; }
+.pg-toc-list__item--h3       { font-size: 0.7rem;  padding-top: 0.35em; }
+.pg-toc-list__item--active a { color: var(--my-black); font-weight: 600; }
+.pg-toc-list__item a:focus-visible {
     outline: 2px solid var(--my-theme-accent);
     outline-offset: 2px;
     border-radius: 2px;
 }
 
-/* Spacing: only when a panel is actually visible alongside head-panel */
-#text-size-panel.open,
-#toc-panel:not(.hide) { margin-top: calc(0.25 * var(--signture-height)); }
-#page-console.bottom #text-size-panel.open,
-#page-console.bottom #toc-panel:not(.hide) {
+/* Spacing: only when a panel is actually visible alongside pg-head-panel */
+#pg-text-size-panel.open,
+#pg-toc-panel:not(.hide) { margin-top: calc(0.25 * var(--signture-height)); }
+#page-console.bottom #pg-text-size-panel.open,
+#page-console.bottom #pg-toc-panel:not(.hide) {
   margin-top: 0;
   margin-bottom: calc(0.25 * var(--signture-height));
 }
 
 /* Text-align + indent flip based on which side #page-console is anchored to */
-#page-console.left  #toc-panel            { text-align: left;  }
-#page-console.left  .toc-list__item--h3   { padding-left: 1.4em; }
-#page-console.right #toc-panel            { text-align: right; }
-#page-console.right .toc-list__item--h3   { padding-right: 1.4em; }
-#page-console.right #toc-panel::before { left: auto; right: 0; }
+#page-console.left  #pg-toc-panel            { text-align: left;  }
+#page-console.left  .pg-toc-list__item--h3   { padding-left: 1.4em; }
+#page-console.right #pg-toc-panel            { text-align: right; }
+#page-console.right .pg-toc-list__item--h3   { padding-right: 1.4em; }
+#page-console.right #pg-toc-panel::before { left: auto; right: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   /* Snap the TOC active-indicator to its new position instantly so it
      doesn't slide across the panel under reduced-motion preferences. */
-  #toc-panel::before { transition-duration: 0.01ms !important; }
+  #pg-toc-panel::before { transition-duration: 0.01ms !important; }
 }

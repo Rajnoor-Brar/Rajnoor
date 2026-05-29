@@ -15,10 +15,10 @@
 
   <ul class="now-items list-unstyled">
     {{ range site.Data.now.items }}
-    <li class="now-item-row">
+    <li class="now-item__row">
       {{ if .description }}
-      <details class="now-item-details"{{ if site.Params.features.nowExpanded }} open{{ end }}>
-        <summary class="now-item-summary">
+      <details class="now-item__details"{{ if site.Params.features.nowExpanded }} open{{ end }}>
+        <summary class="now-item__summary">
           <span class="now-item__verb"><em>{{ .verb }}</em></span>
           <span class="now-item__phrase">{{ .phrase | safeHTML }}</span>
         </summary>

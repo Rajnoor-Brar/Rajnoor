@@ -1,11 +1,11 @@
-// ── Command Palette (⌘K palette) ─────────────────────────────────────────────
-// Gated by window.__features.commandPalette — only loaded when flag is on.
+// ── Spotlight — fuzzy page search overlay (Shift+Space) ──────────────────────
+// Gated by window.__features.spotlight — only loaded when flag is on.
 (function () {
-  if (!window.__features?.commandPalette) return;
+  if (!window.__features?.spotlight) return;
 
-  const overlay = document.getElementById('command-palette');
-  const input   = document.getElementById('command-palette-input');
-  const list    = document.getElementById('command-palette-list');
+  const overlay = document.getElementById('spotlight-overlay');
+  const input   = document.getElementById('spotlight-overlay-input');
+  const list    = document.getElementById('spotlight-overlay-list');
   if (!overlay || !input || !list) return;
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -13,9 +13,18 @@
   let activeIndex = -1;
   let searchReadyAnnounced = false;
 
+  // Toast copy sourced from data/script.yaml › spotlight.toasts (single source
+  // of truth). cfgToast maps a { message, duration, variant } config onto showToast.
+  const TOASTS = {{ site.Data.script.spotlight.toasts | jsonify }};
+  function cfgToast(cfg) {
+    if (cfg && cfg.message && typeof showToast === 'function') {
+      showToast(cfg.message, { duration: cfg.duration, variant: cfg.variant });
+    }
+  }
+
   // ── Open / close ──────────────────────────────────────────────────────────
   function open() {
-    overlay.classList.add('command-palette--open');
+    overlay.classList.add('spotlight-overlay--open');
     input.value = '';
     input.focus();
     activeIndex = -1;
@@ -24,12 +33,12 @@
   }
 
   function close() {
-    overlay.classList.remove('command-palette--open');
+    overlay.classList.remove('spotlight-overlay--open');
     activeIndex = -1;
   }
 
   function toggle() {
-    overlay.classList.contains('command-palette--open') ? close() : open();
+    overlay.classList.contains('spotlight-overlay--open') ? close() : open();
   }
 
   // ── Index fetch ────────────────────────────────────────────────────────────
@@ -37,7 +46,7 @@
     if (isRetry && typeof showToast === 'function') {
       cfgToast(TOASTS.retry);
     }
-    list.innerHTML = '<li class="command-palette__status">Loading…</li>';
+    list.innerHTML = '<li class="spotlight-overlay__status">Loading…</li>';
     const controller = new AbortController();
     const timeoutId  = setTimeout(() => controller.abort('timeout'), 8000);
     try {
@@ -55,22 +64,22 @@
       if (e.name === 'AbortError') {
         // 8 s timeout — offer a retry
         list.innerHTML =
-          '<li class="command-palette__status command-palette__status--error">' +
+          '<li class="spotlight-overlay__status spotlight-overlay__status--error">' +
           'Took too long to load. ' +
-          '<button class="command-palette__retry">Retry</button>' +
+          '<button class="spotlight-overlay__retry">Retry</button>' +
           '</li>';
-        list.querySelector('.command-palette__retry')
+        list.querySelector('.spotlight-overlay__retry')
             ?.addEventListener('click', () => fetchIndex(true), { once: true });
         if (typeof showToast === 'function') {
           cfgToast(TOASTS.slow);
         }
       } else {
         list.innerHTML =
-          '<li class="command-palette__status command-palette__status--error">' +
+          '<li class="spotlight-overlay__status spotlight-overlay__status--error">' +
           'Could not load index. ' +
-          '<button class="command-palette__retry">Retry</button>' +
+          '<button class="spotlight-overlay__retry">Retry</button>' +
           '</li>';
-        list.querySelector('.command-palette__retry')
+        list.querySelector('.spotlight-overlay__retry')
             ?.addEventListener('click', () => fetchIndex(true), { once: true });
         if (typeof showToast === 'function') {
           cfgToast(TOASTS.unavailable);
@@ -108,22 +117,22 @@
       .slice(0, 8);
 
     if (!scored.length) {
-      list.innerHTML = '<li class="command-palette__status">No results.</li>';
+      list.innerHTML = '<li class="spotlight-overlay__status">No results.</li>';
       activeIndex = -1;
       return;
     }
 
     list.innerHTML = scored.map((x, i) => {
       const p = x.page;
-      const kindLabel = p.kind ? `<span class="command-palette__kind">${p.kind}</span>` : '';
-      return `<li class="command-palette__item${i === 0 ? ' active' : ''}" data-url="${p.url}" role="option" aria-selected="${i === 0}">
-        <span class="command-palette__title">${escHtml(p.title)}</span>
+      const kindLabel = p.kind ? `<span class="spotlight-overlay__kind">${p.kind}</span>` : '';
+      return `<li class="spotlight-overlay__item${i === 0 ? ' active' : ''}" data-url="${p.url}" role="option" aria-selected="${i === 0}">
+        <span class="spotlight-overlay__title">${escHtml(p.title)}</span>
         ${kindLabel}
       </li>`;
     }).join('');
     activeIndex = 0;
 
-    list.querySelectorAll('.command-palette__item').forEach(item => {
+    list.querySelectorAll('.spotlight-overlay__item').forEach(item => {
       item.addEventListener('click', () => navigate(item.dataset.url));
       item.addEventListener('mouseover', () => setActive(item));
     });
@@ -134,7 +143,7 @@
   }
 
   function setActive(el) {
-    list.querySelectorAll('.command-palette__item').forEach((item, i) => {
+    list.querySelectorAll('.spotlight-overlay__item').forEach((item, i) => {
       const on = item === el;
       item.classList.toggle('active', on);
       item.setAttribute('aria-selected', on);
@@ -143,7 +152,7 @@
   }
 
   function moveActive(dir) {
-    const items = [...list.querySelectorAll('.command-palette__item')];
+    const items = [...list.querySelectorAll('.spotlight-overlay__item')];
     if (!items.length) return;
     activeIndex = Math.max(0, Math.min(items.length - 1, activeIndex + dir));
     items.forEach((item, i) => {
@@ -166,25 +175,25 @@
   }
 
   // ── Events ─────────────────────────────────────────────────────────────────
-  // ⇧⌘Space (Mac) / Shift+Win+Space (Windows) — toggles palette
+  // ⇧⌘Space (Mac) / Shift+Win+Space (Windows) — toggles spotlight
   // • opens only when focus is outside text inputs
-  // • closes even when the palette's own search input has focus
+  // • closes even when spotlight's own search input has focus
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && e.shiftKey && !e.altKey && !e.metaKey && !e.ctrlKey) {
-      const isOpen = overlay.classList.contains('command-palette--open');
+      const isOpen = overlay.classList.contains('spotlight-overlay--open');
       const tag    = document.activeElement?.tagName;
       if (isOpen || !tag || !['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) {
         e.preventDefault();
         toggle();
       }
     }
-    if (!overlay.classList.contains('command-palette--open')) return;
+    if (!overlay.classList.contains('spotlight-overlay--open')) return;
     if (e.key === 'Escape') { e.preventDefault(); close(); }
     if (e.key === 'ArrowDown') { e.preventDefault(); moveActive(+1); }
     if (e.key === 'ArrowUp')   { e.preventDefault(); moveActive(-1); }
     if (e.key === 'Enter') {
       e.preventDefault();
-      const active = list.querySelector('.command-palette__item.active');
+      const active = list.querySelector('.spotlight-overlay__item.active');
       if (active) navigate(active.dataset.url);
     }
   });
