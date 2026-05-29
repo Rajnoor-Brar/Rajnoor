@@ -154,7 +154,8 @@ All colours are CSS custom properties. **Always reference `var(--my-*)`, never h
 | `--z-pill` | `8` | Signature island (`#signature-panel`) |
 | `--z-fixed` | `10` | Always-visible fixed islands (`#command-console`, `#page-console`) |
 | `--z-overlay` | `1400` | Command-palette backdrop |
-| `--z-toast` | `1500` | Shortcut-hints overlay |
+| `--z-hints` | `1500` | Shortcut-hints overlay (`?` panel) |
+| `--z-toast` | `1501` | Notification toast pill (`#rj-toast`) |
 | `--z-critical` | `9000` | Reserved — above all chrome (unused currently) |
 
 Between `--z-pill` (8) and `--z-fixed` (10), drag-targets and the scroll-arc sit at `calc(var(--z-pill) + 1)`.
@@ -173,7 +174,7 @@ Glow (`text-shadow` for icon buttons) — always references `--my-theme-accent`:
 
 | Token | Value | Use |
 |---|---|---|
-| `--glow-sm` | `var(--my-theme-accent) 0 0 2px` | Utility toggles (`#text-size-toggle`, `#page-console-toggle`, chevrons) |
+| `--glow-sm` | `var(--my-theme-accent) 0 0 1px` | Utility toggles (`#text-size-toggle`, `#page-console-toggle`, chevrons) |
 | `--glow-md` | `var(--my-theme-accent) 0 0 4px` | Standard interactive icons (`.head-item`, nav links) |
 | `--glow-lg` | `var(--my-theme-accent) 0 0 8px` | Prominent glow — dark-mode `#shortcut-hints-toggle` |
 

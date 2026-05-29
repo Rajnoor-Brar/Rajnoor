@@ -55,6 +55,9 @@
   }, { capture: true });
 
   function initImages(root) {
+    // Reset stale batch counter so a prior-page error doesn't bleed into new-page toast
+    errorCount = 0;
+    clearTimeout(errorTimer);
     (root || document).querySelectorAll('img').forEach(checkImg);
   }
 

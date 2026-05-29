@@ -4,7 +4,7 @@
   --radius-pill: 999px;
   --nav-height: calc(4.5rem + env(safe-area-inset-bottom));
 {{- range $k, $v := site.Data.style.motion }}{{ printf "\n  --motion-%s: %s;" $k $v }}{{- end }}
-{{- range $k, $v := site.Data.style.z_index }}{{ printf "\n  --z-%s: %s;" $k $v }}{{- end }}
+{{- range $k, $v := site.Data.style.z_index }}{{ printf "\n  --z-%s: %v;" $k $v }}{{- end }}
 {{- range site.Data.style.shadows }}{{ printf "\n  --shadow-%s: %s;" .size .value }}{{- end }}
 {{- range site.Data.style.glows }}{{ printf "\n  --glow-%s: %s;" .size .value }}{{- end }}
 }
@@ -52,7 +52,7 @@ body {
 #toc-panel.hide { display: none; }
 
 :focus-visible {
-  outline: 1px solid var(--my-theme-accent);
+  outline: 2px solid var(--my-theme-accent);
   outline-offset: 2px;
   border-radius: 2px; /* softens corners on rectangular controls */
 }
@@ -772,7 +772,7 @@ button {
   display: none;
   position: fixed;
   inset: 0;
-  z-index: var(--z-toast);
+  z-index: var(--z-hints);
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -898,7 +898,7 @@ button {
   bottom: calc(2rem + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%) translateY(0.75rem);
-  z-index: var(--z-critical);
+  z-index: var(--z-toast);
   --rj-toast-shadow: var(--shadow-md);
   background: rgba(var(--my-white-rgb), 0.92);
   color: var(--bs-body-color);
@@ -971,20 +971,21 @@ button {
 }
 
 
+.card-img-top,
+.figure img,
+.certificate img {
+  background-color: var(--my-silver-2);
+}
 .card-img-top {
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  object-fit: contain;
+  min-height: 140px;
+  object-fit: cover;
 }
 .certificate img {
   min-height: 40px;
 }
-
-.card-img-top {
-  background-color: var(--my-silver-2);
-}
-.card-img-top:not(.img-loaded):not(.img-error) {
+.card-img-top:not(.img-loaded):not(.img-error),
+.figure img:not(.img-loaded):not(.img-error),
+.certificate img:not(.img-loaded):not(.img-error) {
   animation: rj-shimmer var(--motion-loader) ease-in-out infinite;
 }
 @keyframes rj-shimmer {
@@ -1022,7 +1023,9 @@ html[data-bs-theme="dark"] .img-error {
   filter: invert(1) brightness(0.85);
 }
 @media (prefers-reduced-motion: reduce) {
-  .card-img-top:not(.img-loaded):not(.img-error) {
+  .card-img-top:not(.img-loaded):not(.img-error),
+  .figure img:not(.img-loaded):not(.img-error),
+  .certificate img:not(.img-loaded):not(.img-error) {
     animation: none;
   }
   .card-img-top.img-loaded,

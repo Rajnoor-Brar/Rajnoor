@@ -96,7 +96,8 @@ z_index:
   pill: 8
   fixed: 10
   overlay: 1400
-  toast: 1500
+  hints: 1500
+  toast: 1501
   critical: 9000
 
 shadows:
