@@ -377,10 +377,9 @@ pre{
     max-width: 100%;
 }
 
-.figure-image--small  { --rj-figure-image-basis: calc(25% - 0.75rem); }
-.figure-image--medium { --rj-figure-image-basis: calc(50% - 0.5rem); }
-.figure-image--large  { --rj-figure-image-basis: 75%; }
-.figure-image--full   { --rj-figure-image-basis: 100%; }
+{{- range site.Data.style.figure_sizes }}
+.figure-image--{{ .name }} { --rj-figure-image-basis: {{ .basis }}; }
+{{- end }}
 
 .figure-image img {
     display: block;
@@ -457,35 +456,9 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
     text-shadow: none;
 }
 
-.token.string {
-    color: var(--string);
-}
-
-.token.keyword {
-    color: var(--keyword);
-    font-weight: bold;
-}
-
-.token.function {
-    color: var(--function);
-}
-
-.token.number {
-    color: var(--number);
-}
-
-.token.operator {
-    color: var(--operation);
-}
-
-.token.comment {
-    color: var(--comment);
-    font-style: italic;
-}
-
-.token.punctuation {
-    color: var(--punctuation);
-}
+{{- range site.Data.style.syntax_tokens }}
+.token.{{ .token }} { color: var(--{{ .var }});{{ if .bold }} font-weight: bold;{{ end }}{{ if .italic }} font-style: italic;{{ end }} }
+{{- end }}
 
 /* Article width token — updated at each Bootstrap breakpoint.
    Consumers: .header and .article. Set once here, used everywhere. */

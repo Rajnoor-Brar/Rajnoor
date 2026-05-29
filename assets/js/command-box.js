@@ -35,7 +35,7 @@
   // ── Index fetch ────────────────────────────────────────────────────────────
   async function fetchIndex(isRetry) {
     if (isRetry && typeof showToast === 'function') {
-      showToast('Retrying search', { duration: 'short', variant: 'info' });
+      cfgToast(TOASTS.retry);
     }
     list.innerHTML = '<li class="command-palette__status">Loading…</li>';
     const controller = new AbortController();
@@ -47,7 +47,7 @@
       pages = await res.json();
       renderResults(input.value);
       if (!searchReadyAnnounced && typeof showToast === 'function') {
-        showToast('Search ready', { duration: 'short', variant: 'success' });
+        cfgToast(TOASTS.ready);
         searchReadyAnnounced = true;
       }
     } catch (e) {
@@ -62,7 +62,7 @@
         list.querySelector('.command-palette__retry')
             ?.addEventListener('click', () => fetchIndex(true), { once: true });
         if (typeof showToast === 'function') {
-          showToast('Search took too long', { duration: 'long', variant: 'warning' });
+          cfgToast(TOASTS.slow);
         }
       } else {
         list.innerHTML =
@@ -73,7 +73,7 @@
         list.querySelector('.command-palette__retry')
             ?.addEventListener('click', () => fetchIndex(true), { once: true });
         if (typeof showToast === 'function') {
-          showToast('Search unavailable', { duration: 'long', variant: 'error' });
+          cfgToast(TOASTS.unavailable);
         }
       }
     }

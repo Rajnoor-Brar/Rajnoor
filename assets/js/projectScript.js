@@ -37,20 +37,8 @@ function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValu
     if (resetBtn) resetBtn.addEventListener('click', doReset);
 }
 
-initRangeSlider({
-    sliderId: 'text-size-slider', resetBtnId: 'text-size-reset',
-    storageKey: 'rj_doc_font_size', cssVar: '--rj-article-fs',
-    defaultValue: 1.1, min: 0.8, max: 1.6, unit: 'rem',
-    articleStyleProp: 'fontSize',
-    toastLabel: 'Text size',
-});
-
-initRangeSlider({
-    sliderId: 'img-size-slider', resetBtnId: 'img-size-reset',
-    storageKey: 'rj_doc_figure_width', cssVar: '--rj-article-figure-width',
-    defaultValue: 75, min: 45, max: 100, unit: '%',
-    toastLabel: 'Figure width',
-});
+{{ range site.Data.script.project.sliders }}initRangeSlider({{ . | jsonify }});
+{{ end }}
 
 // ── Project list: filter toggle + tag chips ──────────────────────────────────
 (function () {

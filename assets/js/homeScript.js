@@ -2,6 +2,9 @@ function initHomePage() {
   const timers = [];
   const intervals = [];
 
+  const HERO = {{ site.Data.script.home.hero | jsonify }};
+  const T = {{ site.Data.script.home.timing | jsonify }};
+
   // Register cleanup so SPA nav can cancel before leaving
   window.__registerCleanup(function () {
     timers.forEach(clearTimeout);
@@ -21,11 +24,10 @@ function initHomePage() {
   const nowHorz = localStorage.getItem("navHorz");
   if (header) header.classList.add((nowHorz === "left") ? "right" : "left");
 
-  // Animation re-shows after a 12-hour TTL. Stored as Date.now() in localStorage.
-  const ANIM_TTL_MS = 12 * 60 * 60 * 1000;
+  // Animation re-shows after a TTL (T.anim_ttl_ms). Stored as Date.now() in localStorage.
   const isFresh = (key) => {
     const t = parseInt(localStorage.getItem(key), 10);
-    return Number.isFinite(t) && (Date.now() - t) < ANIM_TTL_MS;
+    return Number.isFinite(t) && (Date.now() - t) < T.anim_ttl_ms;
   };
   const stampFresh = (key) => {
     try { localStorage.setItem(key, String(Date.now())); } catch (e) { /* quota/disabled — non-fatal */ }
@@ -40,22 +42,17 @@ function initHomePage() {
       about.classList.remove("d-none");
       about.classList.add("visible");
     }
-    if (header) header.textContent = "I am Rajnoor";
-    const finalTexts = [
-      "Mastering Physics at IIT Mandi",
-      "while also exploring the depths of Mathematics and Computation as a personal venture",
-      "I am a dedicated learner driven by a relentless pursuit of knowledge and a commitment to innovative thinking and scientific rigour."
-    ];
+    if (header) header.textContent = HERO.header;
     lines.forEach((line, i) => {
       line.classList.add("typed");
-      line.textContent = finalTexts[i] || "";
+      line.textContent = HERO.lines[i] || "";
     });
     if (nowBlock) nowBlock.classList.add("typed");
     return;
   }
 
-  const unwriteDelay = 3800;
-  const unwriteInterval = 600;
+  const unwriteDelay = T.unwrite_delay;
+  const unwriteInterval = T.unwrite_interval;
 
   const unwriteGTD = () => {
     gtdPaths.forEach((path) => {
@@ -93,15 +90,11 @@ function initHomePage() {
     if (!about) return;
     about.classList.remove("d-none");
     about.classList.add("visible");
-    typeText(header, "I am Rajnoor", 100, typeLinesSequentially);
+    typeText(header, HERO.header, T.header_type_speed, typeLinesSequentially);
   };
 
   const typeLinesSequentially = () => {
-    const texts = [
-      "Mastering Physics at IIT Mandi",
-      "while also exploring the depths of Mathematics and Computation as a personal venture",
-      "I am a dedicated learner driven by a relentless pursuit of knowledge and a commitment to innovative thinking and scientific rigour."
-    ];
+    const texts = HERO.lines;
     lines.forEach(line => line.textContent = "");
 
     const typeNext = (i) => {
@@ -111,6 +104,7 @@ function initHomePage() {
           if (nowBlock) nowBlock.classList.add("typed");
           stampFresh("rj_hero_seen_at");
 
+
           // Discover-pulse on the signature pill. Also gated by a 12h TTL so it
           // can fire again after the user's been away. Skipped under reduced motion.
           const signatureFresh = isFresh("rj_signature_seen_at");
@@ -119,18 +113,18 @@ function initHomePage() {
             const tPulse = setTimeout(() => {
               pill.classList.add("discover-pulse");
               // Remove after the animation completes
-              const tClear = setTimeout(() => pill.classList.remove("discover-pulse"), 2600);
+              const tClear = setTimeout(() => pill.classList.remove("discover-pulse"), T.pulse_clear);
               timers.push(tClear);
               stampFresh("rj_signature_seen_at");
-            }, 600);
+            }, T.pulse_delay);
             timers.push(tPulse);
           }
-        }, 900);
+        }, T.now_reveal_delay);
         timers.push(tNow);
         return;
       }
       lines[i].classList.add("typed");
-      typeText(lines[i], texts[i], 40, () => typeNext(i + 1));
+      typeText(lines[i], texts[i], T.line_type_speed, () => typeNext(i + 1));
     };
     typeNext(0);
   };

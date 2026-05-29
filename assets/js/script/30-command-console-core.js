@@ -5,7 +5,7 @@
 let showTimeouts = [];
 let hideTimeouts = [];
 
-let panelTime = 100;
+let panelTime = {{ site.Data.script.console.panel_open_ms }};
 
 function clearAllTimeouts(arr) {
   arr.forEach(clearTimeout);
@@ -81,7 +81,7 @@ function closeNavPanel() {
       panel.classList.add('contract');
 
       // Hide after the collapse animation completes (nav-panel: 0.18s, action-panel: 0.12s)
-      const animDuration = panel.id === 'nav-panel' ? 180 : 120;
+      const animDuration = panel.id === 'nav-panel' ? {{ site.Data.script.console.nav_panel_anim_ms }} : {{ site.Data.script.console.panel_anim_ms }};
       const tHide = setTimeout(() => {
         panel.classList.remove('contract');
         panel.classList.add('hide');
