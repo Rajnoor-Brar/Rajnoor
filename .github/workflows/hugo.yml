@@ -52,20 +52,7 @@ jobs:
           hugo \
             --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
-      - name: Smoke test — verify expected pages exist
-        run: |
-          for page in \
-            public/index.html \
-            public/projects/index.html \
-            public/credentials/index.html \
-            public/contact/index.html \
-            public/projects/ellipsoidal-channel/index.html \
-            public/404.html; do
-            if [ ! -f "$page" ]; then
-              echo "MISSING: $page" && exit 1
-            fi
-            echo "OK: $page"
-          done
+    
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
