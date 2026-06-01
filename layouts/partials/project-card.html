@@ -1,16 +1,10 @@
 {{/* Project card. Expects a dict with keys:
-     href, cardImage, cardImage_Light, cardImage_Dark, cardTitle, cardText, tags, group, show. */}}
+     href, cardImage, cardImage_light, cardImage_dark, cardTitle, cardText, tags, group, show. */}}
 {{ if .show }}
 <div class="project-card-wrap col-10 col-lg-5 m-4" data-tags="{{ with .tags }}{{ delimit . " " }}{{ end }}" data-group="{{ .group }}">
   <a href="{{ .href }}" class="card h-100 project-card">
-    {{ $hasThemed := and .cardImage_Light .cardImage_Dark }}
     <div class="project-card__media">
-      {{ if $hasThemed }}
-        <img src="{{ .cardImage_Light }}" class="card-img-top theme-img--light" alt="{{ .cardTitle }}" loading="lazy">
-        <img src="{{ .cardImage_Dark }}" class="card-img-top theme-img--dark" alt="{{ .cardTitle }}" loading="lazy">
-      {{ else }}
-        <img src="{{ .cardImage }}" class="card-img-top" alt="{{ .cardTitle }}" loading="lazy">
-      {{ end }}
+      {{ partial "themedImg.html" (dict "light" .cardImage_light "dark" .cardImage_dark "fallback" .cardImage "class" "card-img-top" "alt" .cardTitle) }}
     </div>
     <div class="card-body">
       <h5 class="card-title">{{ .cardTitle }}</h5>

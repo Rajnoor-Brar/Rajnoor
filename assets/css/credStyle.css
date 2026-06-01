@@ -214,14 +214,29 @@
     background: var(--my-black);
 }
 
-/* Mobile: stack the pills one-per-row (full width) instead of wrapping. With
-   the meter pinned right, each pill reads as a label-left / proficiency-right row. */
-@media (max-width: 575.98px) {
-    .cred-skill-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
+/* Mobile: two pills per row (half width), and stack each pill's contents so the
+   proficiency meter sits between the label and the note (dots below title, above
+   description). `display: contents` unwraps __text so the label + note become
+   direct flex children of the badge, letting `order` interleave the meter. The
+   round pill radius is relaxed to a card radius since the badge is now multi-line. */
+@media (max-width: 576px) {
     .cred-skill-row .skill-badge {
+        flex: 0 0 calc(50% - 0.25rem);
         min-width: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.15rem;
+        border-radius: var(--radius-md);
     }
+    .cred-skill-row .skill-badge__text {
+        display: contents;
+    }
+    .cred-skill-row .skill-badge__icon  { order: 0; }
+    .cred-skill-row .skill-badge__label { order: 1; white-space: normal; }
+    .cred-skill-row .skill-badge__meter {
+        order: 2;
+        margin-left: 0;
+        padding-left: 0;
+    }
+    .cred-skill-row .skill-badge__note  { order: 3; white-space: normal; }
 }

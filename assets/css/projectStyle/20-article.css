@@ -1,0 +1,353 @@
+/* ── Project card, article layout, figures, headings, syntax, responsive ──────── */
+
+
+/* ── Project card (entire card surface is the link) ─────────────────────── */
+.project-card {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    transition: transform var(--motion-fast) ease, box-shadow var(--motion-base) ease;
+}
+.project-card:hover,
+.project-card:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+    color: inherit;
+}
+.project-card .card-title {
+    background: transparent;
+    color: var(--my-black);
+    font-family: var(--my-font-title);
+    margin: 0 0 0.4em 0;
+    transition: color var(--motion-fast) ease;
+}
+.project-card:hover .card-title {
+    color: var(--my-black);
+}
+
+.project-card__media {
+    aspect-ratio: 4 / 3;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin:0;
+    background: transparent;
+    border-bottom: 1px solid var(--my-border-color);
+    overflow: hidden;
+}
+
+.project-card__media .card-img-top {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 0;
+    margin: 0;
+    background: transparent;
+}
+
+/* Inline GitHub icon button in article footer (Ellipsoidal Channel) */
+.my-btn-icon {
+    border-color: transparent !important;
+    font-size: 1em;
+    width: 1.25em;
+    height: 1.25em;
+    padding: 0;
+}
+
+.page {
+    position: relative;
+    font-size: 1.1rem;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    max-width: 98vw;
+    justify-content: center;
+    align-items: center;
+    padding: 2em 1em;
+}
+
+.katex-display {
+    overflow-x: auto;
+    font-size: 1.15em;
+    overflow-y: hidden;
+    max-width: 100%;
+    display: block;
+    text-align: center;
+}
+
+.katex {
+    font-size: 0.8em;
+    white-space: normal !important;
+}
+
+.header {
+    text-align: center;
+    max-width: 80%;
+    margin-bottom: 1em;
+}
+
+.header .title {
+    font-family: var(--my-font-title);
+    font-size: clamp(2rem, 4vw, 3rem);
+    text-align: center;
+    font-weight: bold;
+}
+
+.header .subtitle {
+    font-family: var(--my-font-subtitle);
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    color: var(--subtitle-color);
+}
+
+.header .author {
+    margin-top: 8px;
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
+    font-weight: 500;
+}
+
+.article {
+    font-family: var(--my-font-article);
+    font-size: var(--rj-article-fs, 1.1rem);
+    text-align: justify;
+    color:var(--my-black);
+    overflow-x: auto;
+    word-wrap: break-word;
+    white-space: normal;
+    background-color: var(--page-color);
+    background-clip: border-box;
+    border: 1px solid var(--my-border-color);
+    border-radius: 0.25em;
+    padding: 2em;
+    margin: 4px;
+    max-width: 85%;
+}
+
+.abstract {
+    font-size: 1em;
+    padding: 2em;
+    background: var(--abstract-bg);
+    border-radius: 0.5rem;
+}
+
+.abstract > .title {
+    width: 100%;
+    text-align: center;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: bold;
+    border-bottom: 2px solid var(--my-border-color);
+    padding-bottom: 0.5rem;
+}
+
+.section {
+    margin-block: 2em;
+    padding: 1.5em;
+}
+
+.section > .title {
+    width: 100%;
+    text-align: left;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: bold;
+    border-bottom: 2px solid var(--my-border-color);
+    padding-bottom: 0.4em;
+    margin-bottom: 1em;
+}
+
+.sub-section > .title {
+    width: 100%;
+    text-align: left;
+    font-size: clamp(1.5rem, 2.5vw, 1.75rem);
+    font-weight: bold;
+    margin-top: 1em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px groove var(--my-border-color);
+}
+
+.figure {
+    width: calc(100% + 2rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 12px 12px;
+    margin-left: -1em;
+    margin-right: -1em;
+    margin-block: 2em;
+    border: 1px solid var(--my-border-color);
+    border-radius: 0.45em;
+}
+
+.figure__media {
+    width: var(--rj-article-figure-width, 75%);
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.35rem;
+    background: transparent;
+    transition: width var(--motion-base) ease;
+}
+
+.figure__image {
+    --rj-figure-image-basis: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 1 var(--rj-figure-image-basis);
+    max-width: 100%;
+}
+
+.figure__image--small  { --rj-figure-image-basis: calc(33% - 0.5rem); }
+.figure__image--medium { --rj-figure-image-basis: calc(50% - 0.5rem); }
+.figure__image--large  { --rj-figure-image-basis: 85%; }
+.figure__image--full   { --rj-figure-image-basis: 100%; }
+
+.figure__image img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    max-height: min(72vh, 42rem);
+    height: auto;
+    object-fit: contain;
+    background: transparent;
+    border-radius: 0.25rem;
+}
+
+.figure figcaption,
+.figure p {
+    width:100%;
+    font-size: 0.9em;
+    text-align: center;
+    margin-top: 0.25em;
+    padding: 0;
+    margin-bottom:-6px;
+    color: var(--my-gray-1);
+}
+
+ul,td{
+    text-align: left;
+}
+
+/* ── Markdown-generated headings inside .article ───────────────────────── */
+.article h2 {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: bold;
+    border-bottom: 2px solid var(--my-border-color);
+    padding-bottom: 0.4em;
+    margin-top: 2em;
+    margin-bottom: 1em;
+}
+
+.article h3 {
+    font-size: clamp(1.5rem, 2.5vw, 1.75rem);
+    font-weight: bold;
+    margin-top: 1.5em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px groove var(--my-border-color);
+    margin-bottom: 0.75em;
+}
+
+/* Markdown lists: match original list-unstyled appearance */
+.article ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+td{
+    padding-inline: 8px;
+    border: 1px dashed var(--my-border-color);
+}
+
+/* Matches both raw-HTML .code-block (legacy .html pages) and Prism-processed
+   pre[class*="language-"] (generated from fenced code blocks in .md pages) */
+pre.code-block,
+pre[class*="language-"] {
+    background-color: var(--code-color);
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    font-size: 0.7em;
+    text-shadow: none;
+}
+code[class*="language-"], :not(pre)>code[class*="language-"]{
+    padding-inline: 4px;
+    background-color: var(--code-color);
+    color:var(--my-black);
+}
+
+.token{
+    text-shadow: none;
+}
+
+/* Article width token — updated at each Bootstrap breakpoint.
+   Consumers: .header and .article. Set once here, used everywhere. */
+@media (max-width: 992px) {
+    :root { --rj-article-width: 95%; }
+
+    .header  { max-width: var(--rj-article-width); }
+    .article { max-width: var(--rj-article-width); }
+
+    .abstract {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .article {
+        padding: 1.5rem;
+    }
+
+    .abstract {
+        padding: 1rem;
+    }
+
+    .section {
+        padding: 1rem;
+    }
+
+    .figure__media { gap: 0.75rem; }
+    .figure__image--small  { --rj-figure-image-basis: calc(50% - 0.375rem); }
+    .figure__image--medium { --rj-figure-image-basis: 75%; }
+    .figure__image--large,
+    .figure__image--full   { --rj-figure-image-basis: 100%; }
+}
+
+@media (max-width: 576px) {
+    :root { --rj-article-width: 100%; }
+
+    .page {
+        font-size: 0.7rem;
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .article {
+        max-width: var(--rj-article-width);
+        padding: 0.5rem;
+    }
+
+    .header {
+        width: 100%;
+    }
+
+    .header .title {
+        font-size: 1.25rem;
+    }
+
+    .header .subtitle {
+        font-size: 1rem;
+    }
+
+    .header .author {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .figure { width: 100%; margin-left: 0; margin-right: 0; }
+    .figure__media { width: min(var(--rj-article-figure-width, 75%), 100%); }
+}

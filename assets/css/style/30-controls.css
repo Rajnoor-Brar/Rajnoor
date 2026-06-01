@@ -1,0 +1,78 @@
+/* ── Controls — WCAG touch targets, shortcuts toggle, corner targets, hover-grow ─── */
+
+/* ── Touch target extension (WCAG 2.5.5 — minimum 44×44 px) ───────────────
+   The visual size of these controls (~36 px) is intentional, so we don't
+   resize them; instead we extend the hit area via an invisible ::before
+   pseudo. Pointer-events fall through to the parent button. */
+.pg-head__item, .action-item, .corner-picker__dot { position: relative; }
+.pg-head__item::before,
+.action-item::before,
+.corner-picker__dot::before {
+  content: "";
+  position: absolute;
+  inset: -4px;          /* 36 + 4 + 4 = 44 px hit area */
+  pointer-events: auto; /* explicit: clicks within the extended area still hit the button */
+  background: transparent;
+}
+
+#shortcuts-toggle {
+  background-color: transparent !important;
+  border: none;
+  padding: 0;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--bs-body-color);
+  touch-action: manipulation;
+  transition: text-shadow var(--motion-fast) ease, transform var(--motion-fast) ease;
+}
+#shortcuts-toggle .material-symbols-rounded {
+  font-variation-settings: 'wght' 300;
+}
+#shortcuts-toggle:hover {
+  text-shadow: var(--glow-sm);
+}
+html[data-bs-theme="dark"] #shortcuts-toggle:hover {
+  text-shadow: var(--glow-lg);
+}
+
+#corner-targets {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: calc(var(--z-pill) + 1);
+  opacity: 0;
+  transition: opacity var(--motion-fast) ease;
+}
+
+#corner-targets.visible {
+  opacity: 1;
+}
+
+.corner-target {
+  position: absolute;
+  width: calc(var(--signature-height) * 0.6);
+  height: calc(var(--signature-height) * 0.6);
+  border: 2px dashed var(--my-border-color);
+  border-radius: var(--panel-radius);
+}
+
+.corner-target.TL { top: 2.5vw; left: 2.5vw; }
+.corner-target.TR { top: 2.5vw; right: 2.5vw; }
+.corner-target.BL { bottom: calc(2.5vw + 4.5vh); left: 2.5vw; }
+.corner-target.BR { bottom: calc(2.5vw + 4.5vh); right: 2.5vw; }
+
+.hover-grow {
+  display: inline-block;
+  transition: transform var(--motion-slow) ease, letter-spacing var(--motion-slow) ease;
+}
+
+.hover-grow:hover {
+  transform: scale(1.05);
+  letter-spacing: 0.05em;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+

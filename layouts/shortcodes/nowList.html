@@ -40,7 +40,7 @@
     {{ range $i, $item := first 3 site.Data.now.items }}
     <span class="{{ if eq $i 0 }}d-inline{{ else }}d-none d-md-inline{{ end }}">
       {{ if gt $i 0 }}<span class="now-sep">·</span>{{ end }}
-      <span class="now-item"{{ with $item.description }} title="{{ . }}"{{ end }}><em>{{ $item.verb }}</em> {{ $item.phrase | safeHTML }}</span>
+      <span class="now-snippet__item"{{ with $item.description }} title="{{ . }}"{{ end }}><em>{{ $item.verb }}</em> {{ $item.phrase | safeHTML }}</span>
       <br class="d-inline d-md-none">
     </span>
     {{ end }}

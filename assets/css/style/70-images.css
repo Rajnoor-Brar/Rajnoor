@@ -1,0 +1,65 @@
+/* ── Images — load / shimmer / error states ────────────────────────────────────── */
+
+.card-img-top,
+.figure img,
+.certificate img {
+  background-color: var(--my-silver-2);
+}
+.card-img-top {
+  min-height: 140px;
+  object-fit: cover;
+}
+.certificate img {
+  min-height: 40px;
+}
+.card-img-top:not(.img-loaded):not(.img-error),
+.figure img:not(.img-loaded):not(.img-error),
+.certificate img:not(.img-loaded):not(.img-error) {
+  animation: rj-shimmer var(--motion-loader) ease-in-out infinite;
+}
+@keyframes rj-shimmer {
+  0%, 100% { background-color: var(--my-silver-2); }
+  50%       { background-color: var(--my-silver-1); }
+}
+
+.card-img-top.img-loaded,
+.figure img.img-loaded {
+  background: transparent;
+  animation: none;
+  opacity: 1;
+  transition: opacity var(--motion-slow) ease;
+}
+@starting-style {
+  .card-img-top.img-loaded,
+  .figure img.img-loaded {
+    opacity: 0;
+  }
+}
+
+.img-error {
+  background-color: var(--my-silver-2) !important;
+  background-image: url('/resources/img_placeholder.svg') !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: clamp(28px, 35%, 56px) auto !important;
+  animation: none !important;
+  min-height: 60px;
+  object-fit: contain !important;
+  padding: 0.75rem;
+  opacity: 1 !important;
+}
+html[data-bs-theme="dark"] .img-error {
+  filter: invert(1) brightness(0.85);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-img-top:not(.img-loaded):not(.img-error),
+  .figure img:not(.img-loaded):not(.img-error),
+  .certificate img:not(.img-loaded):not(.img-error) {
+    animation: none;
+  }
+  .card-img-top.img-loaded,
+  .figure img.img-loaded {
+    transition: none;
+  }
+}
+

@@ -2,18 +2,12 @@
 # layouts/partials/assets/js.html). Each section is injected as a JS literal.
 
 home:
-  hero:
-    header: "I am Rajnoor"
-    lines:
-      - "Mastering Physics at IIT Mandi"
-      - "while also exploring the depths of Mathematics and Computation as a personal venture"
-      - "I am a dedicated learner driven by a relentless pursuit of knowledge and a commitment to innovative thinking and scientific rigour."
   timing:
     anim_ttl_ms: 43200000      # 12h re-show TTL for hero + signature pulse
     unwrite_delay: 3800        # delay before GTD paths start un-drawing
     unwrite_interval: 600      # stagger between path un-draws
     header_type_speed: 100     # ms/char for "I am Rajnoor"
-    line_type_speed: 40        # ms/char for the bio lines
+    line_type_speed: 20        # ms/char for the bio lines
     now_reveal_delay: 900      # pause before the now-snippet fades in
     pulse_delay: 600           # delay before signature discover-pulse
     pulse_clear: 2600          # remove discover-pulse after animation
@@ -23,6 +17,7 @@ project:
     - { sliderId: pg-text-size-slider, resetBtnId: pg-text-size-reset, storageKey: rj_doc_font_size,
         cssVar: "--rj-article-fs", defaultValue: 1.1, min: 0.8, max: 1.6, unit: rem,
         articleStyleProp: fontSize, toastLabel: "Text size" }
+
     - { sliderId: pg-img-size-slider, resetBtnId: pg-img-size-reset, storageKey: rj_doc_figure_width,
         cssVar: "--rj-article-figure-width", defaultValue: 75, min: 45, max: 100, unit: "%",
         toastLabel: "Figure width" }

@@ -2,7 +2,7 @@ function initHomePage() {
   const timers = [];
   const intervals = [];
 
-  const HERO = {{ site.Data.script.home.hero | jsonify }};
+  const HERO = {{ site.Data.heroPhrases.typography | jsonify }};
   const T = {{ site.Data.script.home.timing | jsonify }};
 
   // Register cleanup so SPA nav can cancel before leaving
@@ -36,7 +36,7 @@ function initHomePage() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (heroFresh || reduceMotion) {
-    const gtdContainer = document.getElementById("gtd-container");
+    const gtdContainer = document.getElementById("gtd-stage");
     if (gtdContainer) gtdContainer.classList.add("d-none");
     if (about) {
       about.classList.remove("d-none");
@@ -64,7 +64,7 @@ function initHomePage() {
     });
 
     const t2 = setTimeout(() => {
-      const gtdContainer = document.getElementById("gtd-container");
+      const gtdContainer = document.getElementById("gtd-stage");
       if (gtdContainer) gtdContainer.classList.add("d-none");
       startAboutTyping();
     }, 3 * gtdPaths.length * unwriteInterval);

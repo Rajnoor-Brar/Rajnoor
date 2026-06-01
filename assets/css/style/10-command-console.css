@@ -1,0 +1,134 @@
+/* ── Command console — corner positioning, drag, focus + signature pill & SVG letters ─── */
+
+#command-console{
+  position: fixed;
+  display: flex;
+  justify-content: end;
+  z-index: var(--z-fixed);
+  height:auto;
+  cursor: grab;
+
+  touch-action: none;
+  transition: transform var(--motion-slow) cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+#command-console.left{
+ left:2.5vw;
+ align-items: start;
+}
+
+#command-console.right{
+ right:2.5vw;
+ align-items: end;
+}
+
+#command-console.top{
+  flex-direction: column;
+ top:2.5vw;
+}
+
+#command-console.bottom{
+  flex-direction: column-reverse;
+ bottom:calc(2.5vw + 4.5vh);
+}
+
+#command-console.dragging {
+  transition: none;
+  cursor: grabbing;
+}
+
+#theme-toggle:active,
+#shortcuts-toggle:active {
+  transform: scale(0.96);
+}
+
+.corner-picker__dot:active {
+  transform: scale(0.88);
+}
+
+#command-console:focus{
+  outline: none;
+}
+
+#command-console:focus-visible #signature-panel {
+  box-shadow:
+    var(--shadow-panel),
+    0 0 8px 1px color-mix(in srgb, var(--my-theme-accent) 10%, transparent);
+}
+
+#signature-panel{
+  overflow: hidden;
+  width: var(--signature-height);
+  border-radius: var(--panel-radius);
+  background-color: rgba(var(--my-white-rgb), 0.8);
+  box-shadow: var(--shadow-panel);
+  padding: calc(var(--signature-height)/4);
+  padding-bottom: calc(var(--signature-height)/5.5);
+  opacity:0;
+  animation: fadeIn 1.75s ease-in-out forwards;
+  animation-delay: 0s;
+  z-index: var(--z-pill);
+  backdrop-filter: blur(20px);
+  transition: width var(--signature-bg-duration) ease;
+  transition-duration: var(--motion-slow);
+  transition-delay: calc(var(--signature-stroke-duration)*0.68);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+#command-console:focus #signature-panel{
+  outline: none;
+  width: calc(2*var(--signature-height));
+  transition-delay: 0s;
+}
+
+#signature{
+  left: calc(var(--signature-height)/11);
+  position: relative;
+  height: calc(var(--signature-height)*0.568);
+}
+
+
+.signature-letters {
+  fill: none;
+  stroke: var(--my-black);
+  stroke-width: 100px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-miterlimit: 1.5;
+  stroke-dasharray: none;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--signature-stroke-duration) ease-out;
+}
+
+#command-console:focus .signature-letters{
+  stroke-dashoffset: 0;
+  transition-duration: var(--motion-base);
+}
+
+#NameR1{
+  animation: writeStroke 2s ease forwards;
+  animation-delay: 0.5s;
+}
+
+#NameA{transition-delay: 0.25s; transition-duration: var(--motion-base);}
+#command-console:focus #NameA{transition-delay: 0s; transition-duration: var(--motion-fast);}
+
+#NameJ{transition-delay: 0.20s; transition-duration: var(--motion-base);}
+#command-console:focus #NameJ{transition-delay: 0.05s; transition-duration: var(--motion-base);}
+
+#NameJdot{transition-delay: 0.20s; transition-duration: var(--motion-base);}
+#command-console:focus #NameJdot{transition-delay: 0.05s; transition-duration: var(--motion-base);}
+
+#NameN{transition-delay: 0.15s; transition-duration: var(--motion-base);}
+#command-console:focus #NameN{transition-delay: 0.10s; transition-duration: var(--motion-base);}
+
+#NameO1{transition-delay: 0.10s; transition-duration: var(--motion-base);}
+#command-console:focus #NameO1{transition-delay: 0.15s; transition-duration: var(--motion-base);}
+
+#NameO2{transition-delay: 0.05s; transition-duration: var(--motion-base);}
+#command-console:focus #NameO2{transition-delay: 0.20s; transition-duration: var(--motion-base);}
+
+#NameR2{transition-delay: 0.0s; transition-duration: var(--motion-fast);}
+#command-console:focus #NameR2{transition-delay: 0.25s; transition-duration: var(--motion-base);}
+

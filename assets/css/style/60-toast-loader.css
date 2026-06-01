@@ -1,0 +1,80 @@
+/* ── Toast notification + page loader ────────────────────────────────────────────── */
+
+#toast {
+  position: fixed;
+  bottom: calc(2rem + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%) translateY(0.75rem);
+  z-index: var(--z-toast);
+  --toast-shadow: var(--shadow-md);
+  background: rgba(var(--my-white-rgb), 0.92);
+  color: var(--bs-body-color);
+  border: 1px solid var(--my-border-color);
+  border-radius: var(--radius-pill);
+  padding: 0.45rem 1.1rem;
+  font-family: var(--my-font-ui);
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+  max-width: min(28rem, calc(100vw - 2rem));
+  box-shadow: var(--toast-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--motion-base) ease,
+    transform var(--motion-base) ease;
+}
+#toast.toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+#toast.toast--hiding {
+  opacity: 0;
+  transform: translateX(-50%) translateY(0.5rem);
+}
+{{ range site.Data.toast.variants -}}
+#toast.toast--{{ .name }} {
+  --toast-shadow: {{ .shadow }};
+}
+{{ end -}}
+@media (prefers-reduced-motion: reduce) {
+  #toast { transition-duration: 0.01ms !important; }
+}
+
+#page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-pill) - 1); /* below pill + page-console; chrome stays reachable */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--my-background);
+  transition: opacity 0.45s ease;
+}
+#page-loader.dismissed {
+  opacity: 0;
+  pointer-events: none;
+}
+.spinner {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2.5px solid var(--my-silver-1);
+  border-top-color: var(--my-black);
+  animation: spin var(--motion-loader) linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 3s;
+  }
+}
+
+

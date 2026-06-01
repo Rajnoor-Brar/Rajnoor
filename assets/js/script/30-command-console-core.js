@@ -77,7 +77,10 @@ function closeNavPanel() {
       panel.classList.remove('show');
       panel.classList.add('contract');
 
-      // Hide after the collapse animation completes (navigation-panel: 0.18s, action-panel: 0.12s)
+      // Hide after the collapse animation completes. These ms values are the
+      // single source for the matching CSS `animation-duration` on
+      // #navigation-panel / #action-panel (injected from the same keys), so the
+      // teardown timer and the animation stay in lock-step.
       const animDuration = panel.id === 'navigation-panel' ? {{ site.Data.script.console.navigation_panel_anim_ms }} : {{ site.Data.script.console.panel_anim_ms }};
       const tHide = setTimeout(() => {
         panel.classList.remove('contract');

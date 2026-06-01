@@ -3,7 +3,15 @@
 {{- if and $path (not (hasPrefix $path "css/")) -}}
   {{- $path = printf "css/%s" $path -}}
 {{- end -}}
+{{/* When a sibling <name>/ dir exists (e.g. css/style/*.css), concat its numbered
+     parts in name order — mirrors assets/js.html so the global stylesheet is
+     assembled the same way the global script bundle is. Otherwise load the single file. */}}
+{{- $bundleGlob := printf "%s/*.css" (strings.TrimSuffix ".css" $path) -}}
+{{- $bundleParts := sort (resources.Match $bundleGlob) "Name" -}}
 {{- $asset := resources.Get $path -}}
+{{- if gt (len $bundleParts) 0 -}}
+  {{- $asset = $bundleParts | resources.Concat $path -}}
+{{- end -}}
 {{- if not $asset -}}
   {{- errorf "CSS asset not found: %q (from %q)" $path $src -}}
 {{- end -}}

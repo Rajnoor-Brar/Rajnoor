@@ -1,0 +1,24 @@
+{{/* Renders the full home hero: GTD calligraphy SVG stage + typed-text about block.
+     Both halves read from data/heroPhrases.yaml (calligraphy / typography).
+     Single source of truth shared with assets/js/homeScript.js (HERO injection).
+     Usage: {{< homeHero >}}  — no arguments. */}}
+{{ $hero := site.Data.heroPhrases.typography }}
+<div class="align-items-center" id="gtd-stage">
+  {{ range site.Data.heroPhrases.calligraphy }}
+  <div id="{{ .id }}" class="container gtd-container">
+    <svg version="1.1" viewBox="{{ .viewBox }}" xmlns="http://www.w3.org/2000/svg" class="gtd-svg">
+      <path class="gtd-path draw"
+            transform="{{ .transform }}"
+            d="{{ .pathData }}"
+            pathLength="1"
+            aria-label="{{ .ariaLabel }}"/>
+    </svg>
+  </div>
+  {{ end }}
+</div>
+<div id="about" class="d-none">
+  <div id="about-header" class="about-heading blink-cursor">{{ $hero.header }}</div>
+  {{ range $i, $line := $hero.lines }}
+  <div id="about-line-{{ add $i 1 }}" class="about-line">{{ $line }}</div>
+  {{ end }}
+</div>

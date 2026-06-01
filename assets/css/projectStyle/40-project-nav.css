@@ -1,0 +1,87 @@
+/* ── Project navigation quad (prev/next project + chapter buttons) ──────────── */
+
+
+/* ── Four-button project navigation (chapter bottom) ─────────────────────
+   Outer pair = prev/next project across the gallery (in weight order).
+   Inner pair = prev/next chapter within the current bundle.
+   Placeholders keep the four slots aligned when a button is absent
+   (e.g. first/last project in gallery, single-page projects). */
+.project-nav-quad {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 2rem 1.5rem 3rem;
+    max-width: 56rem;
+    margin: 0 auto;
+    border-top: 1px solid var(--my-border-color);
+}
+
+.project-nav-quad__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    font-family: var(--my-font-ui);
+    font-size: 0.85rem;
+    color: var(--my-gray-1);
+    text-decoration: none;
+    border: 1px solid var(--my-border-color);
+    border-radius: var(--radius-pill);
+    transition:
+        color var(--motion-fast) ease,
+        border-color var(--motion-fast) ease,
+        box-shadow var(--motion-base) ease,
+        transform var(--motion-fast) ease;
+}
+.project-nav-quad__btn:hover {
+    color: var(--my-black);
+    border-color: var(--my-gray-2);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+/* Outer pair (cross-project): visually heavier so the boundary reads */
+.project-nav-quad__btn--outer-prev,
+.project-nav-quad__btn--outer-next {
+    color: var(--my-gray-2);
+    font-weight: 500;
+}
+
+.project-nav-quad__arrow {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.project-nav-quad__label {
+    /* Hidden on narrow viewports; visible on desktop */
+    display: none;
+    max-width: 12em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Placeholder slot — preserves layout when a button is absent */
+.project-nav-quad__btn--placeholder {
+    border-color: transparent;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+@media (min-width: 768px) {
+    .project-nav-quad__label {
+        display: inline;
+    }
+}
+
+@media (max-width: 576px) {
+    .project-nav-quad {
+        padding: 1.5rem 0.75rem 2.5rem;
+        gap: 0.35rem;
+    }
+    .project-nav-quad__btn {
+        padding: 0.4rem 0.65rem;
+    }
+}

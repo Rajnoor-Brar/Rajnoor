@@ -1,0 +1,140 @@
+/* ── Base code styles, page-nav button, chapter-strip panel ─────────────────── */
+
+
+pre, code {
+    font-family: var(--my-font-code);
+}
+
+pre{
+    background-color: var(--my-white);
+}
+
+.btn.page-nav{
+    color:var(--my-gray-1);
+    background-color: var(--bs-body-bg);
+}
+.btn.page-nav:hover{
+    color:var(--my-black);
+}
+
+.btn.page-nav.active{
+    background-color: var(--my-white);
+    border:none;
+}
+
+.btn.page-nav.active:hover{
+    color:var(--my-gray-1);
+}
+
+/* ── Chapter-strip panel (lives inside #page-console, below #pg-head-panel) ──
+   Always visible when console is expanded; has its own collapse toggle
+   that shrinks it to pg-head-panel-shape. Inherits .pg-summoned base
+   (background, blur, shadow, radius) plus existing visibility rules
+   (hidden when console is contracted). */
+.pg-chapter-strip-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-width: calc(2.25 * var(--signature-height));
+    max-width: calc(3.5 * var(--signature-height));
+    padding: calc(0.25 * var(--signature-height));
+    font-family: var(--my-font-ui);
+    transition:
+        min-width var(--motion-base) ease,
+        max-width var(--motion-base) ease,
+        height var(--motion-base) ease,
+        padding var(--motion-base) ease;
+}
+
+.pg-chapter-strip-toggle {
+    align-self: flex-start;
+    width: calc(0.45 * var(--signature-height));
+    height: calc(0.45 * var(--signature-height));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-bottom: 0.25rem;
+    cursor: pointer;
+    color: var(--bs-body-color);
+    transition: color var(--motion-fast) ease, text-shadow var(--motion-fast) ease;
+}
+.pg-chapter-strip-toggle:hover {
+    text-shadow: var(--glow-sm);
+}
+.pg-chapter-strip-toggle .bi {
+    transition: transform var(--motion-base) ease;
+}
+
+.pg-chapter-strip-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.pg-chapter-strip__item {
+    padding-left: 0.4rem;
+    border-left: 2px solid transparent;
+    transition: border-color var(--motion-fast) ease;
+}
+.pg-chapter-strip__item.active {
+    border-left-color: var(--my-black);
+}
+
+.pg-chapter-strip__link {
+    color: var(--my-gray-1);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color var(--motion-fast) ease;
+}
+.pg-chapter-strip__link:hover {
+    color: var(--my-black);
+}
+.pg-chapter-strip__item.active .pg-chapter-strip__link {
+    color: var(--my-black);
+    font-weight: 600;
+}
+
+/* Collapsed: shrink to pg-head-panel-shape pill — only toggle visible */
+.pg-chapter-strip-panel.collapsed {
+    min-width: var(--signature-height);
+    max-width: var(--signature-height);
+    height: var(--signature-height);
+    align-items: center;
+    justify-content: center;
+}
+.pg-chapter-strip-panel.collapsed .pg-chapter-strip-toggle .bi {
+    transform: rotate(180deg);
+}
+.pg-chapter-strip-panel.collapsed .pg-chapter-strip-list {
+    display: none;
+}
+
+/* Right-corner mirror: align contents flush to the right edge */
+#page-console.right .pg-chapter-strip-toggle {
+    align-self: flex-end;
+}
+
+#page-console.right .pg-chapter-strip__item {
+    padding-left: 0;
+    padding-right: 0.4rem;
+    border-left: none;
+    border-right: 2px solid transparent;
+    text-align: right;
+}
+#page-console.right .pg-chapter-strip__item.active {
+    border-right-color: var(--my-black);
+}
+
+/* Spacing alongside pg-head-panel — match existing .pg-summoned pattern */
+#page-console:not(.bottom) #pg-chapter-strip-panel {
+    margin-top: calc(0.25 * var(--signature-height));
+}
+#page-console.bottom #pg-chapter-strip-panel {
+    margin-bottom: calc(0.25 * var(--signature-height));
+}

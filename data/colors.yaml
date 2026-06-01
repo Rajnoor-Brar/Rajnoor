@@ -1,0 +1,104 @@
+# Site colour tokens. Both sections use the same {name, light, dark} shape and
+# are injected as CSS custom properties via resources.ExecuteAsTemplate.
+# Edit here — never hard-code hex in stylesheets.
+
+tokens:
+  - name: bb-color-mode
+    light: "99"
+    dark: "00"
+  - name: bs-body-bg
+    light: "#f9f9f9"
+    dark: "#181818"
+  - name: my-background
+    light: "#f9f9f9"
+    dark: "#181818"
+  - name: bs-body-color
+    light: "#222"
+    dark: "#fbfbfb"
+  - name: my-white
+    light: "#fff"
+    dark: "#111"
+  - name: my-white-rgb
+    light: "255, 255, 255"
+    dark: "17, 17, 17"
+  - name: my-black
+    light: "#111"
+    dark: "#fff"
+  - name: my-silver-1
+    light: "#ddd"
+    dark: "#2d2d2d"
+  - name: my-silver-2
+    light: "#f5f5f5"
+    dark: "#222"
+  - name: my-gray-1
+    light: "#777"
+    dark: "#ccc"
+  - name: my-gray-2
+    light: "#555"
+    dark: "#bbb"
+  - name: my-gray-3
+    light: "#333"
+    dark: "#aaa"
+  - name: my-border-color
+    light: "#22222222"
+    dark: "#fbfbfb22"
+  - name: my-shadow-color
+    light: "#11111133"
+    dark: "#fdfdfd33"
+  - name: my-theme-accent
+    light: "#0047AB"
+    dark: "#6B9EFF"
+  - name: my-theme-night
+    light: "#7EB2FF"
+    dark: "#7EB2FF"
+  - name: my-theme-day
+    light: "#FCA61C"
+    dark: "#FCA61C"
+  - name: my-error
+    light: "#c0392b"
+    dark: "#e85d50"
+  # Modal/overlay backdrop scrim. Same in both themes (black dim over the page).
+  # Hex8 = rgba(0, 0, 0, 0.45); 0x73 = 115/255 ≈ 0.45 alpha.
+  - name: my-overlay-scrim
+    light: "#00000073"
+    dark: "#00000073"
+
+# Project-page code-block + article tokens. Page-specific (consumed only by
+# projectStyle.css), but kept here so ALL colour tokens live in one source.
+code:
+  - name: page-color
+    light: '#ffffff'
+    dark: '#111111'
+  - name: page-border
+    light: '#22222222' # #222222
+    dark: '#fbfbfb22'  # #fbfbfb
+  - name: code-color
+    light: '#fbfbf9'
+    dark: '#181818'
+  - name: punctuation
+    light: '#1d70dd'
+    dark: '#6cb6ff'
+  - name: string
+    light: '#009b00'
+    dark: '#7ee787'
+  - name: keyword
+    light: '#b400b4'
+    dark: '#ff7b72'
+  - name: function
+    light: '#ff0099'
+    dark: '#d2a8ff'
+  - name: number
+    light: '#ff9900'
+    dark: '#ffa657'
+  - name: operation
+    light: '#eb791c'
+    dark: '#ffa657'
+  - name: comment
+    light: '#999999'
+    dark: '#8b949e'
+  - name: subtitle-color
+    light: '#555555'
+    dark: '#bbbbbb'
+  - name: abstract-bg
+    light: '#f5f5f5'
+    dark: '#222222'

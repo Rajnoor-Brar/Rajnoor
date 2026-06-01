@@ -1,0 +1,19 @@
+
+{{- $prefix := .prefix | default "" -}}
+{{- $cls := .class | default "" -}}
+{{- $alt := .alt | default "" -}}
+{{- if and .light .dark -}}
+  <img src="{{ $prefix }}{{ .light }}" class="{{ with $cls }}{{ . }} {{ end }}theme-img--light" alt="{{ $alt }}" loading="lazy">
+  <img src="{{ $prefix }}{{ .dark }}" class="{{ with $cls }}{{ . }} {{ end }}theme-img--dark" alt="{{ $alt }}" loading="lazy">
+{{- else if .fallback -}}
+  <img src="{{ $prefix }}{{ .fallback }}"{{ with $cls }} class="{{ . }}"{{ end }} alt="{{ $alt }}" loading="lazy">
+{{- end -}}
+
+{{/*      Params (dict):
+       light    — light-theme variant value (with `dark`, triggers paired output)
+       dark     — dark-theme variant value
+       fallback — single, theme-agnostic variant value
+       prefix   — (optional) string prepended to every src (default "")
+       class    — (optional) extra classes applied to every emitted <img>
+       alt      — (optional) alt text; pass "" for decorative icons
+        */}}

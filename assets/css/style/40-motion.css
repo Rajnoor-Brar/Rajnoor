@@ -1,0 +1,81 @@
+/* ── Motion — shared keyframes, card + page-content transitions, reduced-motion ─── */
+
+@keyframes writeStroke {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rotateAnim {
+  0%   { transform: rotate(0deg);   animation-timing-function: ease-in;  }
+  50%  { transform: rotate(180deg); animation-timing-function: ease-out; }
+  100% { transform: rotate(360deg); }
+}
+
+.rotate {
+  display: inline-block;
+  animation: rotateAnim 1s;
+}
+
+@keyframes iconSwap {
+  0%   { opacity: 1; transform: scale(1) rotate(0deg); }
+  40%  { opacity: 0; transform: scale(0.7) rotate(90deg); }
+  60%  { opacity: 0; transform: scale(0.7) rotate(90deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+.icon-swap {
+  animation: iconSwap var(--motion-slow) ease;
+}
+
+@keyframes discoverPulse {
+  0%   { box-shadow: 0 0 0   0   var(--my-theme-accent); }
+  35%  { box-shadow: 0 0 22px 6px var(--my-theme-accent); }
+  70%  { box-shadow: 0 0 10px 2px var(--my-theme-accent); }
+  100% { box-shadow: 0 0 0   0   transparent; }
+}
+/* #signature-panel has animation: fadeIn on the ID rule (specificity 1,0,0).
+   A plain .discover-pulse class (0,1,0) would lose the cascade and never run.
+   Combining ID + class (1,1,0) wins, and listing fadeIn with a negative delay
+   equal to its duration instantly completes it — keeping opacity at 1 via
+   the forwards fill — while discoverPulse runs freely on box-shadow. */
+#signature-panel.discover-pulse {
+  animation:
+    fadeIn 1.75s ease-in-out -1.75s forwards,
+    discoverPulse 2.4s ease-out 1;
+}
+
+
+.card {
+  transition: box-shadow var(--motion-base) ease, transform var(--motion-base) ease;
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+#page-content {
+  transition: opacity var(--motion-fast) ease, transform var(--motion-fast) ease;
+}
+#page-content.page-leaving {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+

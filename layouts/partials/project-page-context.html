@@ -54,7 +54,7 @@
 
 {{- $currentProject := . -}}
 {{- if $isChapter -}}{{- $currentProject = .Parent -}}{{- end -}}
-{{- $sortedEntries := sort (where site.Data.projects "show" true) "weight" -}}
+{{- $sortedEntries := sort (where site.Data.projects.projects "show" true) "weight" -}}
 {{- $projIdx := -1 -}}
 {{- range $i, $entry := $sortedEntries -}}
   {{- with site.GetPage $entry.path -}}

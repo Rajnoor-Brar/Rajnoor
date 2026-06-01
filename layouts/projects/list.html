@@ -4,7 +4,7 @@
 
   {{/* ── Collect tags only from visible projects ── */}}
   {{ $allTags := slice }}
-  {{ range site.Data.projects }}
+  {{ range site.Data.projects.projects }}
     {{ if .show }}
       {{ $allTags = $allTags | append .tags }}
     {{ end }}
@@ -49,9 +49,9 @@
 
   <div id="project-grid" class="container-fluid p-0 m-0">
 
-    {{/* ── Named groups from data/projectGroups.yaml ── */}}
-    {{ range $g := site.Data.projectGroups }}
-      {{ $entries := where (where site.Data.projects "group" $g.slug) "show" true }}
+    {{/* ── Named groups from data/projects.yaml › groups ── */}}
+    {{ range $g := site.Data.projects.groups }}
+      {{ $entries := where (where site.Data.projects.projects "group" $g.slug) "show" true }}
       {{ if $entries }}
       <section class="project-group" id="group-{{ $g.slug }}" data-group="{{ $g.slug }}">
         <div class="container-fluid justify-content-center d-flex">
@@ -65,11 +65,11 @@
       {{ end }}
     {{ end }}
 
-    {{/* ── "Other" group — entries whose group isn't in projectGroups.yaml ── */}}
+    {{/* ── "Other" group — entries whose group isn't in data/projects.yaml › groups ── */}}
     {{ $knownSlugs := slice }}
-    {{ range site.Data.projectGroups }}{{ $knownSlugs = $knownSlugs | append .slug }}{{ end }}
+    {{ range site.Data.projects.groups }}{{ $knownSlugs = $knownSlugs | append .slug }}{{ end }}
     {{ $otherEntries := slice }}
-    {{ range site.Data.projects }}
+    {{ range site.Data.projects.projects }}
       {{ if and .show (not (in $knownSlugs .group)) }}
         {{ $otherEntries = $otherEntries | append . }}
       {{ end }}

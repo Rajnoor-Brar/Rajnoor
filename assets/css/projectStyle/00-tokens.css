@@ -1,0 +1,12 @@
+/* ── Project page colour tokens — injected from data/colors.yaml › code ──────── */
+
+/* Code-block + article tokens — injected from data/style.yaml › code
+   (single source of truth, same as the global tokens in style.css). */
+:root{
+{{- range site.Data.colors.code }}{{ printf "\n    --%s: %s;" .name .light }}{{- end }}
+}
+
+html[data-bs-theme="dark"] {
+{{- range site.Data.colors.code }}{{ printf "\n    --%s: %s;" .name .dark }}{{- end }}
+}
+

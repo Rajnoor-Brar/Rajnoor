@@ -10,9 +10,9 @@
 */}}
 
 {{/* Build a lookup of project metadata keyed by Page.RelPermalink so each
-     project page can pull its `tags` and `show` from data/projects.yaml. */}}
+     project page can pull its `tags` and `show` from data/projects.yaml › projects. */}}
 {{ $projectData := dict }}
-{{ range $entry := site.Data.projects }}
+{{ range $entry := site.Data.projects.projects }}
   {{ with site.GetPage $entry.path }}
     {{ $projectData = merge $projectData (dict .RelPermalink $entry) }}
   {{ end }}

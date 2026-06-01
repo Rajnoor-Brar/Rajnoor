@@ -32,28 +32,25 @@ html, body {
     height: 20vh !important;
 }
 
-#gtd-container{
+#gtd-stage{
     display: flex;
     flex-direction: row;
     max-width: 100vw;
     align-items: center;
     justify-content: center;
-    /* display: flex; */
 }
 
 .gtd-container{
     display: flex;
     justify-content: center;
-    /* width:80vw; */
     align-items: center;
-
 }
 
 @media (max-width: 768px) {
     .gtd-svg {
         height: 17vh !important;
     }
-    #gtd-container{
+    #gtd-stage{
         flex-direction: column;
     }
 }
@@ -101,14 +98,13 @@ html, body {
     transition: none !important;
   }
   .draw, .undraw { animation: none !important; }
-  /* In homeScript.js the unwriteGTD step still adds .d-none to #gtd-container
+  /* In homeScript.js the unwriteGTD step still adds .d-none to #gtd-stage
      after a short delay, so the hero remains transient under reduced motion. */
 }
 
 
 /* --- Scroll Lock State --- */
 body.locked {
-  /* overflow: hidden; */
   touch-action: none;
 }
 
@@ -226,23 +222,23 @@ font-size: max(clamp(1.2rem, 2vw, 2.5rem),clamp(1.2rem, 3vh, 2.5rem)) !important
   transform: translateY(0);
 }
 
-.now-item {
+.now-snippet__item {
   display: inline-flex;
   align-items: baseline;
   gap: 0.3em;
   padding-inline: 0.35em;
   transition: color var(--motion-base) ease;
 }
-.now-item em {
+.now-snippet__item em {
   font-style: italic;
   color: var(--my-gray-1);
   font-weight: 400;
 }
-.now-item cite {
+.now-snippet__item cite {
   font-style: italic;
 }
-.now-item:hover { color: var(--my-black); }
-.now-item:hover em { color: var(--my-black); }
+.now-snippet__item:hover { color: var(--my-black); }
+.now-snippet__item:hover em { color: var(--my-black); }
 
 .now-sep {
   color: var(--my-gray-1);

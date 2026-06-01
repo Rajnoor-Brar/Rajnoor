@@ -1,0 +1,96 @@
+/* ── Page console — project-page chrome (#page-console family) ─────────────────── */
+
+#page-console {
+  position: fixed;
+  z-index: var(--z-fixed);
+  display: flex;
+  align-items: flex-end;
+}
+#page-console.left  { left:  2.5vw; align-items: flex-start; }
+#page-console.right { right: 2.5vw; align-items: flex-end; }
+#page-console.top    { flex-direction: column;          top:    2.5vw; }
+#page-console.bottom { flex-direction: column-reverse; bottom: calc(2.5vw + 4.5vh); }
+
+/* Shared surface for all four page-console panels (parallel to .command-panel
+   on the command-console). Individual panels add their own layout/sizing. */
+.page-panel {
+  border-radius: var(--panel-radius);
+  background-color: rgba(var(--my-white-rgb), 0.8);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+#pg-head-panel {
+  position: relative;
+  display: flex;
+  gap: calc(0.15 * var(--signature-height));
+  align-items: center;
+  justify-content: space-evenly;
+  height: var(--signature-height);
+  padding-inline: calc(0.3 * var(--signature-height));
+  transition: width var(--motion-base) ease, padding-inline var(--motion-base) ease;
+}
+#page-console.right #pg-head-panel { flex-direction: row-reverse; }
+
+.pg-head__item {
+  display: flex;
+  background: transparent !important;
+  border: none;
+  padding: 0;
+  width: calc(0.45 * var(--signature-height));
+  height: calc(0.45 * var(--signature-height));
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  color: var(--bs-body-color);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color var(--motion-fast) ease, text-shadow var(--motion-fast) ease, transform var(--motion-fast) ease;
+}
+.pg-head__item:hover { text-shadow: var(--glow-md); }
+
+#pg-text-size-toggle:hover,
+#page-console-toggle:hover { text-shadow: var(--glow-sm); }
+/* #pg-toc-toggle glow is filter: drop-shadow on .pg-toc-icon — text-shadow has no
+   effect on SVG content. See projectStyle.css #pg-toc-toggle:hover .pg-toc-icon. */
+
+#page-console-toggle .bi { transition: transform var(--motion-base) ease; }
+#page-console.left:not(.contracted)  #page-console-toggle .bi { transform: scaleX(1);  }
+#page-console.right:not(.contracted) #page-console-toggle .bi { transform: scaleX(-1); }
+#page-console.left.contracted  #page-console-toggle .bi { transform: scaleX(-1); }
+#page-console.right.contracted #page-console-toggle .bi { transform: scaleX(1);  }
+
+#page-console.contracted #pg-head-panel {
+  width: var(--signature-height);
+  padding-inline: 0;
+  justify-content: center;
+}
+/* Expand the toggle's hit area to the full contracted pill — no dead zone. */
+#page-console.contracted #page-console-toggle {
+  width: 100%;
+  height: 100%;
+}
+#page-console.contracted .pg-head__item:not(#page-console-toggle) { display: none !important; }
+#page-console.contracted .pg-summoned                       { display: none !important; }
+
+.pg-summoned {
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  #page-console.contracted #pg-head-panel {
+    width: calc(0.7 * var(--signature-height));
+    padding-inline: calc(0.08 * var(--signature-height));
+    background-color: rgba(var(--my-white-rgb), 0.8);
+    box-shadow: var(--shadow-panel);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    margin-inline: 0 !important;
+    border-radius: calc(var(--signature-height) * 0.34);
+  }
+  #page-console.right.contracted #pg-head-panel { margin-right: -26px !important; }
+  #page-console.left.contracted #pg-head-panel  { margin-left:  -26px !important; }
+  #page-console.contracted .scroll-arc { visibility: hidden; }
+}
+

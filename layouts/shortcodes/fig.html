@@ -4,7 +4,7 @@
 {{- $cap := .Get "caption" | default "" -}}
 {{- $validSizes := slice "small" "medium" "large" "full" -}}
 <figure class="figure">
-  <div class="figure-media">
+  <div class="figure__media">
     {{- range $index, $src := $srcs }}
       {{- $imgSrc := trim $src " \n\r\t" -}}
       {{- if $imgSrc -}}
@@ -24,7 +24,7 @@
         {{- else if lt $index (len $alts) -}}
           {{- $alt = index $alts $index -}}
         {{- end -}}
-        <span class="figure-image figure-image--{{ $size }}">
+        <span class="figure__image figure__image--{{ $size }}">
           <img src="{{ $imgSrc }}" alt="{{ trim $alt " \n\r\t" }}" loading="lazy">
         </span>
       {{- end -}}

@@ -1,0 +1,78 @@
+/* ── Foundations — injected :root/dark tokens, theme transition, body, focus, #page-container ─── */
+
+:root{
+{{- range site.Data.colors.tokens }}{{ printf "\n  --%s: %s;" .name .light }}{{- end }}
+{{- range site.Data.style.fonts }}{{ printf "\n  --%s: %s;" .token .typeface }}{{- end }}
+{{- range $k, $v := site.Data.style.radius }}{{ printf "\n  --radius-%s: %s;" $k $v }}{{- end }}
+  --nav-height: calc(4.5rem + env(safe-area-inset-bottom));
+{{- range $k, $v := site.Data.style.motion }}{{ printf "\n  --motion-%s: %s;" $k $v }}{{- end }}
+{{- range $k, $v := site.Data.style.z_index }}{{ printf "\n  --z-%s: %v;" $k $v }}{{- end }}
+{{- range site.Data.style.shadows }}{{ printf "\n  --shadow-%s: %s;" .size .value }}{{- end }}
+{{- range site.Data.style.glows }}{{ printf "\n  --glow-%s: %s;" .size .value }}{{- end }}
+}
+
+html[data-bs-theme="dark"] {
+{{- range site.Data.colors.tokens }}{{ printf "\n  --%s: %s;" .name .dark }}{{- end }}
+}
+
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color var(--motion-base) ease-in, color var(--motion-fast) ease-out;
+}
+
+
+html[data-bs-theme="dark"]  .theme-img--light { display: none; }
+html[data-bs-theme="light"] .theme-img--dark  { display: none; }
+
+body {
+  --signature-height:80px;
+  --signature-bg-duration:0.25s;
+  --signature-stroke-duration:0.5s;
+  /* Frosted-panel corner radius — derived from the signature footprint so the
+     whole command-console family rounds consistently. */
+  --panel-radius: calc(var(--signature-height) * 0.4);
+  font-family: var(--my-font-ui);
+  max-width:100vw;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable both-edges;
+}
+
+.top-spacer{
+  height: 10vh;
+  transition-property: height;
+  transition-duration: var(--motion-base);
+  transition-timing-function: ease-in-out;
+}
+
+.top-spacer.contract{
+  height: 0;
+}
+
+#command-console-tray.hide,
+#navigation-panel.hide,
+#action-panel.hide,
+#pg-toc-panel.hide { display: none; }
+
+:focus-visible {
+  outline: 2px solid var(--my-theme-accent);
+  outline-offset: 2px;
+  border-radius: 2px; /* softens corners on rectangular controls */
+}
+.corner-picker__dot:focus-visible,
+#command-console:focus-visible {
+  outline: none;
+}
+
+#page-container {
+  width:100%;
+  height:100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--my-background);
+  color: var(--bs-body-color);
+  overflow-x: clip; /* clip, not hidden — avoids creating a scroll container */
+}
+

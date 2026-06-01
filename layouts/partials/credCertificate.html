@@ -3,15 +3,9 @@
   <div class="row g-0">
 
     <div class="col-md-4 d-flex align-items-center justify-content-center p-5 p-md-3">
-      {{ $hasThemed := and .icon_light .icon_dark }}
-      {{ if or $hasThemed .icon }}
-        <div class="certificate__icon">
-          {{ if $hasThemed }}
-            <img src="{{ printf "/resources/creds/%s" .icon_light }}" class="theme-img--light" alt="Certificate Icon" loading="lazy">
-            <img src="{{ printf "/resources/creds/%s" .icon_dark }}" class="theme-img--dark" alt="Certificate Icon" loading="lazy">
-          {{ else }}
-            <img src="{{ printf "/resources/creds/%s" .icon }}" alt="Certificate Icon" loading="lazy">
-          {{ end }}
+      {{ if or (and .icon_light .icon_dark) .icon }}
+        <div class="certificate__icon" aria-hidden="true">
+          {{ partial "themedImg.html" (dict "light" .icon_light "dark" .icon_dark "fallback" .icon "prefix" "/resources/creds/" "alt" "") }}
         </div>
       {{ end }}
     </div>
@@ -38,8 +32,6 @@
   <hr class="mt-2">
 
   <div class="d-flex flex-wrap certificate__footer">
-    {{/* {{ $linkedId := cond (and .id .link) " linked-id" }} */}}
-    {{/* {{ idCopy := cond (.id_copy) .id_copy}}{{ $idCopy := cond .id_copy "certificate__copy" "" }} */}}
     {{ $idCopy := cond (default true .id_copy) "certificate__copy" "" }}
     {{ $linkCols := cond (not .marks) "col-lg-12" "col-lg-8" }}
     {{ if .link }}

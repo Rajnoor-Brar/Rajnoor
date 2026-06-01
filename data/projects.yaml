@@ -1,24 +1,44 @@
-# Gallery cards for /projects/. One entry per project.
-# `path` is a content-tree path resolved via site.GetPage to get RelPermalink
-# (so `url:` overrides on the page itself are honoured automatically).
-# `weight` here is gallery sort order; chapter-page weights stay in frontmatter.
+# Gallery data for /projects/.
+# groups: section headers displayed in gallery order (by weight).
+# projects: one entry per project.
+#
+# projects.path is resolved via site.GetPage so url: overrides in frontmatter
+# are honoured automatically. projects.weight is gallery sort order;
+# chapter-page weights stay in frontmatter.
 
-- slug: ellipsoidal-channel
-  path: /projects/Ellipsoidal_Channel
-  show: true
-  weight: 10
-  group: experimentation
-  tags: ["MATLAB", "Visualisation"]
-  cardImage: "/resources/Ellipsoidal_Channel/Shadowed_Tunnel.png"
-  cardTitle: "Ellipsoidal Channel"
-  cardText: "Plotting a channel of ellipsoidal profile wrapped about two directrices in 3D space via MATLAB"
+groups:
+  - slug: simulations
+    name: "Simulations"
+    description: "Physics and math, rendered."
+    weight: 10
 
-- slug: lambda
-  path: /projects/lambda
-  show: false
-  weight: 5
-  group: experimentation
-  tags: []
-  cardImage: "/resources/img_placeholder.svg"
-  cardTitle: "Lambda"
-  cardText: "Multi-threaded reconstruction pipeline. Probe / Record / Monitor / Paint."
+  - slug: experimentation
+    name: "Experimentation"
+    description: "Projects that are more about learning and exploration than building something specific."
+    weight: 15
+
+  - slug: tools
+    name: "Tools"
+    description: "Small utilities built for everyday problems."
+    weight: 20
+
+projects:
+  - slug: ellipsoidal-channel
+    path: /projects/Ellipsoidal_Channel
+    show: true
+    weight: 10
+    group: experimentation
+    tags: ["MATLAB", "Visualisation"]
+    cardImage: "/resources/Ellipsoidal_Channel/Shadowed_Tunnel.png"
+    cardTitle: "Ellipsoidal Channel"
+    cardText: "Plotting a channel of ellipsoidal profile wrapped about two directrices in 3D space via MATLAB"
+
+  - slug: lambda
+    path: /projects/lambda
+    show: false
+    weight: 5
+    group: experimentation
+    tags: []
+    cardImage: "/resources/img_placeholder.svg"
+    cardTitle: "Lambda"
+    cardText: "Multi-threaded reconstruction pipeline. Probe / Record / Monitor / Paint."

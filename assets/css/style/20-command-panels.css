@@ -1,0 +1,242 @@
+/* ── Command panels — tray, .command-panel surface, navigation + action panels ─── */
+
+#command-console-tray{
+  display:flex;
+  position: relative;
+  left: 0;
+  padding: 0 !important;
+  margin-block: calc(0.25*var(--signature-height));
+
+  background-color: transparent;
+  box-shadow: none;
+
+  --navItemHeightFactor:0.6;
+}
+
+.top #command-console-tray{
+  flex-direction: column;
+}
+
+.bottom #command-console-tray{
+  flex-direction: column-reverse;
+}
+
+/* Shared frosted surface for the expanding command-console panels
+   (#navigation-panel + #action-panel). Parallel to .page-panel on the
+   page-console; the resting #signature-panel keeps its own surface inline so
+   the per-corner transform-origin rules below don't bleed onto it. */
+.command-panel{
+  border-radius: var(--panel-radius);
+  background-color: rgba(var(--my-white-rgb), 0.8);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+#command-console.top.left    .command-panel { transform-origin: top left; }
+#command-console.top.right   .command-panel { transform-origin: top right; }
+#command-console.bottom.left  .command-panel { transform-origin: bottom left; }
+#command-console.bottom.right .command-panel { transform-origin: bottom right; }
+
+#navigation-panel{
+  --y-offset: calc(0.15 * var(--signature-height));
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  width: calc(2 * var(--signature-height));
+
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+
+  padding: calc(0.15*var(--signature-height)) calc(0.2*var(--signature-height));
+
+  animation-name: none;
+  /* Injected from the same source the JS cleanup reads (data/script.yaml ›
+     console) so the CSS animation and the JS teardown timer can't drift. */
+  animation-duration: {{ site.Data.script.console.navigation_panel_anim_ms }}ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+#navigation-panel::before,
+#navigation-panel::after {
+  content: "";
+  position: absolute;
+  left : 0px;
+  height: calc(0.3 * var(--signature-height));
+  background: var(--my-black);
+  border-radius: 2px;
+  pointer-events: none;
+  transition: top var(--motion-slow) cubic-bezier(0.22, 1, 0.36, 1), opacity var(--motion-fast) ease;
+}
+#navigation-panel::before {
+  top: calc(var(--active-y, 0px) + var(--y-offset));
+  width: 2px;
+  opacity: var(--active-shown, 0);
+  z-index: calc(var(--z-rail) + 1);
+}
+#navigation-panel::after {
+  top: calc(var(--hover-y, 0px) + var(--y-offset));
+  width: 1px;
+  opacity: var(--hover-shown, 0);
+  z-index: var(--z-rail);
+}
+
+#navigation-panel.show{
+  display: flex;
+  animation-name: panelExpand;
+}
+
+#navigation-panel.contract{
+  animation-name: panelCollapse;
+}
+
+.nav-item{
+  display: flex !important;
+  font-family: var(--my-font-title);
+  font-size: 1rem;
+
+  width: 100%;
+  height: calc(0.6*var(--signature-height));
+
+  align-items: center;
+  justify-content: center;
+  transition: display calc(var(--signature-bg-duration)/5) ease, color 0s;
+}
+.nav-link{
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 50%;  
+  padding-block: 0 !important;
+  padding-inline: calc(0.1*var(--signature-height)) !important;
+  margin-left: calc(0.1*var(--signature-height));
+}
+.nav-link__text{
+  position: absolute;
+  top: 50%;
+  left: calc(0.1*var(--signature-height));
+  right: calc(0.1*var(--signature-height));
+  transform: translateY(-50%);
+  line-height: 1;
+}
+
+#home-nav{
+  transition-delay: calc(var(--signature-bg-duration)/5);
+}
+
+#project-nav{
+  transition-delay: calc(2*var(--signature-bg-duration)/5);
+}
+
+#cred-nav{
+  transition-delay: calc(3*var(--signature-bg-duration)/5);
+}
+
+#action-panel{
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  margin-block: calc(0.25*var(--signature-height));
+
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+
+  padding: calc(0.1*var(--signature-height)) calc(0.1*var(--signature-height));
+
+  width: calc(2 * var(--signature-height));
+  /* See #navigation-panel: injected from data/script.yaml › console. */
+  animation-duration: {{ site.Data.script.console.panel_anim_ms }}ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+#action-panel.show{
+  display: flex;
+  animation-name: panelExpand;
+}
+
+#action-panel.contract{
+  animation-name: panelCollapse;
+}
+
+@keyframes panelExpand {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes panelCollapse {
+  from { transform: scale(1);   opacity: 1; }
+  to   { transform: scale(0.7); opacity: 0; }
+}
+
+.action-item{
+  display: flex !important;
+  font-size: 1.15rem;
+  justify-content: center;
+  align-items: center;
+  height: calc(0.45*var(--signature-height));
+  width: calc(0.45*var(--signature-height));
+  flex: 0 0 calc(0.45*var(--signature-height));
+  border: none;
+  transition: display calc(var(--signature-bg-duration)/5) ease, color 0s;
+}
+
+.action-item.show{
+  display: flex !important;
+}
+
+#theme-toggle{
+  transition: transform var(--motion-slow) ease-in, color 0.02s ease-out 0.05s;
+  background-color: transparent !important;
+  /* Explicit colour — mobile Safari paints unstyled <button> text in the
+     system tint (blue on iOS), which leaks into the Material Symbols glyph. */
+  color: var(--bs-body-color);
+  border: none;
+  padding: 0;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#theme-toggle:hover {
+  text-shadow: var(--my-theme-day) 0px 0px 4px;
+}
+html[data-bs-theme="dark"] #theme-toggle:hover {
+  text-shadow: var(--my-theme-night) 0px 0px 8px;
+}
+
+#corner-picker {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 4px;
+  padding: 8px;
+  background: transparent !important;
+  /* width/height come from .action-item so all three items stay equiwidth */
+}
+
+.corner-picker__dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid var(--my-border-color);
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color var(--motion-base) ease, transform var(--motion-fast) ease, border-color var(--motion-base) ease;
+}
+
+.corner-picker__dot:hover,
+.corner-picker__dot:focus-visible {
+  transform: scale(1.25);
+  outline: none;
+  border-color: var(--my-black);
+}
+
+.corner-picker__dot.active {
+  background-color: var(--my-black);
+  border-color: var(--my-black);
+}
+

@@ -17,15 +17,9 @@
 {{ end }}
 {{ printf "<%s class=%q%s>" $tag $cls $attrs | safeHTML }}
 
-  {{ $hasThemed := and .icon_light .icon_dark }}
-  {{ if or $hasThemed .icon }}
+  {{ if or (and .icon_light .icon_dark) .icon }}
     <span class="skill-badge__icon" aria-hidden="true">
-      {{ if $hasThemed }}
-        <img src="{{ printf "/resources/creds/%s" .icon_light }}" class="theme-img--light" alt="" loading="lazy">
-        <img src="{{ printf "/resources/creds/%s" .icon_dark }}" class="theme-img--dark" alt="" loading="lazy">
-      {{ else }}
-        <img src="{{ printf "/resources/creds/%s" .icon }}" alt="" loading="lazy">
-      {{ end }}
+      {{ partial "themedImg.html" (dict "light" .icon_light "dark" .icon_dark "fallback" .icon "prefix" "/resources/creds/" "alt" "") }}
     </span>
   {{ end }}
 
