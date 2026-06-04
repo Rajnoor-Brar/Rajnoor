@@ -8,9 +8,11 @@
      assembled the same way the global script bundle is. Otherwise load the single file. */}}
 {{- $bundleGlob := printf "%s/*.css" (strings.TrimSuffix ".css" $path) -}}
 {{- $bundleParts := sort (resources.Match $bundleGlob) "Name" -}}
-{{- $asset := resources.Get $path -}}
+{{- $asset := "" -}}
 {{- if gt (len $bundleParts) 0 -}}
   {{- $asset = $bundleParts | resources.Concat $path -}}
+{{- else -}}
+  {{- $asset = resources.Get $path -}}
 {{- end -}}
 {{- if not $asset -}}
   {{- errorf "CSS asset not found: %q (from %q)" $path $src -}}

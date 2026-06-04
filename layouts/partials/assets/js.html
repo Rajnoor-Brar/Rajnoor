@@ -5,9 +5,11 @@
 {{- end -}}
 {{- $bundleGlob := printf "%s/*.js" (strings.TrimSuffix ".js" $path) -}}
 {{- $bundleParts := sort (resources.Match $bundleGlob) "Name" -}}
-{{- $asset := resources.Get $path -}}
+{{- $asset := "" -}}
 {{- if gt (len $bundleParts) 0 -}}
   {{- $asset = $bundleParts | resources.Concat $path -}}
+{{- else -}}
+  {{- $asset = resources.Get $path -}}
 {{- end -}}
 {{- if not $asset -}}
   {{- errorf "JS asset not found: %q (from %q)" $path $src -}}
