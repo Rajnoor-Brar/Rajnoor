@@ -3,7 +3,7 @@ layout: default
 title: "Ellipsoidal Channel"
 active_nav: "projects"
 pageScript: "/js/projectScript.js"
-pageStyle: "/css/projectStyle.css"
+pageStyle: "/css/projectstyle.css"
 url: "/projects/ellipsoidal-channel"
 
 description: "Plot an ellipsoidal channel in MATLAB"
