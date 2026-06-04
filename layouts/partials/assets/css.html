@@ -5,7 +5,12 @@
 {{- end -}}
 {{/* When a sibling <name>/ dir exists (e.g. css/style/*.css), concat its numbered
      parts in name order — mirrors assets/js.html so the global stylesheet is
-     assembled the same way the global script bundle is. Otherwise load the single file. */}}
+     assembled the same way the global script bundle is. Otherwise load the single file.
+     IMPORTANT: do NOT create a real file at the bundle path itself (e.g.
+     assets/css/style.css). On case-sensitive CI filesystems such a file shadows the
+     resources.Concat target of the same name and gets shipped instead of the concat —
+     silently producing an empty stylesheet. The bundle path is virtual; it needs no
+     backing file because the if-branch never calls resources.Get when parts exist. */}}
 {{- $bundleGlob := printf "%s/*.css" (strings.TrimSuffix ".css" $path) -}}
 {{- $bundleParts := sort (resources.Match $bundleGlob) "Name" -}}
 {{- $asset := "" -}}

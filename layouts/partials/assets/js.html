@@ -3,6 +3,10 @@
 {{- if and $path (not (hasPrefix $path "js/")) -}}
   {{- $path = printf "js/%s" $path -}}
 {{- end -}}
+{{/* Bundle parts from a sibling <name>/ dir, else load the single same-named file.
+     IMPORTANT: do NOT create a real file at the bundle path itself (e.g.
+     assets/js/script.js). On case-sensitive CI filesystems it shadows the
+     resources.Concat target and ships instead of the concat — an empty bundle. */}}
 {{- $bundleGlob := printf "%s/*.js" (strings.TrimSuffix ".js" $path) -}}
 {{- $bundleParts := sort (resources.Match $bundleGlob) "Name" -}}
 {{- $asset := "" -}}
