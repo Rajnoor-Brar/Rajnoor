@@ -1,5 +1,35 @@
 /* ── About page ───────────────────────────────────────────────────────── */
 
+/* Vertically composed stage — mirrors the 404 optical centering (404.css
+   #not-found) so the sparse about content sits centered rather than stranded
+   at the top. The desktop bottom-pad pulls the composition slightly above the
+   geometric midpoint. Replaces the top-spacer (removed from the markup). */
+.about-stage {
+  min-height: 100vh;
+  justify-content: center;
+}
+@media (min-width: 768px) {
+  .about-stage {
+    padding-bottom: 12vh;
+  }
+}
+
+/* Subtle fade-up of the composed content on arrival — echoes the home/about
+   reveal language. The element's own resting state is opacity:1 / no transform,
+   and the animation has no fill — so it overrides opacity only while running and
+   never leaves the content stuck invisible (throttled tab / reduced motion). */
+.about-page {
+  opacity: 1;
+  animation: aboutRise var(--motion-slow) ease-out;
+}
+@keyframes aboutRise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-page { animation: none; opacity: 1; transform: none; }
+}
+
 .about-page__title {
   font-family: var(--my-font-title);
   font-size: clamp(2rem, 4vw, 3rem);
@@ -51,9 +81,9 @@
 .about-link:focus-visible {
   color: var(--my-black);
   border-color: var(--my-gray-2);
-  box-shadow: 0 0 10px 0 var(--my-shadow-color);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
-  text-shadow: var(--my-theme-accent) 0 0 1px;
+  text-shadow: var(--glow-sm);
 }
 
 /* Credits */

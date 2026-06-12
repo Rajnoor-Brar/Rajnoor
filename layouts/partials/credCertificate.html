@@ -2,16 +2,16 @@
 <div class="certificate h-100 card p-2 col-12 col-lg-5 col-md-8">
   <div class="row g-0">
 
-    <div class="col-md-4 d-flex align-items-center justify-content-center p-5 p-md-3">
+    <div class="certificate__icon-col flex-center col-5 col-md-4">
       {{ if or (and .icon_light .icon_dark) .icon }}
-        <div class="certificate__icon" aria-hidden="true">
+        <div class="certificate__icon icon-frame" aria-hidden="true">
           {{ partial "themedImg.html" (dict "light" .icon_light "dark" .icon_dark "fallback" .icon "prefix" "/resources/creds/" "alt" "") }}
         </div>
       {{ end }}
     </div>
 
-    <div class="col-md-8 d-flex align-items-center">
-      <div class="card-body flex-wrap d-flex">
+    <div class="certificate__text-col col-7 col-md-8">
+      <div class="card-body">
         <div class="certificate__details col-12">
           {{ with .title }}
             <div class="certificate__name">
@@ -31,26 +31,32 @@
 
   <hr class="mt-2">
 
-  <div class="d-flex flex-wrap certificate__footer">
-    {{ $idCopy := cond (default true .id_copy) "certificate__copy" "" }}
+  <div class="certificate__footer">
+    {{ $idCopyEnabled := default true .id_copy }}
     {{ $linkCols := cond (not .marks) "col-lg-12" "col-lg-8" }}
     {{ if .link }}
       <div class="certificate__link linked-id col-12 {{ $linkCols }}">
-        <a href="{{ .link }}" target="_blank" rel="noopener noreferrer" class="btn">
+        <a href="{{ .link }}" target="_blank" rel="noopener noreferrer" class="btn truncate">
           {{ if .id }}{{ .id }}{{ else }}{{ .link }}{{ end }}
         </a>
       </div>
     {{ else if .id }}
       <div class="certificate__link col-12 {{ $linkCols }}">
-        <button type="button" class="btn {{ $idCopy }}" data-rj-copy="{{ .id }}">
+        {{ if $idCopyEnabled }}
+        <button type="button" class="btn truncate certificate__copy" data-rj-copy="{{ .id }}">
           {{ .id }}
         </button>
+        {{ else }}
+        {{/* Copy disabled — render the id as static, non-interactive text:
+             no data-rj-copy (so the global [data-rj-copy] click handler skips it). */}}
+        <span class="btn truncate certificate__id-static">{{ .id }}</span>
+        {{ end }}
       </div>
     {{ end }}
 
-    <div class="certificate__extra col-12 col-lg-4 d-flex flex-wrap">
+    <div class="certificate__extra col-12 col-lg-4">
       {{ with .marks }}
-        <div class="certificate__marks col-6 col-lg-12 d-flex btn justify-content-lg-end"><span>{{ . }}</span></div>
+        <div class="certificate__marks col-6 col-lg-12 btn"><span>{{ . }}</span></div>
       {{ end }}
     </div>
 

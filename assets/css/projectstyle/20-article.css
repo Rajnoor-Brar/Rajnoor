@@ -9,10 +9,10 @@
     padding: 0;
     transition: transform var(--motion-fast) ease, box-shadow var(--motion-base) ease;
 }
+/* Lift (transform + shadow) comes from the central .card:hover/:focus-visible
+   rule in 40-motion.css; this keeps only the anchor-specific resets. */
 .project-card:hover,
 .project-card:focus-visible {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
     text-decoration: none;
     color: inherit;
 }
@@ -27,26 +27,19 @@
     color: var(--my-black);
 }
 
+/* Flex-center + overflow + img object-fit come from the .icon-frame utility;
+   this keeps the bespoke aspect-ratio and hairline divider. */
 .project-card__media {
     aspect-ratio: 4 / 3;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     padding: 0;
     margin:0;
-    background: transparent;
     border-bottom: 1px solid var(--my-border-color);
-    overflow: hidden;
 }
 
 .project-card__media .card-img-top {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
     border-radius: 0;
     margin: 0;
-    background: transparent;
 }
 
 /* Inline GitHub icon button in article footer (Ellipsoidal Channel) */

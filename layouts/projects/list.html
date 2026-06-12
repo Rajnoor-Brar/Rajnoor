@@ -1,5 +1,5 @@
 {{ define "main" }}
-<div style="min-height: auto;">
+<div>
   <div class="container-fluid top-spacer"></div>
 
   {{/* ── Collect tags only from visible projects ── */}}
@@ -11,7 +11,7 @@
   {{ end }}
   {{ $uniqueTags := $allTags | uniq | sort }}
 
-  <div class="container-fluid justify-content-center d-flex">
+  <div class="container-fluid breadcrumb-row justify-content-center d-flex">
     <div class="col-12 col-lg-6 d-flex mx-0 px-1 px-lg-3 py-4 my-2 align-items-center">
       {{ if $uniqueTags }}
       <button id="filter-toggle"

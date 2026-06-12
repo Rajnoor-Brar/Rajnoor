@@ -25,6 +25,7 @@ window.__registerCleanup = function (fn) {
 };
 
 let consoleTray = document.getElementById('command-console-tray');
+let commandConsole = document.getElementById('command-console');
 let commandPanels = document.querySelectorAll('.command-panel');
 
 // NOTE: these open/close timers are cleared on every SPA navigation directly
@@ -51,6 +52,7 @@ function openNavPanel() {
   clearAllTimeouts(showTimeouts);
 
   consoleTray.classList.remove('hide');
+  if (commandConsole) commandConsole.setAttribute('aria-expanded', 'true');
 
   commandPanels.forEach((panel, i) => {
     const t = setTimeout(() => {
@@ -66,6 +68,7 @@ function closeNavPanel() {
   clearAllTimeouts(showTimeouts);
   clearAllTimeouts(hideTimeouts);
   consoleTray.classList.remove('show');
+  if (commandConsole) commandConsole.setAttribute('aria-expanded', 'false');
 
   // (Scroll-arc no longer lives inside command-console — no focus-hide to mask.)
   // (Text-size panel auto-close removed — toggle no longer lives inside command-console.)

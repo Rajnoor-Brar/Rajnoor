@@ -37,34 +37,61 @@
 .citation{
     font-family: var(--my-font-ui);
     font-size: 0.8em;
+    display: flex;
+    flex-direction: column;
+    flex: 1;      /* fill the card-body height */
+}
+
+/* card-body inside the citation column must stretch to the row height */
+.publication .card-body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Journal name + year — flush to bottom of the icon row */
+.citation__venue {
+    margin-top: auto;
+}
+
+/* Authors — single column list. */
+.citation__authors {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin-bottom: 0.4rem;
+}
+
+/* DOI — visually de-emphasised; users click, not read. */
+.citation__doi {
+    font-size: 0.8em;   /* 80% of parent .citation = ~10px */
+    line-height: 1.2;
+    margin-top: 0;
 }
 .certificate__link{
     font-family: var(--my-font-ui);
-    font-size: 0.8em;
 }
 
-/* .certificate__link .btn {
-    white-space: normal;
-    word-break: break-all;
-    word-wrap: ellipsis;
-    text-decoration: none;
-    text-underline-offset: 0.18em;
-} */
-
+/* Certificate ID / link button — clipping handled by the .truncate utility */
 .certificate__link .btn {
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
     text-decoration: none;
     text-underline-offset: 0.18em;
+    font-size: inherit;
+    text-align: left;
+}
+
+/* DOI link — nobody reads the raw URL; clipping via the .truncate utility */
+.citation__doi a.btn {
+    text-decoration: none;
+    text-underline-offset: 0.18em;
+    font-size: inherit; /* prevent Bootstrap .btn from overriding citation font-size */
+    padding-left: 0;    /* flush-left under the authors/venue block */
+    padding-top: 0;     /* close the gap between venue line and DOI */
 }
 
 .certificate__link.linked-id a.btn:hover,
 .certificate__link.linked-id a.btn:focus-visible,
-.citation__doi a:hover,
-.citation__doi a:focus-visible {
+.citation__doi a.btn:hover,
+.citation__doi a.btn:focus-visible {
     text-decoration: underline;
 }
 
@@ -73,13 +100,69 @@
     text-decoration: underline;
 }
 
+/* id_copy: false — static, non-interactive id (no copy, no pointer affordance) */
+.certificate__id-static {
+    cursor: default;
+}
+
 .certificate__footer{
+    display: flex;
+    flex-wrap: wrap;
     justify-content: end;
+    margin-top: auto;
+}
+
+.certificate__extra{
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .certificate__marks{
+    display: flex;
     text-align: right;
 }
+@media (min-width: 992px) {
+    .certificate__marks { justify-content: flex-end; }
+}
+
+/* Below lg: keep the marks pill beside the link when it fits, and let it wrap
+   to its own line ONLY when the link's content leaves no room — content-driven,
+   not an unconditional stack. Overrides the col-12 / col-6 widths so the footer
+   flex row sizes by content and wraps on demand. */
+@media (max-width: 991.98px) {
+    .certificate__footer { align-items: center; }
+    .certificate__link {
+        width: auto;
+        flex: 1 1 auto;   /* grow to fill; auto basis → a long id forces the wrap */
+        min-width: 0;      /* let the .truncate button shrink instead of overflow */
+    }
+    .certificate__extra {
+        width: auto;
+        flex: 0 0 auto;    /* hug the marks pill */
+    }
+    .certificate__marks {
+        width: auto;       /* override col-6 (was forcing 50%) */
+        justify-content: flex-end;
+    }
+}
+
+/* Container query: enables cqi units inside cert cards for fluid font scaling */
+.certificate {
+    container-type: inline-size;
+}
+
+/* Cert title: full 1rem at normal card widths, floors at 85% on narrow cards */
+.certificate__name {
+    font-size: clamp(0.85rem, 5cqi, 1rem);
+}
+
+/* Institution: fixed 85% of cert title nominal (0.85rem = 85% of 1rem).
+   Independent of cert title's own scaling — doesn't shrink relative to it.
+   Floors at 90% of its own size (0.765rem = 0.9 × 0.85rem) on narrow cards. */
+.certificate__institution {
+    font-size: clamp(0.765rem, 4.3cqi, 0.85rem);
+}
+
 
 @media (min-width:992px) {
     .card {
@@ -87,41 +170,73 @@
     }
 }
 
+/* Card surface — match the skill-pill background (var(--my-white)). Bootstrap's
+   .card otherwise uses --bs-card-bg (≈ --bs-body-bg), which diverges from the
+   pill surface, most visibly in dark mode. Slightly rounder corners than the
+   Bootstrap default (~6px) via the --radius-md token. */
+.certificate,
+.publication {
+    background-color: var(--my-white);
+    border-radius: var(--radius-md);
+}
+
+/* Icon column — centering via .flex-center utility; responsive padding here
+   (was p-2 p-md-3 d-flex align-items-center justify-content-center). */
+.certificate__icon-col{
+    padding: 0.5rem;
+}
+@media (min-width: 768px) {
+    .certificate__icon-col { padding: 1rem; }
+}
+
+/* Text column — was col-7 col-md-8 d-flex align-items-center */
+.certificate__text-col{
+    display: flex;
+    align-items: center;
+}
+.certificate__text-col .card-body{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* Flex-center + img object-fit come from the .icon-frame utility;
+   this rule keeps only the bespoke box sizing. */
 .certificate__icon{
     width:100%;
     aspect-ratio:1/1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
     padding: 0.75rem;
     border-radius: 0.5rem;
-    background: transparent;
-}
-.certificate__icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: transparent;
 }
 
-.publication__icon-frame {
-    width: min(100%, 9rem);
-    aspect-ratio: 1 / 1;
+/* ── Publication title — full-card-width row between metadata and abstract ── */
+.publication__title {
+  padding: 0.5rem 0.75rem 0.15rem;
+  font-family: var(--my-font-ui);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--bs-body-color);
+  text-align: justify;
+}
+
+/* Icon column — was col-6 col-md-4 d-flex align-items-stretch justify-content-center p-0.
+   col-* grid stays on the markup; the flex/stretch/pad live here. */
+.publication__icon-col {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
+    padding: 0;
+}
+
+/* Flex-center + img object-fit come from the .icon-frame utility; this rule
+   keeps only the bespoke box sizing. Fills the full icon column — height
+   driven by the citation column beside it, width capped at 50% of the card
+   via the col-6/col-md-4 column classes. No fixed aspect-ratio: let the
+   journal cover show at its natural shape. */
+.publication__icon-frame {
+    width: 100%;
+    height: 100%;
     padding: 0.5rem;
     border-radius: 0.5rem;
-    background: transparent;
-}
-
-.publication__icon {
-    width: 100%;
-    height: 100%;
-    max-height: var(--cred-icon-max-h);
-    object-fit: contain;
-    background: transparent;
 }
 
 /* ── Skill badge (credentials `type: skill`) ─────────────────────────────── */
@@ -158,18 +273,12 @@
     text-underline-offset: 0.18em;
 }
 
+/* Flex-center + img object-fit come from the .icon-frame utility;
+   this rule keeps the fixed pill-icon footprint. */
 .skill-badge__icon {
     flex: 0 0 auto;
     width: var(--skill-badge-icon-size);
     height: var(--skill-badge-icon-size);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-.skill-badge__icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
 }
 
 .skill-badge__text {
@@ -179,19 +288,19 @@
     line-height: 1.15;
 }
 
+/* nowrap comes from the .nowrap utility (mobile re-wraps via the
+   .cred-skill-row override below, which outspecifies .nowrap). */
 .skill-badge__label {
     font-family: var(--skill-badge-font);
     font-weight: var(--skill-badge-label-weight);
     font-size: var(--skill-badge-label-size);
     color: var(--my-black);
-    white-space: nowrap;
 }
 
 .skill-badge__note {
     font-family: var(--skill-badge-font);
     font-size: var(--skill-badge-note-size);
     color: var(--my-gray-1);
-    white-space: nowrap;
 }
 
 .skill-badge__meter {
@@ -212,6 +321,13 @@
 }
 .skill-badge__dot--filled {
     background: var(--my-black);
+}
+
+/* Above mobile: badges grow equally to fill the row — same container coverage as cert/pub cards.
+   flex-basis = min-width so wrapping behaviour is identical, but each badge in a row
+   stretches to share the leftover space evenly. */
+.cred-skill-row .skill-badge {
+    flex: 1 1 var(--skill-badge-min-width);
 }
 
 /* Mobile: two pills per row (half width), and stack each pill's contents so the

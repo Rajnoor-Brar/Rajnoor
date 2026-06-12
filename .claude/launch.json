@@ -6,6 +6,12 @@
       "runtimeExecutable": "hugo",
       "runtimeArgs": ["server", "--port", "1314", "--disableFastRender"],
       "port": 1314
+    },
+    {
+      "name": "aman",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8099", "--directory", "/tmp"],
+      "port": 8099
     }
   ]
 }

@@ -1,9 +1,9 @@
 {{/* Project card. Expects a dict with keys:
      href, cardImage, cardImage_light, cardImage_dark, cardTitle, cardText, tags, group, show. */}}
 {{ if .show }}
-<div class="project-card-wrap col-10 col-lg-5 m-4" data-tags="{{ with .tags }}{{ delimit . " " }}{{ end }}" data-group="{{ .group }}">
+<div class="project-card-wrap col-10 col-lg-5" data-tags="{{ with .tags }}{{ delimit . " " }}{{ end }}" data-group="{{ .group }}">
   <a href="{{ .href }}" class="card h-100 project-card">
-    <div class="project-card__media">
+    <div class="project-card__media icon-frame">
       {{ partial "themedImg.html" (dict "light" .cardImage_light "dark" .cardImage_dark "fallback" .cardImage "class" "card-img-top" "alt" .cardTitle) }}
     </div>
     <div class="card-body">

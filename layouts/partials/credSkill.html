@@ -18,14 +18,14 @@
 {{ printf "<%s class=%q%s>" $tag $cls $attrs | safeHTML }}
 
   {{ if or (and .icon_light .icon_dark) .icon }}
-    <span class="skill-badge__icon" aria-hidden="true">
+    <span class="skill-badge__icon icon-frame" aria-hidden="true">
       {{ partial "themedImg.html" (dict "light" .icon_light "dark" .icon_dark "fallback" .icon "prefix" "/resources/creds/" "alt" "") }}
     </span>
   {{ end }}
 
   <span class="skill-badge__text">
-    <span class="skill-badge__label">{{ .label }}</span>
-    {{ with .note }}<span class="skill-badge__note">{{ . }}</span>{{ end }}
+    <span class="skill-badge__label nowrap">{{ .label }}</span>
+    {{ with .note }}<span class="skill-badge__note nowrap">{{ . }}</span>{{ end }}
   </span>
 
   {{ with .level }}

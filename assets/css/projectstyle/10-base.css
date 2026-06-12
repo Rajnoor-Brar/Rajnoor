@@ -26,6 +26,20 @@ pre{
     color:var(--my-gray-1);
 }
 
+/* ── Breadcrumb row — clear the fixed signature pill ──────────────────────────
+   The signature pill (#signature-panel) is fixed in a top corner (top-left by
+   default) at left:2.5vw with a width of var(--signature-height). Below lg the
+   breadcrumb row is full-width (col-12) and begins under that footprint, so the
+   first crumb ("Projects") gets occluded. Inset the row past the pill (offset +
+   pill width + gutter). At lg+ the row is centered (col-lg-6) and already clears
+   the pill, so the inset is scoped below lg only. Padding lives on the wrapper
+   (.breadcrumb-row), not the inner col, to avoid Bootstrap's px-1 !important. */
+@media (max-width: 991.98px) {
+  .breadcrumb-row {
+    padding-left: calc(2.5vw + var(--signature-height) + 1rem);
+  }
+}
+
 /* ── Chapter-strip panel (lives inside #page-console, below #pg-head-panel) ──
    Always visible when console is expanded; has its own collapse toggle
    that shrinks it to pg-head-panel-shape. Inherits .pg-summoned base

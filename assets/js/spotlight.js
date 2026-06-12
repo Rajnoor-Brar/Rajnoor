@@ -12,6 +12,7 @@
   let pages       = null;   // fetched once, cached
   let activeIndex = -1;
   let searchReadyAnnounced = false;
+  let lastFocused = null;   // element focused before open — restored on close
 
   // Toast copy sourced from data/script.yaml › spotlight.toasts (single source
   // of truth). cfgToast maps a { message, duration, variant } config onto showToast.
@@ -24,6 +25,7 @@
 
   // ── Open / close ──────────────────────────────────────────────────────────
   function open() {
+    lastFocused = document.activeElement;   // remember trigger for focus restore
     overlay.classList.add('spotlight-overlay--open');
     input.value = '';
     input.focus();
@@ -35,6 +37,8 @@
   function close() {
     overlay.classList.remove('spotlight-overlay--open');
     activeIndex = -1;
+    if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    lastFocused = null;
   }
 
   function toggle() {
@@ -188,6 +192,9 @@
       }
     }
     if (!overlay.classList.contains('spotlight-overlay--open')) return;
+    // Focus trap — the input is the only focusable control in the panel, so
+    // keep Tab / Shift+Tab from escaping to the page behind the modal.
+    if (e.key === 'Tab') { e.preventDefault(); input.focus(); }
     if (e.key === 'Escape') { e.preventDefault(); close(); }
     if (e.key === 'ArrowDown') { e.preventDefault(); moveActive(+1); }
     if (e.key === 'ArrowUp')   { e.preventDefault(); moveActive(-1); }

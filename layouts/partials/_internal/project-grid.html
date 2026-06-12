@@ -1,8 +1,8 @@
 {{/* Renders the card-grid wrapper for one project group.
      Context: a slice of project-data entries (each with .path, .weight,
      and all card fields consumed by project-card.html). */}}
-<div class="project-group__grid container-fluid p-0 m-0 d-flex align-items-center justify-content-center">
-  <div class="container col-12 col-md-8 col-lg-6 d-flex flex-wrap justify-content-evenly align-items-center justify-content-lg-between">
+<div class="project-group__grid flex-center container-fluid">
+  <div class="project-group__grid-row container col-12 col-md-8 col-lg-6">
     {{ range sort . "weight" }}
       {{ $entry := . }}
       {{ with site.GetPage $entry.path }}

@@ -37,10 +37,10 @@
 }
 
 @keyframes discoverPulse {
-  0%   { box-shadow: 0 0 0   0   var(--my-theme-accent); }
-  35%  { box-shadow: 0 0 22px 6px var(--my-theme-accent); }
-  70%  { box-shadow: 0 0 10px 2px var(--my-theme-accent); }
-  100% { box-shadow: 0 0 0   0   transparent; }
+  0%   { box-shadow: 0 0 0    0 var(--my-theme-accent); }
+  35%  { box-shadow: 0 0 12px 0 var(--my-theme-accent); }
+  70%  { box-shadow: 0 0 6px  0 var(--my-theme-accent); }
+  100% { box-shadow: 0 0 0    0 transparent; }
 }
 /* #signature-panel has animation: fadeIn on the ID rule (specificity 1,0,0).
    A plain .discover-pulse class (0,1,0) would lose the cascade and never run.
@@ -57,7 +57,8 @@
 .card {
   transition: box-shadow var(--motion-base) ease, transform var(--motion-base) ease;
 }
-.card:hover {
+.card:hover,
+.card:focus-visible {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }

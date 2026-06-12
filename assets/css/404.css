@@ -34,6 +34,22 @@
   width: clamp(8rem, 22vw, 13rem);
   height: auto;
   display: block;
+  /* Gentle settle-in on load (adds a slight float-up over the opacity fade).
+     The element's own resting state is opacity:1 / no transform, and the
+     animation has NO backwards/forwards fill — so it can only override opacity
+     *while running*. If the animation is ever paused or never plays (throttled
+     background tab, reduced motion), the cat stays visible rather than stuck. */
+  opacity: 1;
+  animation: kittySettle var(--motion-slow) ease-out;
+}
+
+@keyframes kittySettle {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #the-kitty { animation: none; opacity: 1; transform: none; }
 }
 html[data-bs-theme="dark"] #the-kitty {
   filter: invert(1);

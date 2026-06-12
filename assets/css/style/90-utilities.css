@@ -1,0 +1,36 @@
+/* ── Shared semantic utilities ───────────────────────────────────────────────
+   Small, single-purpose classes for field-level property clusters that were
+   previously copy-pasted across credStyle.css, projectstyle/*, and the global
+   bundle. Loads last in the css/style bundle, so it's available site-wide. */
+
+/* Field text helpers */
+.nowrap   { white-space: nowrap; }
+.truncate {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Flex centering */
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Icon frame: flex-centered box whose image scales to fit without distortion.
+   Component CSS adds bespoke padding / radius / aspect-ratio on top. */
+.icon-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: transparent;
+}
+.icon-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: transparent;
+}

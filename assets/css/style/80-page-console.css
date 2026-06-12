@@ -35,7 +35,7 @@
 
 .pg-head__item {
   display: flex;
-  background: transparent !important;
+  background: transparent;   /* Bootstrap reboot already makes <button> transparent */
   border: none;
   padding: 0;
   width: calc(0.45 * var(--signature-height));
@@ -89,8 +89,10 @@
     margin-inline: 0 !important;
     border-radius: calc(var(--signature-height) * 0.34);
   }
-  #page-console.right.contracted #pg-head-panel { margin-right: -26px !important; }
-  #page-console.left.contracted #pg-head-panel  { margin-left:  -26px !important; }
+  /* Pull the contracted pill flush to the edge — tracks the signature footprint
+     (0.325 × 80px = 26px at the default size) instead of a hardcoded pixel. */
+  #page-console.right.contracted #pg-head-panel { margin-right: calc(-0.325 * var(--signature-height)) !important; }
+  #page-console.left.contracted #pg-head-panel  { margin-left:  calc(-0.325 * var(--signature-height)) !important; }
   #page-console.contracted .scroll-arc { visibility: hidden; }
 }
 

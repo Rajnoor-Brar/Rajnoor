@@ -68,6 +68,26 @@
     margin-bottom: 1rem;
 }
 
+/* Grid wrapper — centering via .flex-center utility; this resets the
+   container-fluid gutter (was p-0 m-0). */
+.project-group__grid {
+    padding: 0;
+    margin: 0;
+}
+
+/* Card row — wraps cards; evenly spaced below lg, space-between at lg+
+   (was d-flex flex-wrap justify-content-evenly align-items-center
+   justify-content-lg-between). */
+.project-group__grid-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
+}
+@media (min-width: 992px) {
+    .project-group__grid-row { justify-content: space-between; }
+}
+
 .project-group.hidden {
     display: none;
 }
@@ -128,6 +148,7 @@
 
 .project-card-wrap {
     padding: 0;
+    margin: 1.5rem;   /* was the m-4 utility on the markup */
     transition: opacity var(--motion-base) ease, transform var(--motion-base) ease;
 }
 
