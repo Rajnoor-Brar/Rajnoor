@@ -49,6 +49,18 @@ motion:
   base: 200ms
   slow: 350ms
   loader: 1.2s
+  # Named one-off durations — bespoke choreography that sits outside the
+  # fast/base/slow scale, kept here so every duration is tunable in one place.
+  hero-draw: 3.8s        # home calligraphy write/unwrite keyframes
+  hero-fill: 2s          # home .gtd-path fill + dashoffset transition
+  cursor-blink: 0.8s     # home typed-hero caret blink
+  signature-fade: 1.75s  # signature pill fade-in on load
+  signature-draw: 2s     # signature R-stroke write-on
+  signature-delay: 0.5s  # delay before the R-stroke write-on
+  rotate: 1s             # .rotate utility spin
+  discover-pulse: 2.4s   # signature discover-pulse attention ring
+  loader-fade: 0.45s     # page-loader fade-out
+  loader-reduced: 3s     # spinner period under prefers-reduced-motion
 
 # Corner radius scale. Hairline radii (1px/2px) stay inline at their use
 # sites — they're not part of this semantic scale.
@@ -86,3 +98,11 @@ glows:
     value: 'var(--my-theme-accent) 0 0 4px'
   - size: lg
     value: 'var(--my-theme-accent) 0 0 8px'
+
+# Credentials-page spacing knobs (read directly by assets/css/credStyle.css via
+# ExecuteAsTemplate, emitted as page-scoped --cred-* custom properties). Tune the
+# breathing room of the surfaced cards and the skill-pill row here.
+credentials:
+  card_gap: '3rem'        # gap between certificate / publication cards
+  card_padding: '0.9rem'  # internal padding inside each card (Bootstrap p-2 was 0.5rem)
+  skill_gap: '0.75rem'    # gap between skill pills

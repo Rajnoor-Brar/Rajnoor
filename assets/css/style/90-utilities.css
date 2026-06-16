@@ -19,6 +19,24 @@
     justify-content: center;
 }
 
+/* Skip-to-content link — visually hidden (Bootstrap's .visually-hidden-focusable)
+   until keyboard-focused, then surfaces as a small frosted panel above all chrome. */
+.skip-link:focus-visible {
+    position: fixed;
+    top: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: var(--z-toast);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-pill);
+    background: var(--my-white);
+    color: var(--my-black);
+    font-family: var(--my-font-ui);
+    font-size: 0.85rem;
+    text-decoration: none;
+    box-shadow: var(--shadow-panel);
+}
+
 /* Icon frame: flex-centered box whose image scales to fit without distortion.
    Component CSS adds bespoke padding / radius / aspect-ratio on top. */
 .icon-frame {

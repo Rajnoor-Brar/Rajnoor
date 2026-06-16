@@ -65,7 +65,7 @@
   padding: calc(var(--signature-height)/4);
   padding-bottom: calc(var(--signature-height)/5.5);
   opacity:0;
-  animation: fadeIn 1.75s ease-in-out forwards;
+  animation: fadeIn var(--motion-signature-fade) ease-in-out forwards;
   animation-delay: 0s;
   z-index: var(--z-pill);
   backdrop-filter: blur(20px);
@@ -107,8 +107,8 @@
 }
 
 #NameR1{
-  animation: writeStroke 2s ease forwards;
-  animation-delay: 0.5s;
+  animation: writeStroke var(--motion-signature-draw) ease forwards;
+  animation-delay: var(--motion-signature-delay);
 }
 
 #NameA{transition-delay: 0.25s; transition-duration: var(--motion-base);}

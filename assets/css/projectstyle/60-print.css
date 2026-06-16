@@ -1,0 +1,79 @@
+/* ── Print stylesheet (C6) — project articles on paper ────────────────────────
+   Strips interactive chrome, forces paper colours (theme tokens resolve to
+   white-on-white in dark mode, so absolute black/white keywords are the correct
+   choice here — the one place raw colours are intentional), and tames page
+   breaks. Loads as the last part of the projectstyle bundle, so it only ships
+   on project pages — the print target. */
+
+@media print {
+  /* Drop all fixed/interactive chrome */
+  #command-console,
+  #page-console,
+  #scroll-arc,
+  #toast,
+  #page-loader,
+  #spotlight-overlay,
+  #shortcuts-overlay,
+  .project-nav-quad,
+  .pg-code-copy,
+  .pg-code-lang,
+  .skip-link {
+    display: none !important;
+  }
+
+  html, body {
+    background: white;
+    color: black;
+  }
+
+  /* Article surface → plain page, full width, no card framing */
+  .page {
+    padding: 0;
+    max-width: 100%;
+  }
+  .header {
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+  }
+  .article {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: black;
+    font-size: 11pt;
+    line-height: 1.5;
+    text-align: left;
+  }
+  .abstract {
+    background: transparent;
+    border: 1px solid gray;
+  }
+
+  /* Keep atomic blocks whole; don't strand headings at a page foot */
+  figure, .figure, pre, table, img, .katex-display {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  h1, h2, h3,
+  .article h2, .article h3,
+  .section > .title, .sub-section > .title {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Expose link targets as footnotes — but only real external URLs, not
+     in-page anchors (#…) or javascript: handlers. */
+  .article a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: dimgray;
+    word-break: break-all;
+  }
+
+  /* Comfortable margins; let the browser print backgrounds off by default */
+  @page {
+    margin: 2cm;
+  }
+}

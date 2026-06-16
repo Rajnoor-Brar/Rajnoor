@@ -2,6 +2,7 @@ baseURL = 'https://rajnoor.in/'
 languageCode = 'en-us'
 title = 'Rajnoor'
 disableKinds = ["taxonomy", "term"]
+enableRobotsTXT = true
 
 [outputs]
   home    = ["html", "json"]   # json: search index for spotlight (B3)
@@ -26,7 +27,7 @@ disableKinds = ["taxonomy", "term"]
 [params.features]
   notebook           = false
   nowPage            = true
-  nowExpanded =   true   # true → <details open> on /now/ page; false → collapsed by default
+  nowExpanded        = false
   spotlight          = true
   scrollArc          = true
   shortcutHints      = true

@@ -36,11 +36,13 @@
   </div>
 
   {{ if $uniqueTags }}
-  <div id="project-filters-wrap" class="project-filters-wrap">
+  {{/* `inert` while collapsed: the 0fr-grid collapse hides chips visually but
+       would otherwise leave them in the tab order. JS flips it with `.open`. */}}
+  <div id="project-filters-wrap" class="project-filters-wrap" inert>
     <div class="container-fluid justify-content-center d-flex">
       <div id="project-filters" class="col-12 col-md-8 col-lg-6 d-flex flex-wrap gap-2 px-4 pb-3">
         {{ range $uniqueTags }}
-        <button class="filter-chip" data-tag="{{ . }}" type="button">{{ . }}</button>
+        <button class="filter-chip" data-tag="{{ . }}" type="button" aria-pressed="false">{{ . }}</button>
         {{ end }}
       </div>
     </div>

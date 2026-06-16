@@ -1,0 +1,59 @@
+{{- /* img.html — central <img> emitter for site images.
+
+     Params (dict):
+       src     — site-absolute path ("/resources/…"); looked up under assets/
+       alt     — alt text; pass "" for decorative images
+       class   — (optional) class attribute value
+       loading — (optional) "lazy" (default) or "eager"
+       widths  — (optional) slice of candidate widths for srcset
+                 (default 480/800/1200; candidates wider than the source are dropped)
+       sizes   — (optional) sizes attribute (default "(max-width: 768px) 100vw, 800px")
+
+     Raster assets found under assets/ are resized through Hugo Pipes and
+     emitted with srcset + explicit width/height (no layout shift, no
+     multi-thousand-pixel originals shipped as thumbnails). SVG/GIF assets are
+     emitted unprocessed but still via their published permalink. Paths not
+     found under assets/ (e.g. files still in static/, or remote URLs) fall
+     back to a plain tag so the partial is always safe to call. */ -}}
+{{- $src := .src | default "" -}}
+{{- $alt := .alt | default "" -}}
+{{- $cls := .class | default "" -}}
+{{- $loading := .loading | default "lazy" -}}
+{{- $widths := .widths | default (slice 480 800 1200) -}}
+{{- $sizes := .sizes | default "(max-width: 768px) 100vw, 800px" -}}
+{{- $asset := resources.Get (strings.TrimPrefix "/" $src) -}}
+{{- $isRaster := false -}}
+{{- with $asset -}}
+  {{- $isRaster = and (eq .MediaType.MainType "image") (not (in (slice "svg+xml" "gif") .MediaType.SubType)) -}}
+{{- end -}}
+{{- if $isRaster -}}
+  {{- /* Keep only candidate widths narrower than the source; never upscale. */ -}}
+  {{- $candidates := slice -}}
+  {{- range $w := $widths -}}
+    {{- if lt $w $asset.Width -}}{{- $candidates = $candidates | append $w -}}{{- end -}}
+  {{- end -}}
+  {{- if $candidates -}}
+    {{- $variants := slice -}}
+    {{- range $w := $candidates -}}
+      {{- $variants = $variants | append ($asset.Resize (printf "%dx" $w)) -}}
+    {{- end -}}
+    {{- $primary := index $variants (sub (len $variants) 1) -}}
+    {{- $srcset := slice -}}
+    {{- range $v := $variants -}}
+      {{- $srcset = $srcset | append (printf "%s %dw" $v.RelPermalink $v.Width) -}}
+    {{- end -}}
+    <img src="{{ $primary.RelPermalink }}"
+         srcset="{{ delimit $srcset ", " }}"
+         sizes="{{ $sizes }}"
+         width="{{ $primary.Width }}" height="{{ $primary.Height }}"
+         {{- with $cls }} class="{{ . }}"{{ end }} alt="{{ $alt }}" loading="{{ $loading }}">
+  {{- else -}}
+    {{- /* Source already narrower than every candidate — ship it as-is. */ -}}
+    <img src="{{ $asset.RelPermalink }}" width="{{ $asset.Width }}" height="{{ $asset.Height }}"
+         {{- with $cls }} class="{{ . }}"{{ end }} alt="{{ $alt }}" loading="{{ $loading }}">
+  {{- end -}}
+{{- else if $asset -}}
+  <img src="{{ $asset.RelPermalink }}"{{ with $cls }} class="{{ . }}"{{ end }} alt="{{ $alt }}" loading="{{ $loading }}">
+{{- else -}}
+  <img src="{{ $src }}"{{ with $cls }} class="{{ . }}"{{ end }} alt="{{ $alt }}" loading="{{ $loading }}">
+{{- end -}}

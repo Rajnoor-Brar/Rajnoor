@@ -1,0 +1,61 @@
+{{- /* og-image.html — resolves the Open Graph image for a page.
+
+     Project pages get a build-time branded card: the project title is wrapped
+     and composited (with the wordmark, an eyebrow and the domain) onto
+     assets/og/og-base.png via images.Text + the committed Spectral TTFs — no
+     network or external tooling, so CI reproduces it. Everything else falls
+     back to the site mark. Frontmatter `ogImage:` overrides all.
+
+     Returns a dict: { url, isCard } — url is site-relative; the caller runs it
+     through absURL. isCard drives summary_large_image vs summary. */ -}}
+{{- $fallback := "/resources/eepy_keety.svg" -}}
+{{- $url := $fallback -}}
+{{- $isCard := false -}}
+
+{{- with .Params.ogImage -}}
+  {{- $url = . -}}
+  {{- $isCard = true -}}
+{{- else -}}
+  {{- if and (eq .Section "projects") (ne .RelPermalink "/projects/") -}}
+    {{- $base := resources.Get "og/og-base.png" -}}
+    {{- $fontTitle := resources.Get "fonts/Spectral-SemiBold.ttf" -}}
+    {{- $fontUI := resources.Get "fonts/Spectral-Regular.ttf" -}}
+    {{- if and $base $fontTitle $fontUI -}}
+      {{- /* Word-wrap the title: ≤ 22 chars per line, ≤ 3 lines. */ -}}
+      {{- $maxChars := 22 -}}
+      {{- $lines := slice -}}
+      {{- $cur := "" -}}
+      {{- range $w := split .Title " " -}}
+        {{- $try := cond (eq $cur "") $w (printf "%s %s" $cur $w) -}}
+        {{- if gt (len $try) $maxChars -}}
+          {{- if ne $cur "" -}}{{- $lines = $lines | append $cur -}}{{- end -}}
+          {{- $cur = $w -}}
+        {{- else -}}
+          {{- $cur = $try -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if ne $cur "" -}}{{- $lines = $lines | append $cur -}}{{- end -}}
+      {{- if gt (len $lines) 3 -}}{{- $lines = first 3 $lines -}}{{- end -}}
+      {{- $wrapped := delimit $lines "\n" -}}
+      {{- $filters := slice
+            (images.Text "Rajnoor" (dict "font" $fontTitle "size" 40 "color" "#222222" "x" 72 "y" 64))
+            (images.Text "PROJECT" (dict "font" $fontUI "size" 26 "color" "#0047AB" "x" 74 "y" 238))
+            (images.Text $wrapped (dict "font" $fontTitle "size" 70 "color" "#1a1a1a" "x" 72 "y" 286 "linespacing" 20))
+            (images.Text "rajnoor.in" (dict "font" $fontUI "size" 26 "color" "#8a8a8a" "x" 74 "y" 540))
+      -}}
+      {{- $url = ($base.Filter $filters).RelPermalink -}}
+      {{- $isCard = true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* A frontmatter ogImage pointing at a wide asset raster gets a 1200w
+     render; the generated card is already 1200 and lives under a hashed
+     permalink resources.Get can't resolve, so this is a no-op for it. */ -}}
+{{- with resources.Get (strings.TrimPrefix "/" $url) -}}
+  {{- if and (eq .MediaType.MainType "image") (not (in (slice "svg+xml" "gif") .MediaType.SubType)) (gt .Width 1200) -}}
+    {{- $url = (.Resize "1200x").RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return dict "url" $url "isCard" $isCard -}}

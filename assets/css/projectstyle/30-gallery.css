@@ -75,13 +75,13 @@
     margin: 0;
 }
 
-/* Card row — wraps cards; evenly spaced below lg, space-between at lg+
-   (was d-flex flex-wrap justify-content-evenly align-items-center
-   justify-content-lg-between). */
+/* Card row — wraps cards; evenly spaced below lg, space-between at lg+.
+   align-items: stretch so cards in the same row share the tallest's height
+   (each .project-card carries h-100, which then fills the stretched wrap). */
 .project-group__grid-row {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-evenly;
 }
 @media (min-width: 992px) {
@@ -151,7 +151,6 @@
     margin: 1.5rem;   /* was the m-4 utility on the markup */
     transition: opacity var(--motion-base) ease, transform var(--motion-base) ease;
 }
-
 .project-card-wrap.hidden {
     display: none;
 }

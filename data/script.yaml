@@ -33,3 +33,5 @@ console:
   panel_open_ms: 100           # stagger between panel open/close steps
   navigation_panel_anim_ms: 180  # navigation-panel collapse animation duration
   panel_anim_ms: 120           # action-panel collapse animation duration
+
+# Skill/language proficiency vocabularies moved to data/labels.yaml.

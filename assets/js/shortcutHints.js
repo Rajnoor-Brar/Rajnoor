@@ -9,16 +9,22 @@
   const closeBtn = dialog.querySelector('.shortcuts-overlay__close');
   let lastFocused = null;   // element focused before open — restored on close
 
+  // While the modal is open the page behind it is inert'd — screen readers
+  // and Tab can't wander into content the backdrop only hides visually.
+  const pageContainer = document.getElementById('page-container');
+
   function isOpen() { return dialog.classList.contains('shortcuts-overlay--open'); }
 
   function open() {
     lastFocused = document.activeElement;
     dialog.classList.add('shortcuts-overlay--open');
+    if (pageContainer) pageContainer.inert = true;
     if (closeBtn) closeBtn.focus();   // move focus into the modal
   }
   function close() {
     if (!isOpen()) return;
     dialog.classList.remove('shortcuts-overlay--open');
+    if (pageContainer) pageContainer.inert = false;
     if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
     lastFocused = null;
   }

@@ -240,3 +240,19 @@ html[data-bs-theme="dark"] #theme-toggle:hover {
   border-color: var(--my-black);
 }
 
+/* Coarse pointers: grow the action items to ~48px (≥44px guideline) and give
+   each corner dot an invisible touch halo beyond its visual size. */
+@media (pointer: coarse) {
+  .action-item {
+    height: calc(0.6 * var(--signature-height));
+    width: calc(0.6 * var(--signature-height));
+    flex-basis: calc(0.6 * var(--signature-height));
+  }
+  .corner-picker__dot { position: relative; }
+  .corner-picker__dot::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+  }
+}
+

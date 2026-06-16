@@ -24,9 +24,14 @@
   }
 
   // ── Open / close ──────────────────────────────────────────────────────────
+  // While the modal is open the page behind it is inert'd — screen readers
+  // and Tab can't wander into content the backdrop only hides visually.
+  const pageContainer = document.getElementById('page-container');
+
   function open() {
     lastFocused = document.activeElement;   // remember trigger for focus restore
     overlay.classList.add('spotlight-overlay--open');
+    if (pageContainer) pageContainer.inert = true;
     input.value = '';
     input.focus();
     activeIndex = -1;
@@ -36,6 +41,7 @@
 
   function close() {
     overlay.classList.remove('spotlight-overlay--open');
+    if (pageContainer) pageContainer.inert = false;
     activeIndex = -1;
     if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
     lastFocused = null;
@@ -211,6 +217,9 @@
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) close();
   });
+
+  // Programmatic open hook — used by the 404 page's "another door" link
+  window.__openSpotlight = open;
 
   // Expose cleanup for SPA navigation
   window.__registerCleanup(function () { close(); });

@@ -4,7 +4,7 @@
 <div class="project-card-wrap col-10 col-lg-5" data-tags="{{ with .tags }}{{ delimit . " " }}{{ end }}" data-group="{{ .group }}">
   <a href="{{ .href }}" class="card h-100 project-card">
     <div class="project-card__media icon-frame">
-      {{ partial "themedImg.html" (dict "light" .cardImage_light "dark" .cardImage_dark "fallback" .cardImage "class" "card-img-top" "alt" .cardTitle) }}
+      {{ partial "themedImg.html" (dict "light" .cardImage_light "dark" .cardImage_dark "fallback" .cardImage "class" "card-img-top" "alt" .cardTitle "widths" (slice 480 800) "sizes" "(max-width: 992px) 85vw, 420px") }}
     </div>
     <div class="card-body">
       <h5 class="card-title">{{ .cardTitle }}</h5>

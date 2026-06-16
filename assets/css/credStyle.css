@@ -2,21 +2,37 @@
 :root {
     --cred-icon-max-h: 7.5rem; /* publication icon height — 120px equivalent */
 
+    /* Spacing knobs from data/style.yaml › credentials (tune there, not here). */
+    --cred-card-gap:  {{ site.Data.style.credentials.card_gap }};
+    --cred-card-pad:  {{ site.Data.style.credentials.card_padding }};
+    --cred-skill-gap: {{ site.Data.style.credentials.skill_gap }};
+
     /* Skill badge — font/sizing knobs (tune the whole pill family here) */
     --skill-badge-font:         var(--my-font-ui);
     --skill-badge-label-weight: 600;
     --skill-badge-label-size:   0.95rem;
-    --skill-badge-note-size:    0.7rem;
+    --skill-badge-note-size:    0.525rem;
     --skill-badge-icon-size:    1.25rem;
     --skill-badge-gap:          0.5rem;
     --skill-badge-pad-y:        0.4rem;
     --skill-badge-pad-x:        0.9rem;
     --skill-badge-dot-size:     0.4rem;
     /* Keep pills a consistent footprint over typical content; the meter is pushed
-       to the trailing edge so text↔proficiency always reads as one clear gap. */
+       to the trailing edge so text↔proficiency always reads as one clear gap.
+       The max caps flex-grow so a badge alone on the last wrap row stays a pill
+       instead of stretching across the whole container. */
     --skill-badge-min-width:    11rem;
+    --skill-badge-max-width:    16rem;
     --skill-badge-min-height:   2.75rem;
     --skill-badge-meter-gap:    1rem;
+
+    /* Language-band accent colours, injected from data/colors.yaml ›
+       language_bands (one per fluency level 1–5). Edit colours there, not here. */
+{{- range site.Data.colors.language_bands }}{{ printf "\n    --%s: %s;" .name .light }}{{- end }}
+}
+
+html[data-bs-theme="dark"] {
+{{- range site.Data.colors.language_bands }}{{ printf "\n    --%s: %s;" .name .dark }}{{- end }}
 }
 
 /* Section heading (Publications / Academic / Certifications).
@@ -32,7 +48,10 @@
 
 .abstract{
     font-size: 0.7em;
-    text-align: justify;
+    /* ~45ch column at small type: justification opens rivers — keep ragged
+       right and let hyphenation tidy the rag instead. */
+    text-align: left;
+    hyphens: auto;
 }
 .citation{
     font-family: var(--my-font-ui);
@@ -172,21 +191,52 @@
 
 /* Card surface — match the skill-pill background (var(--my-white)). Bootstrap's
    .card otherwise uses --bs-card-bg (≈ --bs-body-bg), which diverges from the
-   pill surface, most visibly in dark mode. Slightly rounder corners than the
-   Bootstrap default (~6px) via the --radius-md token. */
+   pill surface, most visibly in dark mode. A soft --shadow-panel lift defines
+   the surface (esp. in dark mode) instead of a hard border; internal breathing
+   room comes from --cred-card-pad (replaces the old Bootstrap p-2), so the card
+   reads as defined yet spacious. Slightly rounder corners via --radius-md. */
 .certificate,
 .publication {
+    padding: var(--cred-card-pad);
     background-color: var(--my-white);
+    border: 1px solid var(--my-border-color);
     border-radius: var(--radius-md);
+    box-shadow: var(--shadow-panel);
 }
 
 /* Icon column — centering via .flex-center utility; responsive padding here
-   (was p-2 p-md-3 d-flex align-items-center justify-content-center). */
+   (was p-2 p-md-3 d-flex align-items-center justify-content-center). Positioning
+   context for the overlaid platform badge. */
 .certificate__icon-col{
+    position: relative;
     padding: 0.5rem;
 }
 @media (min-width: 768px) {
     .certificate__icon-col { padding: 1rem; }
+}
+
+/* Platform badge — names the delivery platform (e.g. "edX"), overlaid on the
+   top-left corner of the issuer logo (absolute, so it never shifts the logo).
+   Accent text on a very faint accent tint with a soft lift — reads as a quiet
+   channel tag, never competing with title or logo. The tint/shadow derive from
+   --my-theme-accent (via color-mix), so they track the theme. cqi scales the
+   type with the card (container query on .certificate). */
+.certificate__platform {
+    position: absolute;
+    top: 0.25rem;
+    left: 0.25rem;
+    z-index: 1;
+    font-family: var(--my-font-ui);
+    font-size: clamp(0.55rem, 3.2cqi, 0.62rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: color-mix(in srgb, var(--my-theme-accent) 70%, transparent);
+    padding: 0.2rem 0.45rem;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--my-theme-accent) 8%, transparent);
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
 }
 
 /* Text column — was col-7 col-md-8 d-flex align-items-center */
@@ -215,7 +265,7 @@
   font-size: 0.8rem;
   line-height: 1.45;
   color: var(--bs-body-color);
-  text-align: justify;
+  text-align: left; /* short quoted title — justify stretched its 2–3 lines */
 }
 
 /* Icon column — was col-6 col-md-4 d-flex align-items-stretch justify-content-center p-0.
@@ -238,6 +288,11 @@
     padding: 0.5rem;
     border-radius: 0.5rem;
 }
+
+/* Row gaps — driven by data/style.yaml › credentials (replaces the Bootstrap
+   gap utilities the shortcode used to emit). */
+.cred-card-row  { gap: var(--cred-card-gap); }
+.cred-skill-row { gap: var(--cred-skill-gap); }
 
 /* ── Skill badge (credentials `type: skill`) ─────────────────────────────── */
 .skill-badge {
@@ -301,6 +356,7 @@
     font-family: var(--skill-badge-font);
     font-size: var(--skill-badge-note-size);
     color: var(--my-gray-1);
+    margin-top: 0.2rem;
 }
 
 .skill-badge__meter {
@@ -322,12 +378,50 @@
 .skill-badge__dot--filled {
     background: var(--my-black);
 }
+/* Gold conversion (levels 6–10) — an inked dot turns gold; ink stays beneath via
+   the cascade (this 2-class rule outspecifies the plain --filled ink fill). A
+   faint gold glow gives a hint of "precious" without sparkle. */
+.skill-badge__dot--gold.skill-badge__dot--filled {
+    background: var(--my-gold);
+    box-shadow:
+        inset 0 0.5px 0 rgba(255, 255, 255, 0.5),
+        0 0 3px color-mix(in srgb, var(--my-gold) 55%, transparent);
+}
+
+/* Language fluency band — a simple tag pill: coloured text on a faint 6% fill of
+   the same hue, with a soft same-hue shadow bleed. Carries .skill-badge__meter
+   too (above) for the trailing-edge pin + mobile interleave order; the pill's own
+   padding shorthand overrides .meter's gap padding so the fill doesn't bleed left.
+   The per-band accent (--band-c) is set by the --l1…--l5 modifier from the
+   injected band colours. */
+.skill-badge__band {
+    --band-c: var(--my-gray-1);   /* fallback until a --l* modifier sets the hue */
+    padding: 0.18rem 0.6rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--band-c);
+    background: color-mix(in srgb, var(--band-c) 4%, transparent);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--band-c) 10%, transparent);
+}
+.skill-badge__band--l1 { --band-c: var(--band-1); }
+.skill-badge__band--l2 { --band-c: var(--band-2); }
+.skill-badge__band--l3 { --band-c: var(--band-3); }
+.skill-badge__band--l4 { --band-c: var(--band-4); }
+.skill-badge__band--l5 { --band-c: var(--band-5); }
 
 /* Above mobile: badges grow equally to fill the row — same container coverage as cert/pub cards.
    flex-basis = min-width so wrapping behaviour is identical, but each badge in a row
    stretches to share the leftover space evenly. */
 .cred-skill-row .skill-badge {
     flex: 1 1 var(--skill-badge-min-width);
+    max-width: var(--skill-badge-max-width);
 }
 
 /* Mobile: two pills per row (half width), and stack each pill's contents so the
@@ -337,8 +431,9 @@
    round pill radius is relaxed to a card radius since the badge is now multi-line. */
 @media (max-width: 576px) {
     .cred-skill-row .skill-badge {
-        flex: 0 0 calc(50% - 0.25rem);
+        flex: 0 0 calc(50% - var(--cred-skill-gap) / 2);
         min-width: 0;
+        max-width: none; /* the 50% two-per-row grid sizes the pill, not the cap */
         flex-direction: column;
         align-items: flex-start;
         gap: 0.15rem;

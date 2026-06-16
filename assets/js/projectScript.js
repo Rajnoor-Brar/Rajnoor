@@ -73,11 +73,15 @@ function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValu
       const isOpen = filtersWrap.classList.toggle('open');
       toggleBtn.classList.toggle('active', isOpen);
       toggleBtn.setAttribute('aria-expanded', isOpen);
+      filtersWrap.inert = !isOpen; // keep collapsed chips out of the tab order
 
       // When closing, clear all active chips and reset the filter
       if (!isOpen) {
         activeTags.clear();
-        chips.forEach(c => c.classList.remove('active'));
+        chips.forEach(c => {
+          c.classList.remove('active');
+          c.setAttribute('aria-pressed', 'false');
+        });
         applyFilter();
       }
     });
@@ -119,6 +123,7 @@ function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValu
         activeTags.add(tag);
         chip.classList.add('active');
       }
+      chip.setAttribute('aria-pressed', activeTags.has(tag));
       const totalVisible = applyFilter();
       if (typeof showToast === 'function') {
         if (activeTags.size === 0) {
@@ -260,5 +265,70 @@ function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValu
     toggle.removeEventListener('click', onClick);
     panel.classList.remove('open');
     toggle.classList.remove('active');
+  });
+})();
+
+// ── Project detail: code-block toolkit (copy button + language chip) ─────
+// Buttons live inside each <pre>; they're discarded with the content on SPA
+// navigation, so no cleanup registration is needed.
+(function () {
+  const article = document.querySelector('.article');
+  if (!article) return;
+
+  const COPY_ICON  = '<i class="bi bi-clipboard" aria-hidden="true"></i>';
+  const DONE_ICON  = '<i class="bi bi-clipboard-check" aria-hidden="true"></i>';
+
+  // Async Clipboard API needs a secure context — fall back to the legacy
+  // textarea + execCommand path elsewhere (http dev server, older Safari).
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { /* fall through */ }
+    ta.remove();
+    if (!ok) throw new Error('copy rejected');
+  }
+
+  article.querySelectorAll('pre').forEach((pre) => {
+    if (pre.querySelector('.pg-code-copy')) return; // idempotent on re-runs
+    const code = pre.querySelector('code') || pre;
+
+    const langMatch = (code.className + ' ' + pre.className).match(/language-([a-z0-9+#-]+)/i);
+    if (langMatch) {
+      const chip = document.createElement('span');
+      chip.className = 'pg-code-lang';
+      chip.textContent = langMatch[1];
+      chip.setAttribute('aria-hidden', 'true');
+      pre.appendChild(chip);
+    }
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pg-code-copy';
+    btn.setAttribute('aria-label', 'Copy code');
+    btn.innerHTML = COPY_ICON;
+    btn.addEventListener('click', async () => {
+      try {
+        await copyText(code.innerText);
+        btn.classList.add('copied');
+        btn.innerHTML = DONE_ICON;
+        if (typeof showToast === 'function') showToast('Code copied', { duration: 'short', variant: 'success' });
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = COPY_ICON;
+        }, 1600);
+      } catch (e) {
+        if (typeof showToast === 'function') showToast('Copy failed', { duration: 'short', variant: 'warning' });
+      }
+    });
+    pre.appendChild(btn);
   });
 })();

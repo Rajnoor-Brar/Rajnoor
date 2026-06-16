@@ -25,7 +25,11 @@
           {{- $alt = index $alts $index -}}
         {{- end -}}
         <span class="figure__image figure__image--{{ $size }}">
-          <img src="{{ $imgSrc }}" alt="{{ trim $alt " \n\r\t" }}" loading="lazy">
+          {{- partial "img.html" (dict
+                "src" $imgSrc
+                "alt" (trim $alt " \n\r\t")
+                "widths" (slice 480 800 1200 1600)
+                "sizes" "(max-width: 768px) 95vw, min(85vw, 1100px)") -}}
         </span>
       {{- end -}}
     {{- end }}

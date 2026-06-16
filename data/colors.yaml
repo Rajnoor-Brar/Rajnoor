@@ -71,6 +71,11 @@ tokens:
     light: "#FCA61C"
     dark: "#FCA61C"
 
+  # Gold accent — the upper (6–10) tier of the skill proficiency meter.
+  - name: my-gold
+    light: "#C9971F"
+    dark: "#E4BC45"
+
   - name: my-error
     light: "#c0392b"
     dark: "#e85d50"
@@ -79,6 +84,28 @@ tokens:
   - name: my-overlay-scrim
     light: "#00000073"
     dark: "#00000073"
+
+# Language-band accent colours (credentials page). Page-specific (consumed only by
+# credStyle.css), one per fluency band 1–5 — see data/labels.yaml › language_bands.
+# Each tints the glassy band pill's text, semi-transparent fill, and faint glow.
+# light = darker (reads on the light pill); dark = lighter (reads on the dark pill).
+# Fully configurable: re-colour a band by editing its pair here.
+language_bands:
+  - name: band-1   # Basic — muted gray
+    light: '#6B7280'
+    dark:  '#9CA3AF'
+  - name: band-2   # Conversational — teal
+    light: '#0E7490'
+    dark:  '#5DCAA5'
+  - name: band-3   # Proficient — accent blue
+    light: '#0047AB'
+    dark:  '#6B9EFF'
+  - name: band-4   # Fluent — violet
+    light: '#6D28D9'
+    dark:  '#B6A6F2'
+  - name: band-5   # Native — gold
+    light: '#B07D14'
+    dark:  '#E4BC45'
 
 # Project-page code-block + article tokens. Page-specific (consumed only by
 # projectStyle.css), but kept here so ALL colour tokens live in one source.

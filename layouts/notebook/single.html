@@ -1,3 +1,21 @@
 {{ define "main" }}
-{{ .Content }}
+<div class="container-fluid top-spacer"></div>
+
+<article class="notebook-post container col-12 col-md-8 col-lg-6 py-5 px-4">
+  <header class="notebook-post__header mb-4">
+    {{ with .Date }}
+    <time class="notebook-post__date" datetime="{{ .Format "2006-01-02" }}">{{ .Format "02 Jan 2006" }}</time>
+    {{ end }}
+    <div class="notebook-post__title-row">
+      <a class="notebook-post__back" href="/notebook" aria-label="Back to notebook">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+      </a>
+      <h1 class="notebook-post__title">{{ .Title }}</h1>
+    </div>
+  </header>
+
+  <div class="notebook-post__body">
+    {{ .Content }}
+  </div>
+</article>
 {{ end }}

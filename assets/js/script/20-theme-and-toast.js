@@ -87,6 +87,9 @@ function showToast(message, options) {
   }
 
   var requestedDuration = settings.duration || settings.stay || TOAST_DEFAULT_DURATION;
+  // 'hold' (or persist:true) keeps the pill up until hideToast() is called —
+  // used for the skill-meter hover pill, which dismisses on mouseleave.
+  var hold = requestedDuration === 'hold' || settings.persist === true;
   var ms = (typeof requestedDuration === 'number')
     ? requestedDuration
     : (TOAST_DURATIONS[requestedDuration] || TOAST_DURATIONS[TOAST_DEFAULT_DURATION] || 1800);
@@ -112,10 +115,22 @@ function showToast(message, options) {
 
   pill.classList.add('toast--visible');
 
+  if (hold) return;  // caller dismisses via hideToast()
+
   pill._toastTimer = setTimeout(function () {
     pill.classList.remove('toast--visible');
     pill.classList.add('toast--hiding');
   }, ms);
+}
+
+// Dismiss a toast early — pairs with showToast(msg, { duration: 'hold' }).
+function hideToast() {
+  var pill = document.getElementById('toast');
+  if (!pill) return;
+  clearTimeout(pill._toastTimer);
+  if (!pill.classList.contains('toast--visible')) return;
+  pill.classList.remove('toast--visible');
+  pill.classList.add('toast--hiding');
 }
 
 function copyTextToClipboard(text) {

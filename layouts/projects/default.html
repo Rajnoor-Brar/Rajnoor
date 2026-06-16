@@ -146,7 +146,11 @@
   {{ end }}
 
   {{/* ── Four-button bottom nav: outer = prev/next project across the
-      gallery, inner = prev/next chapter within current bundle. ── */}}
+      gallery, inner = prev/next chapter within current bundle.
+      Skipped entirely when there is nowhere to navigate (lone visible
+      project, single chapter) — otherwise the placeholder row reserves
+      a tall empty band beneath the article. ── */}}
+  {{ if or $ctx.projPrev $ctx.projNext $ctx.chapterPrev $ctx.chapterNext }}
   <nav class="project-nav-quad" aria-label="Project navigation">
     {{ if $ctx.projPrev }}
     <a class="project-nav-quad__btn project-nav-quad__btn--outer-prev"
@@ -184,4 +188,5 @@
     </a>
     {{ else }}<span class="project-nav-quad__btn project-nav-quad__btn--placeholder" aria-hidden="true"></span>{{ end }}
   </nav>
+  {{ end }}
 {{ end }}

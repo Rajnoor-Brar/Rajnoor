@@ -23,7 +23,7 @@
 
 .rotate {
   display: inline-block;
-  animation: rotateAnim 1s;
+  animation: rotateAnim var(--motion-rotate);
 }
 
 @keyframes iconSwap {
@@ -49,8 +49,8 @@
    the forwards fill — while discoverPulse runs freely on box-shadow. */
 #signature-panel.discover-pulse {
   animation:
-    fadeIn 1.75s ease-in-out -1.75s forwards,
-    discoverPulse 2.4s ease-out 1;
+    fadeIn var(--motion-signature-fade) ease-in-out calc(-1 * var(--motion-signature-fade)) forwards,
+    discoverPulse var(--motion-discover-pulse) ease-out 1;
 }
 
 
@@ -70,6 +70,67 @@
   opacity: 0;
   transform: translateY(6px);
 }
+
+/* ── SPA view transitions (C1) — context-aware ────────────────────────────────
+   navigateTo() sets html[data-vt] just before startViewTransition (and only
+   when motion is allowed, so reduced-motion users never reach any of these
+   rules). The mode drives both the root keyframes and which elements get a
+   view-transition-name — naming lifts an element out of the `root` snapshot, so
+   it morphs across (if present both sides) or stays put rather than sliding.
+
+   Spatial model: top-level pages stack vertically by nav order (up/down); the
+   Projects section is one horizontal rail with the gallery at the far left, so
+   everything inside it swipes left/right. */
+
+/* Persistent global chrome — never part of any page slide/morph. */
+#command-console { view-transition-name: vt-console; }
+#toast          { view-transition-name: vt-toast; }
+
+/* Default crossfade (mode "fade" or unset). */
+@keyframes vt-fade-out { to   { opacity: 0; } }
+@keyframes vt-fade-in  { from { opacity: 0; } }
+::view-transition-old(root) { animation: vt-fade-out var(--motion-fast) ease both; }
+::view-transition-new(root) { animation: vt-fade-in  var(--motion-base) ease-out both; }
+
+/* A — vertical slide by nav order. "down" = new enters from below. */
+@keyframes vt-up-old   { to   { opacity: 0; transform: translateY(24px);  } }
+@keyframes vt-up-new   { from { opacity: 0; transform: translateY(-24px); } }
+@keyframes vt-down-old { to   { opacity: 0; transform: translateY(-24px); } }
+@keyframes vt-down-new { from { opacity: 0; transform: translateY(24px);  } }
+:root[data-vt="up"]::view-transition-old(root)   { animation: vt-up-old   var(--motion-base) ease-in  both; }
+:root[data-vt="up"]::view-transition-new(root)   { animation: vt-up-new   var(--motion-base) ease-out both; }
+:root[data-vt="down"]::view-transition-old(root) { animation: vt-down-old var(--motion-base) ease-in  both; }
+:root[data-vt="down"]::view-transition-new(root) { animation: vt-down-new var(--motion-base) ease-out both; }
+
+/* B + C — horizontal content slide across the whole Projects rail (gallery is
+   the left-most "project"). "left" = new enters from the right (Next/deeper);
+   "right" = new enters from the left (Prev/back to gallery). */
+@keyframes vt-left-old  { to   { opacity: 0; transform: translateX(-28px); } }
+@keyframes vt-left-new  { from { opacity: 0; transform: translateX(28px);  } }
+@keyframes vt-right-old { to   { opacity: 0; transform: translateX(28px);  } }
+@keyframes vt-right-new { from { opacity: 0; transform: translateX(-28px); } }
+:root[data-vt="left"]::view-transition-old(root)  { animation: vt-left-old  var(--motion-base) ease-in  both; }
+:root[data-vt="left"]::view-transition-new(root)  { animation: vt-left-new  var(--motion-base) ease-out both; }
+:root[data-vt="right"]::view-transition-old(root) { animation: vt-right-old var(--motion-base) ease-in  both; }
+:root[data-vt="right"]::view-transition-new(root) { animation: vt-right-new var(--motion-base) ease-out both; }
+/* Anchor chapter chrome + quad-nav so only the article body slides. */
+:root[data-vt="left"] #page-console,
+:root[data-vt="right"] #page-console { view-transition-name: vt-page-console; }
+:root[data-vt="left"] .project-nav-quad,
+:root[data-vt="right"] .project-nav-quad { view-transition-name: vt-quad; }
+
+/* Breadcrumb levels morph in place by depth (L0 Projects / L1 parent or title /
+   L2 chapter title) rather than sliding with the body — the shared level stays
+   put while the changing level cross-fades. */
+:root[data-vt="left"]  .breadcrumb-item:nth-child(1),
+:root[data-vt="right"] .breadcrumb-item:nth-child(1) { view-transition-name: pr-L0; }
+:root[data-vt="left"]  .breadcrumb-item:nth-child(2),
+:root[data-vt="right"] .breadcrumb-item:nth-child(2) { view-transition-name: pr-L1; }
+:root[data-vt="left"]  .breadcrumb-item:nth-child(3),
+:root[data-vt="right"] .breadcrumb-item:nth-child(3) { view-transition-name: pr-L2; }
+::view-transition-group(pr-L0),
+::view-transition-group(pr-L1),
+::view-transition-group(pr-L2) { animation-duration: var(--motion-base); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

@@ -5,9 +5,9 @@
   <header class="notebook-list__header mb-5">
     <div class="notebook-list__title-row">
       <h1 class="notebook-list__title">Notebook</h1>
-      <a href="/notebook/index.xml" class="notebook-rss" aria-label="RSS feed" title="Subscribe via RSS">
+      {{/* <a href="/notebook/index.xml" class="notebook-rss" aria-label="RSS feed" title="Subscribe via RSS">
         <i class="bi bi-rss" aria-hidden="true"></i>
-      </a>
+      </a> */}}
     </div>
     <p class="notebook-list__desc">{{ .Params.description }}</p>
   </header>
@@ -15,14 +15,16 @@
   {{ if .Pages }}
   <ol class="notebook-list__posts list-unstyled">
     {{ range .Pages.ByDate.Reverse }}
-    <li class="notebook-list__entry">
-      <time class="notebook-entry__date" datetime="{{ .Date.Format "2006-01-02" }}">
-        {{ .Date.Format "02 Jan 2006" }}
-      </time>
-      <a class="notebook-entry__title" href="{{ .RelPermalink }}">{{ .Title }}</a>
-      {{ if .Params.description }}
-      <p class="notebook-entry__desc">{{ .Params.description }}</p>
-      {{ end }}
+    <li>
+      <a class="notebook-list__entry" href="{{ .RelPermalink }}">
+        <time class="notebook-entry__date" datetime="{{ .Date.Format "2006-01-02" }}">
+          {{ .Date.Format "02 Jan 2006" }}
+        </time>
+        <span class="notebook-entry__title">{{ .Title }}</span>
+        {{ if .Params.description }}
+        <span class="notebook-entry__desc">{{ .Params.description }}</span>
+        {{ end }}
+      </a>
     </li>
     {{ end }}
   </ol>

@@ -40,6 +40,14 @@
   outline: none;
 }
 
+/* The input is the modal's only focusable control, so the global :focus-visible
+   outline is intentionally replaced (outline: none above) with an accent
+   underline — visible focus without boxing the panel's flush search field. */
+.spotlight-overlay__input:focus-visible {
+  border-bottom-color: var(--my-theme-accent);
+  box-shadow: inset 0 -1px 0 var(--my-theme-accent);
+}
+
 .spotlight-overlay__input::placeholder {
   color: var(--my-gray-1);
   font-weight: 400;

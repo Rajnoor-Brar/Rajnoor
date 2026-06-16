@@ -1,0 +1,12 @@
+# Proficiency vocabularies for the credentials page (/credentials/).
+# Single source for the level→word maps; index = level − 1.
+
+# Skill-badge meter: level 1–10 → word shown in the hover/tap pill.
+# Consumed by assets/js/credScript.js + layouts/partials/credBadge.html.
+# 1–5 fill ink dots; 6–10 fill the gold tier. Edit the 6–10 words to taste.
+skill_levels: ["Learner", "Novice", "Familiar", "Competent", "Proficient", "Practitioner", "Advanced", "Expert", "Master", "Luminary"]
+
+# Language-badge band: level 1–5 → fluency word shown in the tag pill.
+# Consumed by layouts/partials/credBadge.html. Each band's accent colour comes
+# from data/colors.yaml › language_bands (band 5 is gold).
+language_bands: ["Basic", "Conversational", "Proficient", "Fluent", "Native"]

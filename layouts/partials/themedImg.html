@@ -1,12 +1,13 @@
-
 {{- $prefix := .prefix | default "" -}}
 {{- $cls := .class | default "" -}}
 {{- $alt := .alt | default "" -}}
+{{- $widths := .widths -}}
+{{- $sizes := .sizes -}}
 {{- if and .light .dark -}}
-  <img src="{{ $prefix }}{{ .light }}" class="{{ with $cls }}{{ . }} {{ end }}theme-img--light" alt="{{ $alt }}" loading="lazy">
-  <img src="{{ $prefix }}{{ .dark }}" class="{{ with $cls }}{{ . }} {{ end }}theme-img--dark" alt="{{ $alt }}" loading="lazy">
+  {{- partial "img.html" (dict "src" (printf "%s%s" $prefix .light) "class" (printf "%stheme-img--light" (cond (ne $cls "") (printf "%s " $cls) "")) "alt" $alt "widths" $widths "sizes" $sizes) -}}
+  {{- partial "img.html" (dict "src" (printf "%s%s" $prefix .dark) "class" (printf "%stheme-img--dark" (cond (ne $cls "") (printf "%s " $cls) "")) "alt" $alt "widths" $widths "sizes" $sizes) -}}
 {{- else if .fallback -}}
-  <img src="{{ $prefix }}{{ .fallback }}"{{ with $cls }} class="{{ . }}"{{ end }} alt="{{ $alt }}" loading="lazy">
+  {{- partial "img.html" (dict "src" (printf "%s%s" $prefix .fallback) "class" $cls "alt" $alt "widths" $widths "sizes" $sizes) -}}
 {{- end -}}
 
 {{/*      Params (dict):
@@ -16,4 +17,9 @@
        prefix   — (optional) string prepended to every src (default "")
        class    — (optional) extra classes applied to every emitted <img>
        alt      — (optional) alt text; pass "" for decorative icons
-        */}}
+       widths   — (optional) srcset candidate widths, forwarded to img.html
+       sizes    — (optional) sizes attribute, forwarded to img.html
+
+     Emission itself is delegated to partials/img.html, which routes raster
+     assets through Hugo image processing (resize + srcset + width/height)
+     and passes SVGs / not-yet-migrated static files through untouched. */}}

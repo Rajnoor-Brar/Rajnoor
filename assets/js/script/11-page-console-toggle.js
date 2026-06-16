@@ -16,7 +16,11 @@ document.addEventListener('click', (e) => {
     if (!pc) return;
     const contracted = pc.classList.toggle('contracted');
     setPageConsoleToggleState(btn, contracted);
-    localStorage.setItem('rj_page_console_contracted', contracted ? '1' : '0');
+    // Per-form-factor key: see syncPageConsoleCorner in 31-nav-position.js.
+    const key = window.matchMedia('(max-width: 768px)').matches
+      ? 'rj_page_console_contracted_sm'
+      : 'rj_page_console_contracted';
+    localStorage.setItem(key, contracted ? '1' : '0');
     showToast(contracted ? 'Page tools collapsed' : 'Page tools expanded', {
       duration: 'short',
       variant: 'info'

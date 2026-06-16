@@ -119,10 +119,13 @@ function syncPageConsoleCorner(to) {
   const mirror = horz === 'left' ? 'right' : 'left';
   pc.classList.remove('top', 'bottom', 'left', 'right');
   pc.classList.add(vert, mirror);
-  // Default to contracted on mobile (≤768px) if no user preference is stored;
-  // respect explicit toggle on either platform otherwise.
-  const stored = localStorage.getItem('rj_page_console_contracted');
+  // Contract state is stored per form factor (the expanded console overlaps
+  // article text on phones, so a desktop "expanded" choice must not carry
+  // over). Mobile defaults to contracted when nothing is stored.
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const stored = localStorage.getItem(
+    isMobile ? 'rj_page_console_contracted_sm' : 'rj_page_console_contracted'
+  );
   const shouldContract = stored === '1' || (stored === null && isMobile);
   const btn = document.getElementById('page-console-toggle');
   if (shouldContract) {

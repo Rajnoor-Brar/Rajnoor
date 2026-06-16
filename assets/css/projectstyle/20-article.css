@@ -7,6 +7,14 @@
     color: inherit;
     cursor: pointer;
     padding: 0;
+    /* White surface + soft hairline lift (mirrors the credentials cards), so the
+       card reads as a distinct object against the page background. overflow:hidden
+       clips the media image to the rounded top corners. */
+    background-color: var(--my-white);
+    border: 1px solid var(--my-border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-panel);
     transition: transform var(--motion-fast) ease, box-shadow var(--motion-base) ease;
 }
 /* Lift (transform + shadow) comes from the central .card:hover/:focus-visible
@@ -106,6 +114,7 @@
     font-family: var(--my-font-article);
     font-size: var(--rj-article-fs, 1.1rem);
     text-align: justify;
+    hyphens: auto; /* justify without hyphenation opens word-spacing rivers */
     color:var(--my-black);
     overflow-x: auto;
     word-wrap: break-word;
@@ -293,6 +302,9 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
 @media (max-width: 768px) {
     .article {
         padding: 1.5rem;
+        /* Below ~40ch per line, justification spaces out unevenly even with
+           hyphenation — ragged right reads better on phones. */
+        text-align: left;
     }
 
     .abstract {
@@ -343,4 +355,51 @@ code[class*="language-"], :not(pre)>code[class*="language-"]{
 
     .figure { width: 100%; margin-left: 0; margin-right: 0; }
     .figure__media { width: min(var(--rj-article-figure-width, 75%), 100%); }
+}
+
+/* ── Code-block toolkit — copy button + language chip ─────────────────────
+   Injected by projectScript.js into each article <pre>. The button reveals
+   on hover/focus (always visible on touch, which has no hover). */
+.article pre { position: relative; }
+
+.pg-code-lang {
+    position: absolute;
+    top: 0.45rem;
+    right: 2.6rem;
+    font-family: var(--my-font-ui);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--my-gray-1);
+    user-select: none;
+    pointer-events: none;
+}
+
+.pg-code-copy {
+    position: absolute;
+    top: 0.3rem;
+    right: 0.45rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--my-gray-1);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--motion-base) ease, color var(--motion-fast) ease;
+}
+
+.article pre:hover .pg-code-copy,
+.pg-code-copy:focus-visible,
+.pg-code-copy.copied { opacity: 1; }
+
+.pg-code-copy:hover { color: var(--my-black); text-shadow: var(--glow-sm); }
+.pg-code-copy.copied { color: var(--my-theme-accent); }
+
+@media (pointer: coarse) {
+    .pg-code-copy { opacity: 1; }
 }

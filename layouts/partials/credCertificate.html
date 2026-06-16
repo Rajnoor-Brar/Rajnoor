@@ -1,11 +1,12 @@
 {{/* Certificate card. Receives one entry from data/credentials.yaml as context. */}}
-<div class="certificate h-100 card p-2 col-12 col-lg-5 col-md-8">
+<div class="certificate h-100 card col-12 col-lg-5 col-md-8">
   <div class="row g-0">
 
     <div class="certificate__icon-col flex-center col-5 col-md-4">
+      {{ with .platform }}<span class="certificate__platform">{{ . }}</span>{{ end }}
       {{ if or (and .icon_light .icon_dark) .icon }}
         <div class="certificate__icon icon-frame" aria-hidden="true">
-          {{ partial "themedImg.html" (dict "light" .icon_light "dark" .icon_dark "fallback" .icon "prefix" "/resources/creds/" "alt" "") }}
+          {{ partial "themedImg.html" (dict "light" .icon_light "dark" .icon_dark "fallback" .icon "prefix" "/resources/creds/" "alt" "" "widths" (slice 160 320) "sizes" "120px") }}
         </div>
       {{ end }}
     </div>
