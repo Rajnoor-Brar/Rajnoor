@@ -53,7 +53,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--my-background);
+  /* Frosted, not a hard opaque slab — a translucent blur over the outgoing page
+     reads as a soft transition rather than a black rectangle (esp. in dark mode /
+     behind Safari's chrome). The blur masks the content swap underneath. */
+  background: color-mix(in srgb, var(--my-background) 80%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transition: opacity var(--motion-loader-fade) ease;
 }
 #page-loader.dismissed {

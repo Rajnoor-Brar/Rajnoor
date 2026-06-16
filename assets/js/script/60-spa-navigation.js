@@ -199,8 +199,18 @@
     // fromPath is already captured; advance the tracker to the resolved page.
     currentPath = finalUrl;
 
-    // Wait for CSS fade-out to finish (fallback path only)
-    if (!useVT) await new Promise(r => setTimeout(r, 160));
+    // Did the slow-load loader actually appear (fetch outran the 150ms timer)?
+    // If so it's already covering the old page, so we reveal the new page by
+    // fading the loader out — a clean old → loader → loader-out → new sequence —
+    // rather than running a view transition under it (which would leave the loader
+    // lingering over the swapped-in content). Bonus: no VT snapshot on slow navs,
+    // which sidesteps WebKit's transition black-frame on iOS.
+    const loaderEl = document.getElementById('page-loader');
+    const loaderShown = !!(loaderEl && !loaderEl.classList.contains('dismissed'));
+
+    // Wait for CSS fade-out to finish (manual fallback path only — skip when the
+    // loader is bridging, since it already hides the outgoing content)
+    if (!useVT && !loaderShown) await new Promise(r => setTimeout(r, 160));
 
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const newContent = doc.getElementById('page-content');
@@ -251,7 +261,15 @@
       if (!useVT) content.classList.remove('page-leaving');
     };
 
-    if (useVT) {
+    if (loaderShown) {
+      // Loader bridge: swap beneath the loader, let the new content paint, then
+      // fade the loader out to reveal it. The loader fade IS the transition here,
+      // so no view transition runs (and the console isn't lifted into a snapshot,
+      // so no lock/reconcile needed).
+      applyDom();
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+      hideNavLoader();
+    } else if (useVT) {
       // Choose the transition shape from where we're navigating, expose it to
       // CSS via html[data-vt].
       document.documentElement.dataset.vt = resolveMode(fromPath, finalUrl, fromNav, toNav, triggerEl, popDir);
@@ -280,10 +298,11 @@
       if (transition && transition.finished) transition.finished.finally(cleanup);
       else cleanup();
     } else {
+      // No VT support and no loader shown — instant swap (manual fade is handled
+      // by the page-leaving class around applyDom).
       applyDom();
+      hideNavLoader();
     }
-
-    hideNavLoader();
 
     // Position #page-console (if present in new content) to mirror command-console corner
     syncPageConsoleCorner();
