@@ -397,6 +397,7 @@ html[data-bs-theme="dark"] {
 .skill-badge__band {
     --band-c: var(--my-gray-1);   /* fallback until a --l* modifier sets the hue */
     padding: 0.18rem 0.6rem;
+    text-align: center;
     border: 0;
     border-radius: var(--radius-pill);
     font-size: 0.62rem;

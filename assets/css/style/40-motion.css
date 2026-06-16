@@ -82,9 +82,15 @@
    Projects section is one horizontal rail with the gallery at the far left, so
    everything inside it swipes left/right. */
 
-/* Persistent global chrome — never part of any page slide/morph. */
-#command-console { view-transition-name: vt-console; }
-#toast          { view-transition-name: vt-toast; }
+/* Persistent global chrome — never part of any page slide/morph.
+   view-transition-name creates a stacking context that kills backdrop-filter,
+   so we only assign names while a transition is actually in flight (data-vt is
+   set by navigateTo() just before startViewTransition and removed afterwards).
+   This keeps the frosted blur intact at rest. */
+:root[data-vt] #signature-panel  { view-transition-name: vt-signature; }
+:root[data-vt] #navigation-panel { view-transition-name: vt-nav-panel; }
+:root[data-vt] #action-panel     { view-transition-name: vt-action-panel; }
+:root[data-vt] #toast            { view-transition-name: vt-toast; }
 
 /* Default crossfade (mode "fade" or unset). */
 @keyframes vt-fade-out { to   { opacity: 0; } }

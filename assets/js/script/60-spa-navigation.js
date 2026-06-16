@@ -256,7 +256,7 @@
       // CSS via html[data-vt].
       document.documentElement.dataset.vt = resolveMode(fromPath, finalUrl, fromNav, toNav, triggerEl, popDir);
 
-      // #command-console (view-transition-name: vt-console) is lifted into its own
+      // The console panels (view-transition-name: vt-signature etc.) are lifted into
       // snapshot during the transition, which fires a spurious blur/pointerleave on
       // it — collapsing the open nav panel mid-navigation. Hold the lock so the hover
       // logic ignores those, then reconcile against the real cursor once it settles.
