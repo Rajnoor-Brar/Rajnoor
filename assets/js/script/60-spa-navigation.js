@@ -148,7 +148,7 @@
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ANIM_MS = reduceMotion ? 1 : 200;   // exit / enter keyframe duration (--motion-base)
-    const ARC_MS  = reduceMotion ? 1 : 120;   // arc draw / undraw transition  (--motion-fast)
+    const ARC_MS  = reduceMotion ? 1 : 120;   // arc fade-in / fade-out transition (--motion-fast)
     const ARC_THRESHOLD_MS = 150;             // only show arc when fetch is slower than this
 
     const dirEst = resolveMode(fromPath, url, fromNav, estimateNavKey(url), triggerEl, popDir);
@@ -171,18 +171,17 @@
       content.classList.add('page-leaving');
     }
 
-    // Gate arc on slow fetches: draw in after threshold, then spin once drawn
+    // Gate arc on slow fetches — fade in after threshold, fade out when done.
+    // The timer must measure fetch latency alone, so cancel it the instant the
+    // fetch settles. (Phase 1 below always waits ≥ ANIM_MS for the exit keyframe,
+    // which is longer than ARC_THRESHOLD_MS — clearing only after that wait would
+    // let the arc flash on every navigation, even instant ones.)
     let arcShown = false;
-    let arcSpinTimer = null;
     const arcTimer = setTimeout(() => {
       arcShown = true;
-      if (arcEl) {
-        arcEl.classList.add('arc-drawing');
-        arcSpinTimer = setTimeout(() => {
-          if (arcShown && arcEl) arcEl.classList.add('arc-spinning');
-        }, ARC_MS + 10);
-      }
+      if (arcEl) arcEl.classList.add('arc-visible');
     }, ARC_THRESHOLD_MS);
+    fetchPromise.then(() => clearTimeout(arcTimer), () => clearTimeout(arcTimer));
 
     let fetchResult;
     try {
@@ -191,14 +190,11 @@
         new Promise(r => setTimeout(r, ANIM_MS))
       ]);
     } catch (err) {
-      clearTimeout(arcTimer);
-      clearTimeout(arcSpinTimer);
-      if (arcShown && arcEl) arcEl.classList.remove('arc-drawing', 'arc-spinning');
+      // arcTimer was already cleared by the fetch-settle handler above.
+      if (arcShown && arcEl) arcEl.classList.remove('arc-visible');
       if (err.name !== 'AbortError') location.href = url;
       return;
     }
-
-    clearTimeout(arcTimer); // no-op if already fired
 
     const { finalUrl, html } = fetchResult;
     currentPath = finalUrl;
@@ -246,13 +242,10 @@
       window.scrollTo(0, 0);
     }
 
-    // ── Phase 3: arc exits, then content enters ──────────────────────────────
+    // ── Phase 3: arc fades out, then content enters ──────────────────────────
     if (arcShown && arcEl) {
-      // Undraw the arc (transition: 120ms). New content is already hidden behind
-      // page-leaving's forwards-fill opacity: 0, so nothing flashes during undraw.
-      arcEl.classList.remove('arc-drawing');
+      arcEl.classList.remove('arc-visible');
       await new Promise(r => setTimeout(r, ARC_MS + 20));
-      arcEl.classList.remove('arc-spinning');
     }
 
     // Swap page-leaving → page-entering in one synchronous batch so the browser

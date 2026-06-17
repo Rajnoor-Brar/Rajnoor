@@ -5,8 +5,10 @@
 
       <div class="publication__icon-col col-6 col-md-4">
         {{ if or (and .icon_light .icon_dark) .icon }}
-          <div class="publication__icon-frame icon-frame" aria-hidden="true">
-            {{ partial "themedImg.html" (dict "light" .icon_light "dark" .icon_dark "fallback" .icon "prefix" "/resources/creds/" "class" "img-fluid rounded publication__icon" "alt" "" "widths" (slice 240 480) "sizes" "200px") }}
+          <div class="publication__icon-frame" aria-hidden="true">
+            <div class="publication__icon-clip">
+              {{ partial "themedImg.html" (dict "light" .icon_light "dark" .icon_dark "fallback" .icon "prefix" "/resources/creds/" "class" "publication__icon" "alt" "" "widths" (slice 240 480) "sizes" "200px") }}
+            </div>
           </div>
         {{ end }}
       </div>

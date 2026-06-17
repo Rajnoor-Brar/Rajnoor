@@ -128,6 +128,12 @@
     </div>
   </div>
 
+  {{/* .page-body holds everything that slides on a horizontal SPA hop. The
+       breadcrumb-row and #page-console sit OUTSIDE it so they stay put as
+       persistent landmarks, and the slide can use transform (no #page-console
+       capture, since that fixed island lives above this wrapper). */}}
+  <div class="page-body">
+
 {{/* Article */}}
 
   {{ with .Params.longTitle }}
@@ -189,4 +195,5 @@
     {{ else }}<span class="project-nav-quad__btn project-nav-quad__btn--placeholder" aria-hidden="true"></span>{{ end }}
   </nav>
   {{ end }}
+  </div>{{/* .page-body */}}
 {{ end }}

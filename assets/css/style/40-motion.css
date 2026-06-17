@@ -71,60 +71,52 @@
 
    Direction is set on #page-content[data-nav-dir] before the class is applied.
 
-   Vertical (up/down): uses transform — safe, no position:fixed elements live
-   inside #page-content on these pages.
-   Horizontal (left/right, projects rail): uses `left` not `transform` so that
-   position:fixed descendants (#page-console) stay viewport-anchored — transform
-   would create a stacking context and capture them.
+   Two scopes:
+   • Vertical (up/down) + fade animate the WHOLE #page-content with transform —
+     used between top-level pages, which carry no persistent landmarks.
+   • Horizontal (left/right, the projects rail) animates only the inner
+     .page-body (transform translateX). The breadcrumb-row and #page-console
+     live OUTSIDE .page-body, so they stay fixed in place as persistent
+     landmarks while the article body slides — and because .page-body holds no
+     position:fixed descendants, transform is safe (no stacking-context capture
+     of #page-console). The breadcrumb gets only a gentle opacity dip so its
+     label can change between gallery ("Projects") and article ("Projects ›
+     Title") without a hard pop, while never moving. */
 
-   Breadcrumb counter-animation: .breadcrumb-row is a persistent landmark on
-   project pages. Its counter-animation exactly cancels the parent's left offset
-   so it stays visually in place while the article body slides. */
-
-#page-content { position: relative; }   /* enables `left` animation */
-.breadcrumb-row { position: relative; } /* enables counter `left` animation */
-
-/* Vertical exit/enter */
+/* Fade / vertical — whole #page-content */
+@keyframes nav-out-fade { to   { opacity: 0; } }
+@keyframes nav-in-fade  { from { opacity: 0; } }
 @keyframes nav-out-up   { to   { opacity: 0; transform: translateY(-20px); } }
 @keyframes nav-in-up    { from { opacity: 0; transform: translateY(20px);  } }
 @keyframes nav-out-down { to   { opacity: 0; transform: translateY(20px);  } }
 @keyframes nav-in-down  { from { opacity: 0; transform: translateY(-20px); } }
 
-/* Horizontal exit/enter (left-property, not transform) */
-@keyframes nav-out-left  { to   { opacity: 0; left: -20px; } }
-@keyframes nav-in-left   { from { opacity: 0; left:  20px; } }
-@keyframes nav-out-right { to   { opacity: 0; left:  20px; } }
-@keyframes nav-in-right  { from { opacity: 0; left: -20px; } }
+#page-content[data-nav-dir="fade"].page-leaving,
+#page-content.page-leaving:not([data-nav-dir])   { animation: nav-out-fade var(--motion-fast) ease-in  both; }
+#page-content[data-nav-dir="fade"].page-entering,
+#page-content.page-entering:not([data-nav-dir])  { animation: nav-in-fade  var(--motion-base) ease-out both; }
+#page-content[data-nav-dir="up"].page-leaving    { animation: nav-out-up   var(--motion-base) ease-in  both; }
+#page-content[data-nav-dir="down"].page-leaving  { animation: nav-out-down var(--motion-base) ease-in  both; }
+#page-content[data-nav-dir="up"].page-entering   { animation: nav-in-up    var(--motion-base) ease-out both; }
+#page-content[data-nav-dir="down"].page-entering { animation: nav-in-down  var(--motion-base) ease-out both; }
 
-/* Breadcrumb counter (inverse of parent so screen position stays at 0) */
-@keyframes nav-pin-out-left   { to   { left:  20px;  } }
-@keyframes nav-pin-out-right  { to   { left: -20px;  } }
-@keyframes nav-pin-in-left    { from { left: -20px;  } }
-@keyframes nav-pin-in-right   { from { left:  20px;  } }
+/* Horizontal — inner .page-body slides (transform), landmarks stay put */
+@keyframes body-out-left  { to   { opacity: 0; transform: translateX(-20px); } }
+@keyframes body-in-left   { from { opacity: 0; transform: translateX(20px);  } }
+@keyframes body-out-right { to   { opacity: 0; transform: translateX(20px);  } }
+@keyframes body-in-right  { from { opacity: 0; transform: translateX(-20px); } }
+@keyframes bc-dip-out     { to   { opacity: 0.35; } }
+@keyframes bc-dip-in      { from { opacity: 0.35; } }
 
-/* Fallback fade (direction unresolved) */
-@keyframes nav-out-fade { to   { opacity: 0; } }
-@keyframes nav-in-fade  { from { opacity: 0; } }
+#page-content[data-nav-dir="left"].page-leaving   .page-body { animation: body-out-left  var(--motion-base) ease-in  both; }
+#page-content[data-nav-dir="right"].page-leaving  .page-body { animation: body-out-right var(--motion-base) ease-in  both; }
+#page-content[data-nav-dir="left"].page-entering  .page-body { animation: body-in-left   var(--motion-base) ease-out both; }
+#page-content[data-nav-dir="right"].page-entering .page-body { animation: body-in-right  var(--motion-base) ease-out both; }
 
-/* Exit — directional overrides take precedence over the fallback fade */
-#page-content.page-leaving                        { animation: nav-out-fade  var(--motion-fast) ease-in  both; }
-#page-content[data-nav-dir="up"].page-leaving     { animation: nav-out-up    var(--motion-base) ease-in  both; }
-#page-content[data-nav-dir="down"].page-leaving   { animation: nav-out-down  var(--motion-base) ease-in  both; }
-#page-content[data-nav-dir="left"].page-leaving   { animation: nav-out-left  var(--motion-base) ease-in  both; }
-#page-content[data-nav-dir="right"].page-leaving  { animation: nav-out-right var(--motion-base) ease-in  both; }
-
-/* Enter */
-#page-content.page-entering                        { animation: nav-in-fade  var(--motion-base) ease-out both; }
-#page-content[data-nav-dir="up"].page-entering     { animation: nav-in-up    var(--motion-base) ease-out both; }
-#page-content[data-nav-dir="down"].page-entering   { animation: nav-in-down  var(--motion-base) ease-out both; }
-#page-content[data-nav-dir="left"].page-entering   { animation: nav-in-left  var(--motion-base) ease-out both; }
-#page-content[data-nav-dir="right"].page-entering  { animation: nav-in-right var(--motion-base) ease-out both; }
-
-/* Breadcrumb counter-animation (left/right only) */
-#page-content[data-nav-dir="left"].page-leaving   .breadcrumb-row { animation: nav-pin-out-left   var(--motion-base) ease-in  both; }
-#page-content[data-nav-dir="right"].page-leaving  .breadcrumb-row { animation: nav-pin-out-right  var(--motion-base) ease-in  both; }
-#page-content[data-nav-dir="left"].page-entering  .breadcrumb-row { animation: nav-pin-in-left    var(--motion-base) ease-out both; }
-#page-content[data-nav-dir="right"].page-entering .breadcrumb-row { animation: nav-pin-in-right   var(--motion-base) ease-out both; }
+#page-content[data-nav-dir="left"].page-leaving   .breadcrumb-row,
+#page-content[data-nav-dir="right"].page-leaving  .breadcrumb-row { animation: bc-dip-out var(--motion-base) ease-in  both; }
+#page-content[data-nav-dir="left"].page-entering  .breadcrumb-row,
+#page-content[data-nav-dir="right"].page-entering .breadcrumb-row { animation: bc-dip-in  var(--motion-base) ease-out both; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

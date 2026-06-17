@@ -35,6 +35,10 @@
     </div>
   </div>
 
+  {{/* .page-body holds everything that slides on a horizontal SPA hop; the
+       breadcrumb-row above stays put as a persistent landmark. */}}
+  <div class="page-body">
+
   {{ if $uniqueTags }}
   {{/* `inert` while collapsed: the 0fr-grid collapse hides chips visually but
        would otherwise leave them in the tab order. JS flips it with `.open`. */}}
@@ -93,5 +97,6 @@
     </div>
 
   </div>
+  </div>{{/* .page-body */}}
 </div>
 {{ end }}

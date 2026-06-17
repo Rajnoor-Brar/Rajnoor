@@ -54,6 +54,11 @@
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--motion-fast) ease;
+}
+#nav-arc.arc-visible {
+  opacity: 1;
 }
 #nav-arc svg {
   width: 40px;
@@ -65,31 +70,19 @@
   stroke-width: 1.5;
   fill: none;
   stroke-linecap: round;
-  /* Full circumference as one dash — dashoffset controls how much is visible.
-     dashoffset 113.1 = nothing drawn; 94.25 = 18.85 units = 60° arc. */
   stroke-dasharray: 113.1;
-  stroke-dashoffset: 113.1;
-  /* Start the arc at 12 o'clock. transform-box: fill-box lets transform-origin
-     reference the element's own bounding box, so "center" = cx/cy = 24 24. */
+  stroke-dashoffset: 94.25;  /* fixed 60° arc (18.85 = circumference/6) */
   transform-box: fill-box;
   transform-origin: center;
-  transform: rotate(-90deg);
-  transition: stroke-dashoffset var(--motion-fast) ease-in-out;
-}
-/* 60° arc visible */
-#nav-arc.arc-drawing circle {
-  stroke-dashoffset: 94.25;
-}
-/* Continuous spin — starts from the same -90deg base so there's no jump */
-@keyframes arc-spin {
-  to { transform: rotate(270deg); }  /* -90 + 360 = one full clockwise rotation */
-}
-#nav-arc.arc-spinning circle {
   animation: arc-spin 0.9s linear infinite;
 }
+@keyframes arc-spin {
+  from { transform: rotate(-90deg); }
+  to   { transform: rotate(270deg); }
+}
 @media (prefers-reduced-motion: reduce) {
-  #nav-arc circle { transition-duration: 0.01ms !important; }
-  #nav-arc.arc-spinning circle { animation: none; }
+  #nav-arc { transition-duration: 0.01ms !important; }
+  #nav-arc circle { animation: none; }
 }
 
 
