@@ -66,7 +66,7 @@
     {{ $labels := index site.Data.labels ($.labels | default "language_bands") }}
     {{ $word := "" }}
     {{ if and (ge $n 1) (le $n (len $labels)) }}{{ $word = index $labels (sub $n 1) }}{{ end }}
-    <span class="skill-badge__meter skill-badge__band skill-badge__band--l{{ $n }}" aria-label="Fluency: {{ with $word }}{{ . }}{{ else }}{{ $n }} of {{ len $labels }}{{ end }}">{{ $word }}</span>
+    <span class="skill-badge__band skill-badge__band--l{{ $n }}" aria-label="Fluency: {{ with $word }}{{ . }}{{ else }}{{ $n }} of {{ len $labels }}{{ end }}">{{ $word }}</span>
   {{ end }}
 
 {{ printf "</%s>" $tag | safeHTML }}

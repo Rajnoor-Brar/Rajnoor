@@ -9,6 +9,9 @@
 {{- range $k, $v := site.Data.style.z_index }}{{ printf "\n  --z-%s: %v;" $k $v }}{{- end }}
 {{- range site.Data.style.shadows }}{{ printf "\n  --shadow-%s: %s;" .size .value }}{{- end }}
 {{- range site.Data.style.glows }}{{ printf "\n  --glow-%s: %s;" .size .value }}{{- end }}
+  /* View Transitions snapshot the root — without an explicit background the
+     canvas is transparent (renders black), causing a dark flash mid-crossfade. */
+  background-color: var(--my-background);
 }
 
 html[data-bs-theme="dark"] {

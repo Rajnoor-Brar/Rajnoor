@@ -389,13 +389,13 @@ html[data-bs-theme="dark"] {
 }
 
 /* Language fluency band — a simple tag pill: coloured text on a faint 6% fill of
-   the same hue, with a soft same-hue shadow bleed. Carries .skill-badge__meter
-   too (above) for the trailing-edge pin + mobile interleave order; the pill's own
-   padding shorthand overrides .meter's gap padding so the fill doesn't bleed left.
+   the same hue, with a soft same-hue shadow bleed. Self-contained: margin-left: auto
+   pins it to the trailing edge (same job .skill-badge__meter does for the dot meter).
    The per-band accent (--band-c) is set by the --l1…--l5 modifier from the
    injected band colours. */
 .skill-badge__band {
     --band-c: var(--my-gray-1);   /* fallback until a --l* modifier sets the hue */
+    margin-left: auto;
     padding: 0.18rem 0.6rem;
     text-align: center;
     border: 0;
@@ -447,9 +447,15 @@ html[data-bs-theme="dark"] {
     .cred-skill-row .skill-badge__label { order: 1; white-space: normal; }
     .cred-skill-row .skill-badge__meter {
         order: 2;
-        margin-left: 0;
+        margin-left: 0.15rem;
         padding-left: 0;
-        margin-top: 0.3rem;   /* breathing room below the title before the meter / band pill */
+        margin-top: 0.4rem;
+    }
+    .cred-skill-row .skill-badge__band {
+        order: 2;
+        margin-left: 0;
+        padding: 0.09rem 0.3rem;
+        margin-top: 0.4rem;
     }
     .cred-skill-row .skill-badge__note  { order: 3; white-space: normal; }
 }
