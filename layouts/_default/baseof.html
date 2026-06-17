@@ -81,7 +81,7 @@
     {{ partial "assets/css.html" (dict "src" "css/style.css") }}
     {{ with .Params.pageStyle }}{{ partial "assets/css.html" (dict "src" . "id" "page-style") }}{{ end }}
 
-    <noscript><style>#page-loader{display:none!important}</style></noscript>
+    <noscript><style>#nav-arc{display:none!important}</style></noscript>
 
     {{ if site.Params.features.notebook }}
     <link rel="alternate" type="application/rss+xml" title="Notebook — {{ site.Title }}" href="/notebook/index.xml">
@@ -123,8 +123,10 @@
 
     <a class="visually-hidden-focusable skip-link" href="#page-content">Skip to content</a>
 
-    <div id="page-loader" aria-hidden="true">
-      <div class="spinner"></div>
+    <div id="nav-arc" aria-hidden="true">
+      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="18"/>
+      </svg>
     </div>
 
     <div id="page-container" class=" d-flex flex-column">

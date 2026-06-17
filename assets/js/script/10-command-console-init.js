@@ -5,36 +5,6 @@ const HOVER_LEAVE_GRACE_MS = 180;
 // true when the panel was opened by tap/click — stays open until outside tap
 let pinnedOpen = false;
 
-// Set true by navigateTo() (60-spa-navigation.js) while an SPA view transition
-// runs. #command-console carries view-transition-name: vt-console, so the browser
-// lifts it into its own snapshot for the transition — which fires a spurious blur
-// / pointerleave on it even though the cursor never moved off it (the panel would
-// otherwise collapse mid-navigation, then reopen once hover is re-detected). While
-// locked we ignore those teardown signals; navigateTo calls reconcileConsoleHover()
-// once the transition settles to restore the true hover state.
-let consoleNavLock = false;
-let lastPointer = { x: -1, y: -1 };
-document.addEventListener('pointermove', (e) => {
-  lastPointer.x = e.clientX;
-  lastPointer.y = e.clientY;
-}, { passive: true });
-
-// Re-evaluate the console's open/closed state against the real cursor position
-// after a navigation transition releases the lock: keep it open if the pointer is
-// genuinely still over the console, otherwise tear it down.
-function reconcileConsoleHover() {
-  const hitbox = document.getElementById('command-console');
-  if (!hitbox) return;
-  const el = document.elementFromPoint(lastPointer.x, lastPointer.y);
-  const stillInside = !!(el && hitbox.contains(el));
-  if (stillInside) {
-    if (document.activeElement !== hitbox) hitbox.focus(); // → openNavPanel (no-op if already shown)
-  } else {
-    pinnedOpen = false;
-    if (document.activeElement === hitbox) hitbox.blur();   // → closeNavPanel
-    else closeNavPanel();
-  }
-}
 
 document.addEventListener("DOMContentLoaded", function () {
     const hitbox = document.getElementById('command-console');
@@ -51,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
     hitbox.addEventListener('pointerleave', () => {
         clearTimeout(hoverTimer);
         if (pinnedOpen) return;  // tap/click opened — ignore leave
-        if (consoleNavLock) return;  // spurious leave from a view-transition snapshot lift — ignore
         // Grace period: if the pointer re-enters #command-console (which contains the
         // command box and panels) before this elapses, cancel the blur.
         leaveTimer = setTimeout(() => { hitbox.blur(); }, HOVER_LEAVE_GRACE_MS);
@@ -59,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     hitbox.addEventListener('focus', () => openNavPanel());
     hitbox.addEventListener('blur', () => {
-        if (consoleNavLock) return;  // transition lifted the console — don't tear down; reconcile handles it
         pinnedOpen = false; closeNavPanel();
     });
 

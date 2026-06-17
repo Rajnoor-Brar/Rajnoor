@@ -16,8 +16,8 @@
   }
   function seg(p) { return p.replace(/^\/+|\/+$/g, '').split('/'); }
 
-  // Pick the view-transition mode for a navigation. Returns one of
-  // up | down | left | right | fade — consumed by CSS via html[data-vt].
+  // Pick the transition direction for a navigation. Returns one of
+  // up | down | left | right | fade — consumed by CSS via #page-content[data-nav-dir].
   // See assets/css/style/40-motion.css.
   function resolveMode(fromPath, toPath, fromNav, toNav, trigger, popDir) {
     const fromGallery = fromPath === '/projects/' || fromPath === '/projects';
@@ -84,27 +84,6 @@
     }
   });
 
-  function showNavLoader() {
-    let loader = document.getElementById('page-loader');
-    if (!loader) {
-      loader = document.createElement('div');
-      loader.id = 'page-loader';
-      loader.setAttribute('aria-hidden', 'true');
-      loader.innerHTML = '<div class="spinner"></div>';
-      document.body.appendChild(loader);
-    } else {
-      // Re-activate if it was dismissed by the initial-load sequence
-      loader.classList.remove('dismissed');
-    }
-  }
-
-  function hideNavLoader() {
-    const loader = document.getElementById('page-loader');
-    if (!loader) return;
-    loader.classList.add('dismissed');
-    setTimeout(() => { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 500);
-  }
-
   // KaTeX/Prism are page-gated in baseof.html (only article pages ship them).
   // When an SPA hop lands on a page that declares a data-lib asset this
   // document never loaded, copy it across. Resolves once injected scripts have
@@ -137,195 +116,175 @@
     return Promise.all(pending);
   }
 
+  // Guess the active-nav key from a URL path before the fetch resolves.
+  function estimateNavKey(path) {
+    const p = path.replace(/[?#].*/, '');
+    if (p === '/' || p === '') return 'home';
+    const first = p.replace(/^\//, '').split('/')[0];
+    const map = { projects: 'projects', notebook: 'notebook', about: 'about', now: 'now', credentials: 'credentials' };
+    return map[first] || '';
+  }
+
   async function navigateTo(url, pushState, restoreScrollY, triggerEl = null, popDir = null) {
-    // Cancel any in-flight fetch
     if (abortController) abortController.abort();
     abortController = new AbortController();
 
     const content = document.getElementById('page-content');
-    // Capture the starting context before anything is swapped. fromPath comes
-    // from our own tracker (not location) so it's correct on popstate too.
+    const arcEl   = document.getElementById('nav-arc');
     const fromPath = currentPath;
-    const fromNav = content.dataset.activeNav;
+    const fromNav  = content ? content.dataset.activeNav : '';
 
-    // Run page-specific cleanup (e.g. clear homeScript timers)
     if (typeof window.__pageCleanup === 'function') {
       try { window.__pageCleanup(); } catch (e) { console.error('pageCleanup error:', e); }
       window.__pageCleanup = null;
     }
-
-    // Hard-clear command-console open/close timers on every navigation.
-    // The __pageCleanup chain is consume-once (it nulls itself after running),
-    // so a cleanup registered once at load is lost after the first nav — these
-    // timers live in the global bundle and must be cleared unconditionally here.
     clearAllTimeouts(showTimeouts);
     clearAllTimeouts(hideTimeouts);
-
-    // View Transitions (C1) drive the page crossfade when the browser supports
-    // them and motion is allowed; otherwise fall back to the manual opacity
-    // fade. Reduced-motion users always take the fallback, which the global
-    // motion clamp renders instant.
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const useVT = typeof document.startViewTransition === 'function' && !reduceMotion;
-
-    // Fade out current content immediately (fallback path only).
-    // Delay the full-screen loader so it only appears on slow fetches (>150ms).
-    // Fast same-origin navigations complete before the timer fires — no flash.
-    if (!useVT) content.classList.add('page-leaving');
-    const loaderTimer = setTimeout(showNavLoader, 150);
 
     // Separate path+search from hash fragment
     let urlHash = '';
     const hashIdx = url.indexOf('#');
     if (hashIdx !== -1) { urlHash = url.slice(hashIdx); url = url.slice(0, hashIdx); }
 
-    let html, finalUrl;
-    try {
-      const res = await fetch(url, { signal: abortController.signal });
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ANIM_MS = reduceMotion ? 1 : 200;   // exit / enter keyframe duration (--motion-base)
+    const ARC_MS  = reduceMotion ? 1 : 120;   // arc draw / undraw transition  (--motion-fast)
+    const ARC_THRESHOLD_MS = 150;             // only show arc when fetch is slower than this
+
+    const dirEst = resolveMode(fromPath, url, fromNav, estimateNavKey(url), triggerEl, popDir);
+
+    // Flush any leftover animation state from a rapid previous navigation
+    if (content) {
+      content.classList.remove('page-leaving', 'page-entering');
+      content.removeAttribute('data-nav-dir');
+      void content.offsetWidth; // force reflow to restart keyframes cleanly
+    }
+
+    // ── Phase 1: exit animation + fetch in parallel ──────────────────────────
+    const fetchPromise = fetch(url, { signal: abortController.signal }).then(async res => {
       if (!res.ok) throw new Error(res.status);
-      // Use the post-redirect URL (e.g. /credentials → /credentials/)
-      finalUrl = new URL(res.url).pathname;
-      html = await res.text();
+      return { finalUrl: new URL(res.url).pathname, html: await res.text() };
+    });
+
+    if (content) {
+      content.dataset.navDir = dirEst;
+      content.classList.add('page-leaving');
+    }
+
+    // Gate arc on slow fetches: draw in after threshold, then spin once drawn
+    let arcShown = false;
+    let arcSpinTimer = null;
+    const arcTimer = setTimeout(() => {
+      arcShown = true;
+      if (arcEl) {
+        arcEl.classList.add('arc-drawing');
+        arcSpinTimer = setTimeout(() => {
+          if (arcShown && arcEl) arcEl.classList.add('arc-spinning');
+        }, ARC_MS + 10);
+      }
+    }, ARC_THRESHOLD_MS);
+
+    let fetchResult;
+    try {
+      [fetchResult] = await Promise.all([
+        fetchPromise,
+        new Promise(r => setTimeout(r, ANIM_MS))
+      ]);
     } catch (err) {
-      clearTimeout(loaderTimer);
-      if (err.name === 'AbortError') { hideNavLoader(); return; }
-      // Fallback: hard navigate (loader stays — the browser will unload the page)
-      location.href = url;
+      clearTimeout(arcTimer);
+      clearTimeout(arcSpinTimer);
+      if (arcShown && arcEl) arcEl.classList.remove('arc-drawing', 'arc-spinning');
+      if (err.name !== 'AbortError') location.href = url;
       return;
     }
 
-    // Fetch done — cancel loader if it hasn't appeared yet
-    clearTimeout(loaderTimer);
-    // fromPath is already captured; advance the tracker to the resolved page.
+    clearTimeout(arcTimer); // no-op if already fired
+
+    const { finalUrl, html } = fetchResult;
     currentPath = finalUrl;
-
-    // Did the slow-load loader actually appear (fetch outran the 150ms timer)?
-    // If so it's already covering the old page, so we reveal the new page by
-    // fading the loader out — a clean old → loader → loader-out → new sequence —
-    // rather than running a view transition under it (which would leave the loader
-    // lingering over the swapped-in content). Bonus: no VT snapshot on slow navs,
-    // which sidesteps WebKit's transition black-frame on iOS.
-    const loaderEl = document.getElementById('page-loader');
-    const loaderShown = !!(loaderEl && !loaderEl.classList.contains('dismissed'));
-
-    // Wait for CSS fade-out to finish (manual fallback path only — skip when the
-    // loader is bridging, since it already hides the outgoing content)
-    if (!useVT && !loaderShown) await new Promise(r => setTimeout(r, 160));
 
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const newContent = doc.getElementById('page-content');
     if (!newContent) { location.href = url; return; }
     const toNav = newContent.dataset.activeNav || '';
 
-    // Sync Google Fonts links — the new page may need fonts not loaded on the
-    // starting page (conditional per active_nav in baseof.html).
-    // Inject any missing <link> before the content swap so the browser can
-    // start fetching while we finish the transition.
-    doc.querySelectorAll('link[rel="stylesheet"][href*="fonts.googleapis.com"]').forEach(function (newLink) {
-      var href = newLink.getAttribute('href');
+    // Refine direction now that we know the actual destination nav key
+    const direction = resolveMode(fromPath, finalUrl, fromNav, toNav, triggerEl, popDir);
+
+    // Sync any Google Fonts the new page may need
+    doc.querySelectorAll('link[rel="stylesheet"][href*="fonts.googleapis.com"]').forEach(newLink => {
+      const href = newLink.getAttribute('href');
       if (!document.querySelector('link[href="' + href + '"]')) {
-        var link = document.createElement('link');
+        const link = document.createElement('link');
         link.rel = 'stylesheet';
         link.href = href;
         document.head.appendChild(link);
       }
     });
 
-    // The DOM-mutating swap, factored out so a view transition can wrap it.
-    const applyDom = function () {
-      // Swap page-specific CSS
-      const pageStyleEl = document.getElementById('page-style');
-      const newStyleHref = doc.getElementById('page-style')?.getAttribute('href') || '';
-      if (pageStyleEl) pageStyleEl.setAttribute('href', newStyleHref);
+    // ── Phase 2: DOM swap ────────────────────────────────────────────────────
+    const pageStyleEl = document.getElementById('page-style');
+    const newStyleHref = doc.getElementById('page-style')?.getAttribute('href') || '';
+    if (pageStyleEl) pageStyleEl.setAttribute('href', newStyleHref);
 
-      // Swap content
+    if (content) {
+      content.dataset.navDir = direction; // refine before entering animation
       content.innerHTML = newContent.innerHTML;
       content.dataset.activeNav = newContent.dataset.activeNav || '';
-
-      // Update title + active nav
-      document.title = doc.title;
-      updateActiveNav(newContent.dataset.activeNav);
-
-      // Scroll: restore saved position (back/forward), jump to hash anchor, or top
-      if (restoreScrollY != null) {
-        window.scrollTo(0, restoreScrollY);
-      } else if (urlHash) {
-        const target = document.getElementById(urlHash.slice(1));
-        if (target) target.scrollIntoView({ behavior: 'instant' });
-        else window.scrollTo(0, 0);
-      } else {
-        window.scrollTo(0, 0);
-      }
-
-      // Fade in (fallback path only — VT runs its own crossfade)
-      if (!useVT) content.classList.remove('page-leaving');
-    };
-
-    if (loaderShown) {
-      // Loader bridge: swap beneath the loader, let the new content paint, then
-      // fade the loader out to reveal it. The loader fade IS the transition here,
-      // so no view transition runs (and the console isn't lifted into a snapshot,
-      // so no lock/reconcile needed).
-      applyDom();
-      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-      hideNavLoader();
-    } else if (useVT) {
-      // Choose the transition shape from where we're navigating, expose it to
-      // CSS via html[data-vt].
-      document.documentElement.dataset.vt = resolveMode(fromPath, finalUrl, fromNav, toNav, triggerEl, popDir);
-
-      // The console panels (view-transition-name: vt-signature etc.) are lifted into
-      // snapshot during the transition, which fires a spurious blur/pointerleave on
-      // it — collapsing the open nav panel mid-navigation. Hold the lock so the hover
-      // logic ignores those, then reconcile against the real cursor once it settles.
-      consoleNavLock = true;
-
-      // Await only the DOM update, not the animation, so post-swap work (math,
-      // highlight, lib load) proceeds while the transition plays out.
-      let transition;
-      try {
-        transition = document.startViewTransition(applyDom);
-        await transition.updateCallbackDone;
-      } catch (e) { /* transition aborted — applyDom already ran in the callback */ }
-
-      // Clear the mode + lock once the animation finishes, so the next nav starts
-      // clean, then restore the console to whatever the cursor is actually doing.
-      const cleanup = function () {
-        delete document.documentElement.dataset.vt;
-        consoleNavLock = false;
-        reconcileConsoleHover();
-      };
-      if (transition && transition.finished) transition.finished.finally(cleanup);
-      else cleanup();
-    } else {
-      // No VT support and no loader shown — instant swap (manual fade is handled
-      // by the page-leaving class around applyDom).
-      applyDom();
-      hideNavLoader();
     }
 
-    // Position #page-console (if present in new content) to mirror command-console corner
+    document.title = doc.title;
+    updateActiveNav(newContent.dataset.activeNav);
+
+    if (restoreScrollY != null) {
+      window.scrollTo(0, restoreScrollY);
+    } else if (urlHash) {
+      const target = document.getElementById(urlHash.slice(1));
+      if (target) target.scrollIntoView({ behavior: 'instant' });
+      else window.scrollTo(0, 0);
+    } else {
+      window.scrollTo(0, 0);
+    }
+
+    // ── Phase 3: arc exits, then content enters ──────────────────────────────
+    if (arcShown && arcEl) {
+      // Undraw the arc (transition: 120ms). New content is already hidden behind
+      // page-leaving's forwards-fill opacity: 0, so nothing flashes during undraw.
+      arcEl.classList.remove('arc-drawing');
+      await new Promise(r => setTimeout(r, ARC_MS + 20));
+      arcEl.classList.remove('arc-spinning');
+    }
+
+    // Swap page-leaving → page-entering in one synchronous batch so the browser
+    // never sees an intermediate full-opacity frame between the two animations.
+    requestAnimationFrame(() => {
+      if (content) {
+        content.classList.remove('page-leaving');
+        content.classList.add('page-entering');
+        setTimeout(() => {
+          content.classList.remove('page-entering');
+          content.removeAttribute('data-nav-dir');
+        }, ANIM_MS + 50);
+      }
+    });
+
+    // Post-nav housekeeping (runs while animations play)
     syncPageConsoleCorner();
     if (typeof window.__initScrollArc === 'function') window.__initScrollArc();
-    // Mark already-cached images as loaded; start shimmer on new in-flight ones
     if (typeof window.__initImages === 'function') window.__initImages(content);
 
     if (pushState) {
-      // Save current scroll before stamping new entry
       history.replaceState({ ...history.state, scrollY: window.scrollY }, '');
       history.pushState({ url: finalUrl + urlHash, idx: ++navIdx }, '', finalUrl + urlHash);
     }
 
-    // Pull in any page-gated libs the destination declares, then re-render
-    // math (KaTeX) and re-highlight code (Prism). Fire-and-forget so a slow
-    // CDN never blocks the fade-in.
     syncLibAssets(doc).then(() => {
       if (typeof renderMathInElement === 'function') {
         renderMathInElement(content, {
           delimiters: [
-            { left: '$$', right: '$$', display: true },
-            { left: '\\[', right: '\\]', display: true },
-            { left: '$', right: '$', display: false },
+            { left: '$$',  right: '$$',  display: true  },
+            { left: '\\[', right: '\\]', display: true  },
+            { left: '$',   right: '$',   display: false },
             { left: '\\(', right: '\\)', display: false },
           ]
         });
@@ -335,7 +294,6 @@
       }
     });
 
-    // Swap page-specific script (fire-and-forget — never block the fade-in)
     const oldScript = document.getElementById('page-script');
     if (oldScript) oldScript.remove();
     const newScriptSrc = doc.getElementById('page-script')?.getAttribute('src') || '';
@@ -346,8 +304,6 @@
       document.body.appendChild(script);
     }
 
-    // On touch-primary devices there is no hover-away to close the pill.
-    // Auto-collapse 1 s after navigation unless the user touches the console.
     if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
       const collapseTimer = setTimeout(() => {
         pinnedOpen = false;

@@ -46,40 +46,50 @@
   #toast { transition-duration: 0.01ms !important; }
 }
 
-#page-loader {
+#nav-arc {
   position: fixed;
   inset: 0;
-  z-index: calc(var(--z-pill) - 1); /* below pill + page-console; chrome stays reachable */
+  z-index: calc(var(--z-pill) - 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Frosted, not a hard opaque slab — a translucent blur over the outgoing page
-     reads as a soft transition rather than a black rectangle (esp. in dark mode /
-     behind Safari's chrome). The blur masks the content swap underneath. */
-  background: color-mix(in srgb, var(--my-background) 80%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: opacity var(--motion-loader-fade) ease;
-}
-#page-loader.dismissed {
-  opacity: 0;
   pointer-events: none;
 }
-.spinner {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 2.5px solid var(--my-silver-1);
-  border-top-color: var(--my-black);
-  animation: spin var(--motion-loader) linear infinite;
+#nav-arc svg {
+  width: 40px;
+  height: 40px;
+  overflow: visible;
 }
-@keyframes spin {
-  to { transform: rotate(360deg); }
+#nav-arc circle {
+  stroke: var(--my-black);
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  /* Full circumference as one dash — dashoffset controls how much is visible.
+     dashoffset 113.1 = nothing drawn; 94.25 = 18.85 units = 60° arc. */
+  stroke-dasharray: 113.1;
+  stroke-dashoffset: 113.1;
+  /* Start the arc at 12 o'clock. transform-box: fill-box lets transform-origin
+     reference the element's own bounding box, so "center" = cx/cy = 24 24. */
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: rotate(-90deg);
+  transition: stroke-dashoffset var(--motion-fast) ease-in-out;
+}
+/* 60° arc visible */
+#nav-arc.arc-drawing circle {
+  stroke-dashoffset: 94.25;
+}
+/* Continuous spin — starts from the same -90deg base so there's no jump */
+@keyframes arc-spin {
+  to { transform: rotate(270deg); }  /* -90 + 360 = one full clockwise rotation */
+}
+#nav-arc.arc-spinning circle {
+  animation: arc-spin 0.9s linear infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .spinner {
-    animation-duration: var(--motion-loader-reduced);
-  }
+  #nav-arc circle { transition-duration: 0.01ms !important; }
+  #nav-arc.arc-spinning circle { animation: none; }
 }
 
 
