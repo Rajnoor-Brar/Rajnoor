@@ -19,8 +19,13 @@ function themeToggleEventMaker(){
         setTimeout(() => {
             let currentTheme = localStorage.getItem("theme") || "auto";
 
-            // Fire background/colour transition for manual toggles
+            // Fire background/colour transition for manual toggles. Force a
+            // reflow so the before-state (old theme, transition now active)
+            // commits before setTheme() changes the tokens — otherwise the
+            // transition property is "added" in the same recalc as the value
+            // change and the crossfade is skipped (snaps).
             document.documentElement.classList.add('theme-transitioning');
+            void document.documentElement.offsetWidth;
             setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 350);
 
             let nextThemeLabel;
@@ -174,11 +179,15 @@ document.addEventListener('click', function (e) {
 
 function setTheme(mode) {
     const metaThemeColor = document.querySelector("meta[name=theme-color]");
-    const bg = getComputedStyle(document.documentElement).getPropertyValue('--my-background').trim();
 
     document.documentElement.setAttribute("data-bs-theme", mode);
 
-    if (metaThemeColor) metaThemeColor.setAttribute("content", bg);
+    // Read --my-background *after* switching the theme — otherwise the chrome
+    // colour lags one toggle behind the page.
+    if (metaThemeColor) {
+        const bg = getComputedStyle(document.documentElement).getPropertyValue('--my-background').trim();
+        metaThemeColor.setAttribute("content", bg);
+    }
 }
 
 function setAutoTheme() {
@@ -196,8 +205,10 @@ function updateAutoTheme() {
 }
 
 function applyTheme(theme) {
-    // Fire background/colour transition for system-triggered auto changes
+    // Fire background/colour transition for system-triggered auto changes.
+    // Reflow commits the before-state so the crossfade fires (see manual path).
     document.documentElement.classList.add('theme-transitioning');
+    void document.documentElement.offsetWidth;
     setTimeout(() => document.documentElement.classList.remove('theme-transitioning'), 350);
     // Skip icon-swap when .rotate is already running (manual toggle) —
     // both set `animation` on the same element and the last cascade wins,

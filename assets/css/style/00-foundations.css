@@ -18,9 +18,19 @@ html[data-bs-theme="dark"] {
 {{- range site.Data.colors.tokens }}{{ printf "\n  --%s: %s;" .name .dark }}{{- end }}
 }
 
-html.theme-transitioning *,
-html.theme-transitioning *::before,
-html.theme-transitioning *::after {
+/* Theme crossfade — live only while .theme-transitioning is on <html> (added by
+   the toggle, removed after --motion-base). The two heavy *generated* subtrees
+   are excluded from per-element transitions:
+     • KaTeX math (.katex *) inherits its colour from the transitioning .article,
+       so it still fades — without ~3.7k per-element transition setups.
+     • Prism code tokens (.token) snap; imperceptible under the code block's own
+       background fade.
+   The bare universal selector cost ~170ms of style recalc on a long math article
+   (5k+ nodes); this scope brings it to ~20ms. The toggle JS forces a reflow after
+   adding the class so the before-state commits and the transition actually fires. */
+html.theme-transitioning *:not(.katex):not(.katex *):not(.token):not(.token *),
+html.theme-transitioning *:not(.katex):not(.katex *):not(.token):not(.token *)::before,
+html.theme-transitioning *:not(.katex):not(.katex *):not(.token):not(.token *)::after {
   transition: background-color var(--motion-base) ease-in, color var(--motion-fast) ease-out;
 }
 

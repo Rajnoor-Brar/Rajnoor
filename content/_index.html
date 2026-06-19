@@ -13,4 +13,15 @@ description: 'Yours Truly'
 
     {{< nowList "snippet" >}}
 
+    <!-- Progressive enhancement: the bio (#about) ships hidden and is revealed by
+         homeScript.js's typed-hero animation. Without JS it would stay invisible,
+         so reveal it statically and drop the intro calligraphy. Inert when JS is on. -->
+    <noscript><style>
+      #gtd-stage { display: none !important; }
+      #about { display: block !important; opacity: 1 !important; transform: none !important; }
+      #about .about-line { opacity: 1 !important; transform: none !important; }
+      #now.about-now { opacity: 1 !important; transform: none !important; }
+      #about-header.blink-cursor { animation: none !important; }
+    </style></noscript>
+
 </div>

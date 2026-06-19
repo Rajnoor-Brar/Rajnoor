@@ -25,7 +25,7 @@ enableRobotsTXT = true
   math = true  # Enables math rendering
 
 [params.features]
-  notebook           = false
+  notebook           = true
   nowPage            = true
   nowExpanded        = false
   spotlight          = true

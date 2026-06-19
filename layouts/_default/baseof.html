@@ -2,10 +2,20 @@
 <html lang="en">
   <head>
     <script>
+      {{- $bg := index (where site.Data.colors.tokens "name" "my-background") 0 -}}
       (function(){
         var t = localStorage.getItem("theme");
         var dark = t === "dark" || ((t === "auto" || !t) && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
         if (dark) document.documentElement.setAttribute("data-bs-theme", "dark");
+        // Set the mobile browser-chrome colour to match the resolved theme at
+        // first paint (values injected from data/colors.yaml › my-background, so
+        // no hard-coded hex). Created here — before the body paints — instead of a
+        // static <meta>, which flashed white chrome in dark mode until setTheme()
+        // ran. setTheme() keeps updating this same element on later toggles.
+        var mc = document.createElement("meta");
+        mc.name = "theme-color";
+        mc.content = dark ? "{{ $bg.dark }}" : "{{ $bg.light }}";
+        document.head.appendChild(mc);
       })();
     </script>
 
@@ -14,7 +24,6 @@
     <meta name="description" content="{{ .Params.description }}">
     <meta name="author" content="Rajnoor Brar">
     <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#fff">
     <link rel="canonical" href="{{ .Permalink }}">
     <meta name="rj-features" content='{ "notebook": {{ site.Params.features.notebook }}, "nowPage": {{ site.Params.features.nowPage }}, "spotlight": {{ site.Params.features.spotlight }}, "scrollArc": {{ site.Params.features.scrollArc }}, "shortcutHints": {{ site.Params.features.shortcutHints }} }'>
 
