@@ -278,24 +278,8 @@ function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValu
   const COPY_ICON  = '<i class="bi bi-clipboard" aria-hidden="true"></i>';
   const DONE_ICON  = '<i class="bi bi-clipboard-check" aria-hidden="true"></i>';
 
-  // Async Clipboard API needs a secure context — fall back to the legacy
-  // textarea + execCommand path elsewhere (http dev server, older Safari).
-  async function copyText(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-      return;
-    }
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    let ok = false;
-    try { ok = document.execCommand('copy'); } catch (e) { /* fall through */ }
-    ta.remove();
-    if (!ok) throw new Error('copy rejected');
-  }
+  // Clipboard copy (async API + legacy textarea fallback) is provided globally by
+  // the script.js bundle as copyTextToClipboard() — reuse it instead of a duplicate.
 
   article.querySelectorAll('pre').forEach((pre) => {
     if (pre.querySelector('.pg-code-copy')) return; // idempotent on re-runs
@@ -317,7 +301,7 @@ function initRangeSlider({ sliderId, resetBtnId, storageKey, cssVar, defaultValu
     btn.innerHTML = COPY_ICON;
     btn.addEventListener('click', async () => {
       try {
-        await copyText(code.innerText);
+        await copyTextToClipboard(code.innerText);
         btn.classList.add('copied');
         btn.innerHTML = DONE_ICON;
         if (typeof showToast === 'function') showToast('Code copied', { duration: 'short', variant: 'success' });

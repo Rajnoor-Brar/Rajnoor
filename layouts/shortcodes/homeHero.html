@@ -7,10 +7,16 @@
   {{ range site.Data.heroPhrases.calligraphy }}
   <div id="{{ .id }}" class="container gtd-container">
     <svg version="1.1" viewBox="{{ .viewBox }}" xmlns="http://www.w3.org/2000/svg" class="gtd-svg">
+      {{/* fill-opacity="0" as a presentation attribute keeps the glyph invisible
+           before homeStyle.css applies — without it the path falls back to the SVG
+           default (solid black, fully filled) and flashes "unformatted" on a fresh
+           mobile load / SPA hop before .gtd-path + the draw animation take over
+           (author CSS overrides the attribute, so the draw is unaffected). */}}
       <path class="gtd-path draw"
             transform="{{ .transform }}"
             d="{{ .pathData }}"
             pathLength="1"
+            fill-opacity="0"
             aria-label="{{ .ariaLabel }}"/>
     </svg>
   </div>

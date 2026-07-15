@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 16.0.4, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="1000"
+   height="1000"
+   viewBox="0 0 1000 999.99998"
+   enable-background="new 0 0 306 344.35"
+   xml:space="preserve"
+   sodipodi:docname="skl_cpp.svg"
+   inkscape:export-filename="skl_cpp.png"
+   inkscape:export-xdpi="24.576"
+   inkscape:export-ydpi="24.576"
+   inkscape:version="1.4.2 (ebf0e940, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs6" /><sodipodi:namedview
+   id="namedview6"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="0.34342078"
+   inkscape:cx="966.74405"
+   inkscape:cy="576.55217"
+   inkscape:window-width="1712"
+   inkscape:window-height="1046"
+   inkscape:window-x="0"
+   inkscape:window-y="66"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="Layer_1" />
+<path
+   fill="#00599c"
+   d="M 914.18611,739.39444 C 920.85556,727.84167 925,714.825 925,703.13611 V 297.38889 C 925,285.7 920.86111,272.68611 914.18889,261.13333 L 500,500.26389 Z"
+   id="path1"
+   style="stroke-width:2.77778" />
+<path
+   fill="#004482"
+   d="M 536.80556,969.75833 888.19444,766.88611 c 10.12223,-5.84444 19.32223,-15.93611 25.99167,-27.49167 L 500,500.26389 85.813889,739.39722 c 6.669444,11.55278 15.872221,21.64722 25.991671,27.48889 l 351.38888,202.87222 c 20.24167,11.68889 53.36945,11.68889 73.61112,0 z"
+   id="path2"
+   style="stroke-width:2.77778" />
+<path
+   fill="#659ad2"
+   d="m 914.18889,261.13056 c -6.67222,-11.55556 -15.875,-21.64723 -25.99445,-27.49167 L 536.80556,30.766667 c -20.24167,-11.688889 -53.36945,-11.688889 -73.61112,0 L 111.80556,233.63889 C 91.561111,245.325 75,274.01389 75,297.38889 v 405.74722 c 0,11.68889 4.141667,24.70556 10.813889,36.25833 L 500,500.26389 Z"
+   id="path3"
+   style="stroke-width:2.77778" />
+<g
+   id="g4"
+   transform="matrix(2.7777778,0,0,2.7777778,75,22)">
+	<path
+   fill="#ffffff"
+   d="m 153,274.175 c -56.243,0 -102,-45.757 -102,-102 0,-56.243 45.757,-102 102,-102 36.292,0 70.139,19.53 88.331,50.968 l -44.143,25.544 C 188.083,130.951 171.15,121.175 153,121.175 c -28.122,0 -51,22.878 -51,51 0,28.121 22.878,51 51,51 18.152,0 35.085,-9.776 44.191,-25.515 l 44.143,25.543 c -18.192,31.441 -52.04,50.972 -88.334,50.972 z"
+   id="path4" />
+</g>
+<g
+   id="g5"
+   transform="matrix(2.7777778,0,0,2.7777778,75,22)">
+	<polygon
+   fill="#ffffff"
+   points="243.666,189.175 243.666,177.841 255,177.841 255,166.508 243.666,166.508 243.666,155.175 232.334,155.175 232.334,166.508 221,166.508 221,177.841 232.334,177.841 232.334,189.175 "
+   id="polygon4" />
+</g>
+<g
+   id="g6"
+   transform="matrix(2.7777778,0,0,2.7777778,75,22)">
+	<polygon
+   fill="#ffffff"
+   points="286.166,189.175 286.166,177.841 297.5,177.841 297.5,166.508 286.166,166.508 286.166,155.175 274.834,155.175 274.834,166.508 263.5,166.508 263.5,177.841 274.834,177.841 274.834,189.175 "
+   id="polygon5" />
+</g>
+</svg>

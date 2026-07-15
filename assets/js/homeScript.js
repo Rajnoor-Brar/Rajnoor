@@ -105,17 +105,17 @@ function initHomePage() {
           stampFresh("rj_hero_seen_at");
 
 
-          // Discover-pulse on the signature pill. Also gated by a 12h TTL so it
-          // can fire again after the user's been away. Skipped under reduced motion.
-          const signatureFresh = isFresh("rj_signature_seen_at");
+          // Discover-pulse on the signature pill only once per browser profile.
+          // Unlike the hero's timestamp, this marker deliberately never expires.
+          const signatureShown = localStorage.getItem("rj_signature_pulse_seen") !== null;
           const pill = document.getElementById("signature-panel");
-          if (!signatureFresh && pill && !reduceMotion) {
+          if (!signatureShown && pill && !reduceMotion) {
             const tPulse = setTimeout(() => {
               pill.classList.add("discover-pulse");
               // Remove after the animation completes
               const tClear = setTimeout(() => pill.classList.remove("discover-pulse"), T.pulse_clear);
               timers.push(tClear);
-              stampFresh("rj_signature_seen_at");
+              stampFresh("rj_signature_pulse_seen");
             }, T.pulse_delay);
             timers.push(tPulse);
           }

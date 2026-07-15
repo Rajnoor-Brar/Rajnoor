@@ -369,6 +369,22 @@ html[data-bs-theme="dark"] {
     line-height: 1.15;
 }
 
+.skill-badge__content {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--skill-badge-gap);
+    min-width: 0;
+}
+
+.skill-badge__proficiency {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--skill-badge-gap);
+    margin-left: auto;
+}
+
 /* nowrap comes from the .nowrap utility (mobile re-wraps via the
    .cred-skill-row override below, which outspecifies .nowrap). */
 .skill-badge__label {
@@ -390,10 +406,6 @@ html[data-bs-theme="dark"] {
     display: inline-flex;
     align-items: center;
     gap: 0.2rem;
-    /* Pin to the trailing edge; padding-left guarantees a gap even when the
-       label/note is long enough to consume the pill's min-width. */
-    margin-left: auto;
-    padding-left: var(--skill-badge-meter-gap);
 }
 .skill-badge__dot {
     width: var(--skill-badge-dot-size);
@@ -415,13 +427,12 @@ html[data-bs-theme="dark"] {
 }
 
 /* Language fluency band — a simple tag pill: coloured text on a faint 6% fill of
-   the same hue, with a soft same-hue shadow bleed. Self-contained: margin-left: auto
-   pins it to the trailing edge (same job .skill-badge__meter does for the dot meter).
+   the same hue, with a soft same-hue shadow bleed. Its parent aligns the group
+   to the trailing edge.
    The per-band accent (--band-c) is set by the --l1…--l5 modifier from the
    injected band colours. */
 .skill-badge__band {
     --band-c: var(--my-gray-1);   /* fallback until a --l* modifier sets the hue */
-    margin-left: auto;
     padding: 0.18rem 0.6rem;
     text-align: center;
     border: 0;
@@ -443,45 +454,59 @@ html[data-bs-theme="dark"] {
 .skill-badge__band--l4 { --band-c: var(--band-4); }
 .skill-badge__band--l5 { --band-c: var(--band-5); }
 
-/* Above mobile: badges grow equally to fill the row — same container coverage as cert/pub cards.
-   flex-basis = min-width so wrapping behaviour is identical, but each badge in a row
-   stretches to share the leftover space evenly. */
+/* Above mobile: use a four-column basis so a skill row never admits a fifth pill.
+   Badges still share any leftover width equally. */
 .cred-skill-row .skill-badge {
-    flex: 1 1 var(--skill-badge-min-width);
+    flex: 1 0 calc(
+        (100% - var(--cred-skill-gap) - var(--cred-skill-gap) - var(--cred-skill-gap)) / 4
+    );
     max-width: var(--skill-badge-max-width);
 }
 
-/* Mobile: two pills per row (half width), and stack each pill's contents so the
-   proficiency meter sits between the label and the note (dots below title, above
-   description). `display: contents` unwraps __text so the label + note become
-   direct flex children of the badge, letting `order` interleave the meter. The
-   round pill radius is relaxed to a card radius since the badge is now multi-line. */
+/* Keep the desktop skill grid intentionally compact: no more than four pills
+   can occupy a row, even on very wide screens. The extra 1.5rem accounts for
+   the Bootstrap container's horizontal gutter. */
+@media (min-width: 577px) {
+    .cred-skill-row {
+        max-width: calc(
+            var(--skill-badge-max-width) + var(--skill-badge-max-width) +
+            var(--skill-badge-max-width) + var(--skill-badge-max-width) +
+            var(--cred-skill-gap) + var(--cred-skill-gap) + var(--cred-skill-gap) +
+            1.5rem
+        );
+        margin-inline: auto !important;
+    }
+}
+
+/* Mobile: two pills per row (half width). The content group stacks title,
+   proficiency, and note; an available icon stays independently pinned right. */
 @media (max-width: 576px) {
     .cred-skill-row .skill-badge {
         flex: 0 0 calc(50% - var(--cred-skill-gap) / 2);
         min-width: 0;
         max-width: none; /* the 50% two-per-row grid sizes the pill, not the cap */
-        flex-direction: column;
+        flex-direction: row;
         align-items: flex-start;
         gap: 0.15rem;
         border-radius: var(--radius-md);
     }
+    .cred-skill-row .skill-badge__content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.15rem;
+    }
     .cred-skill-row .skill-badge__text {
         display: contents;
     }
-    .cred-skill-row .skill-badge__icon  { order: 0; }
-    .cred-skill-row .skill-badge__label { order: 1; white-space: normal; }
-    .cred-skill-row .skill-badge__meter {
-        order: 2;
-        margin-left: 0.15rem;
-        padding-left: 0;
+    .cred-skill-row .skill-badge__label { order: 0; white-space: normal; }
+    .cred-skill-row .skill-badge__proficiency {
+        order: 1;
         margin-top: 0.4rem;
+        margin-left: 0.15rem;
     }
+    .cred-skill-row .skill-badge__icon { margin-left: auto; }
     /* Mobile: drop the glassy pill — the band reads as plain coloured text. */
     .cred-skill-row .skill-badge__band {
-        order: 2;
-        margin-left: 0.1rem;
-        margin-top: 0;
         padding: 0;
         font-size:0.5rem;
         background: none;

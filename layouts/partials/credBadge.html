@@ -26,47 +26,53 @@
 {{ $tag := "div" }}
 {{ $cls := "skill-badge" }}
 {{ $attrs := "" }}
+{{ $hasIcon := or (and .icon_light .icon_dark) .icon }}
+{{ if $hasIcon }}{{ $cls = printf "%s skill-badge--has-icon" $cls }}{{ end }}
 {{ with .link }}
   {{ $tag = "a" }}
-  {{ $cls = "skill-badge skill-badge--link" }}
+  {{ $cls = printf "%s skill-badge--link" $cls }}
   {{ $attrs = printf " href=%q target=\"_blank\" rel=\"noopener noreferrer\"" . }}
 {{ end }}
 {{ printf "<%s class=%q%s>" $tag $cls $attrs | safeHTML }}
 
-  {{ if or (and .icon_light .icon_dark) .icon }}
+  <span class="skill-badge__content">
+    <span class="skill-badge__text">
+      <span class="skill-badge__label nowrap">{{ .label }}</span>
+      {{ with .note }}<span class="skill-badge__note nowrap">{{ . }}</span>{{ end }}
+    </span>
+
+    {{/* Trailing proficiency element. level → dot meter, band → band pill. */}}
+    <span class="skill-badge__proficiency">
+      {{ with .level }}
+      {{ $n := int . }}
+      {{ $labels := index site.Data.labels ($.labels | default "skill_levels") }}
+      {{ $word := "" }}
+      {{ if and (ge $n 1) (le $n (len $labels)) }}{{ $word = index $labels (sub $n 1) }}{{ end }}
+      {{ $aria := printf "Proficiency: %d of %d" $n (len $labels) }}
+      {{ with $word }}{{ $aria = printf "Proficiency: %s (%d of %d)" . $n (len $labels) }}{{ end }}
+      {{/* 5-dot meter. Levels 1–5 ink the dots left-to-right; levels 6–10 then
+           convert those inked dots to gold one at a time (gold count = level − 5). */}}
+      {{ $filledTo := cond (le $n 5) $n 5 }}
+      {{ $goldTo := cond (gt $n 5) (sub $n 5) 0 }}
+      <span class="skill-badge__meter" role="img" data-level="{{ $n }}" aria-label="{{ $aria }}">
+        {{ range $i := (seq 5) }}
+          <span class="skill-badge__dot{{ if le $i $filledTo }} skill-badge__dot--filled{{ end }}{{ if le $i $goldTo }} skill-badge__dot--gold{{ end }}"></span>
+        {{ end }}
+      </span>
+      {{ else with .band }}
+        {{ $n := int . }}
+        {{ $labels := index site.Data.labels ($.labels | default "language_bands") }}
+        {{ $word := "" }}
+        {{ if and (ge $n 1) (le $n (len $labels)) }}{{ $word = index $labels (sub $n 1) }}{{ end }}
+        <span class="skill-badge__band skill-badge__band--l{{ $n }}" aria-label="Fluency: {{ with $word }}{{ . }}{{ else }}{{ $n }} of {{ len $labels }}{{ end }}">{{ $word }}</span>
+      {{ end }}
+    </span>
+  </span>
+
+  {{ if $hasIcon }}
     <span class="skill-badge__icon icon-frame" aria-hidden="true">
       {{ partial "themedImg.html" (dict "light" .icon_light "dark" .icon_dark "fallback" .icon "prefix" "/resources/creds/" "alt" "" "widths" (slice 64) "sizes" "20px") }}
     </span>
-  {{ end }}
-
-  <span class="skill-badge__text">
-    <span class="skill-badge__label nowrap">{{ .label }}</span>
-    {{ with .note }}<span class="skill-badge__note nowrap">{{ . }}</span>{{ end }}
-  </span>
-
-  {{/* Trailing proficiency element. level → dot meter, band → band pill. */}}
-  {{ with .level }}
-    {{ $n := int . }}
-    {{ $labels := index site.Data.labels ($.labels | default "skill_levels") }}
-    {{ $word := "" }}
-    {{ if and (ge $n 1) (le $n (len $labels)) }}{{ $word = index $labels (sub $n 1) }}{{ end }}
-    {{ $aria := printf "Proficiency: %d of %d" $n (len $labels) }}
-    {{ with $word }}{{ $aria = printf "Proficiency: %s (%d of %d)" . $n (len $labels) }}{{ end }}
-    {{/* 5-dot meter. Levels 1–5 ink the dots left-to-right; levels 6–10 then
-         convert those inked dots to gold one at a time (gold count = level − 5). */}}
-    {{ $filledTo := cond (le $n 5) $n 5 }}
-    {{ $goldTo := cond (gt $n 5) (sub $n 5) 0 }}
-    <span class="skill-badge__meter" role="img" data-level="{{ $n }}" aria-label="{{ $aria }}">
-      {{ range $i := (seq 5) }}
-        <span class="skill-badge__dot{{ if le $i $filledTo }} skill-badge__dot--filled{{ end }}{{ if le $i $goldTo }} skill-badge__dot--gold{{ end }}"></span>
-      {{ end }}
-    </span>
-  {{ else with .band }}
-    {{ $n := int . }}
-    {{ $labels := index site.Data.labels ($.labels | default "language_bands") }}
-    {{ $word := "" }}
-    {{ if and (ge $n 1) (le $n (len $labels)) }}{{ $word = index $labels (sub $n 1) }}{{ end }}
-    <span class="skill-badge__band skill-badge__band--l{{ $n }}" aria-label="Fluency: {{ with $word }}{{ . }}{{ else }}{{ $n }} of {{ len $labels }}{{ end }}">{{ $word }}</span>
   {{ end }}
 
 {{ printf "</%s>" $tag | safeHTML }}

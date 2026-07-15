@@ -1,6 +1,6 @@
 # Home hero phrases for the home page.
-# typography: typed header + bio lines (shared by heroAbout.html and homeScript.js).
-# calligraphy: SVG hand-lettered path data rendered by heroPhrase.html.
+# typography: typed header + bio lines (shared by homeHero.html and homeScript.js).
+# calligraphy: SVG hand-lettered path data rendered by homeHero.html.
 
 typography:
   header: "I'm Rajnoor"
