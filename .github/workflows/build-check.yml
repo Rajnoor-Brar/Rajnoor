@@ -1,0 +1,72 @@
+# Builds the site on every pull request to main, without deploying.
+# Purpose: a template or asset error shows up on the PR instead of on the live
+# site. hugo.yml deploys on push to main; this workflow never deploys and has
+# read-only permissions.
+name: Build check
+
+on:
+  pull_request:
+    branches: ["main"]
+
+  # Allows a manual run from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push to the same PR supersedes the older run.
+concurrency:
+  group: build-check-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # Keep in step with HUGO_VERSION in hugo.yml, so the check builds with
+      # the same Hugo that deploys.
+      HUGO_VERSION: 0.154.0
+    steps:
+      - name: Install Hugo CLI
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
+          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build with Hugo
+        env:
+          HUGO_CACHEDIR: ${{ runner.temp }}/hugo_cache
+          HUGO_ENVIRONMENT: production
+        run: |
+          hugo \
+            --minify \
+            --baseURL "https://rajnoor.in/"
+      # A second line of defence behind Hugo's own errors: confirm the pages and
+      # bundles every page depends on were written and are not empty. This
+      # runner's filesystem is case-sensitive, unlike macOS, so bundle lookups
+      # can behave differently here (see CLAUDE.md, "Bundle directory names
+      # MUST be all-lowercase").
+      - name: Check built output
+        run: |
+          fail=0
+          for f in \
+            public/index.html \
+            public/404.html \
+            public/sitemap.xml \
+            public/index.json \
+            public/generated/css/style.css \
+            public/generated/css/projectstyle.css \
+            public/generated/js/script.js
+          do
+            if [ ! -s "$f" ]; then
+              echo "::error file=$f::missing or empty in the built site"
+              fail=1
+            fi
+          done
+          exit $fail
