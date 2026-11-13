@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ellipsoidal channel — Rajnoor Brar</title>
+<meta name="description" content="The surface swept by an ellipsoid whose two foci ride on two space curves, derived and plotted in MATLAB.">
+<script>try{var t=localStorage.getItem('rj_surface');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="proto.css">
+</head>
+<body>
+<a class="skip" href="#s1">Skip to text</a>
+
+<div class="sheet">
+
+  <nav class="m head" aria-label="Site">
+    <a class="name" href="index.html">Rajnoor Brar</a>
+    <ul>
+      <li><a href="index.html#work" aria-current="true">Work</a></li>
+      <li><a href="index.html#papers">Papers</a></li>
+      <li><a href="index.html#about">About</a></li>
+    </ul>
+    <ul class="contents" aria-label="Contents">
+      <li><a href="#s1">1 Introduction</a></li>
+      <li><a href="#s2">2 The ellipses</a></li>
+    </ul>
+  </nav>
+
+<main>
+
+  <header class="title-block">
+    <h1>Ellipsoidal channel</h1>
+    <p class="sub">Plotting a channel surface in MATLAB from two directrices used as the foci of ellipsoids</p>
+    <p class="quiet">Revised 4 June 2026</p>
+  </header>
+
+  <p class="abstract"><b>In short.</b> Given two space curves and a list of axis lengths, this builds the surface swept by an ellipsoid whose foci ride on the two curves, and plots it in MATLAB with cross-sections and shadows. It covers the geometry, three ways to estimate tangents from discrete points, and the code.</p>
+
+  <h2 id="s1"><span class="m num">1</span>Introduction</h2>
+
+  <p>A channel is a surface formed as the envelope of a family of spheres, each with its centre on a space curve called the directrix. We will generalise this definition to ellipsoids. The directrix determines whether the channel surface is open or closed.</p>
+
+  <figure id="fig1">
+    <img src="../../../assets/resources/Ellipsoidal_Channel/Channel_Construction.png" alt="A row of wireframe spheres along a curved red line, beside the smooth tube they sweep out" width="520">
+    <figcaption><b>Fig. 1.</b> A channel as the sweep of a sphere along its directrix.</figcaption>
+  </figure>
+
+  <aside class="m note">Cylinder, torus and cone are the same construction. Only the directrix and the radii change.</aside>
+
+  <p>Three familiar surfaces are channels:</p>
+  <ul>
+    <li>a right circular cylinder, when the directrix is a straight line and the radii are constant;</li>
+    <li>a torus, when the directrix is a circle and the radii are constant;</li>
+    <li>a right circular cone, when the directrix is a straight line and the radii decrease to zero.</li>
+  </ul>
+
+  <p>We aim to plot a channel using two directrices as the focal points of rotational ellipsoids. The two axes other than the focal axis are taken as equal, <math><mi>b</mi><mo>=</mo><mi>c</mi></math>, and called the minor axis. We are given discrete position coordinates for the two directrices and the corresponding semi-minor axis lengths:</p>
+
+  <div class="eq" id="eq1">
+    <math display="block">
+      <msub><mi>F</mi><mn>1</mn></msub><mo>=</mo>
+      <mo>{</mo><mo>(</mo><msub><mi>p</mi><mi>i</mi></msub><mo>,</mo><msub><mi>q</mi><mi>i</mi></msub><mo>,</mo><msub><mi>r</mi><mi>i</mi></msub><mo>)</mo><mo>}</mo>
+      <mo>,</mo><mspace width="1em"/>
+      <msub><mi>F</mi><mn>2</mn></msub><mo>=</mo>
+      <mo>{</mo><mo>(</mo><msub><mi>u</mi><mi>i</mi></msub><mo>,</mo><msub><mi>v</mi><mi>i</mi></msub><mo>,</mo><msub><mi>w</mi><mi>i</mi></msub><mo>)</mo><mo>}</mo>
+      <mo>,</mo><mspace width="1em"/>
+      <mi>B</mi><mo>=</mo><mo>{</mo><msub><mi>b</mi><mi>i</mi></msub><mo>}</mo>
+    </math>
+    <span class="eqn">(1)</span>
+  </div>
+
+  <p>The data sits in a text file of seven rows. <code>load()</code> reads it, and each row becomes a variable:</p>
+
+<pre><code>impdata = load("curves.txt", "-ascii");
+p      = impdata(1,:);   <span class="c">% first directrix</span>
+q      = impdata(2,:);
+r      = impdata(3,:);
+u      = impdata(4,:);   <span class="c">% second directrix</span>
+v      = impdata(5,:);
+w      = impdata(6,:);
+minor  = impdata(7,:);
+clear impdata;</code></pre>
+
+  <h2 id="s2"><span class="m num">2</span>The ellipses</h2>
+
+  <p>An ellipse is the locus of points in a plane whose distances from two focal points have a constant sum. Let the foci be <math><msub><mi>C</mi><mn>1</mn></msub></math> and <math><msub><mi>C</mi><mn>2</mn></msub></math>, with <math><mi>O</mi></math> their midpoint. For any point <math><mi>P</mi></math> on the ellipse,</p>
+
+  <div class="eq" id="eq2">
+    <math display="block">
+      <msub><mi>C</mi><mn>1</mn></msub><mi>P</mi><mo>+</mo><msub><mi>C</mi><mn>2</mn></msub><mi>P</mi><mo>=</mo><mi>k</mi><mo>=</mo><mn>2</mn><mi>a</mi>
+    </math>
+    <span class="eqn">(2)</span>
+  </div>
+
+  <p>With <math><mi>a</mi></math> the semi-major axis, <math><mi>b</mi></math> the semi-minor axis and <math><mi>c</mi></math> the distance from the centre to a focus,</p>
+
+  <aside class="m note hand">c is fixed by the two directrices, so choosing b fixes a. This is the whole trick.</aside>
+
+  <div class="eq" id="eq3">
+    <math display="block">
+      <msup><mi>a</mi><mn>2</mn></msup><mo>=</mo><msup><mi>b</mi><mn>2</mn></msup><mo>+</mo><msup><mi>c</mi><mn>2</mn></msup>
+    </math>
+    <span class="eqn">(3)</span>
+  </div>
+
+  <figure class="live" id="fig2">
+    <svg viewBox="-170 -112 340 224" role="img" aria-labelledby="fig2-cap">
+      <line class="axis" x1="-165" y1="0" x2="165" y2="0"/>
+      <line class="axis" x1="0" y1="-108" x2="0" y2="108"/>
+      <ellipse class="curve" id="lv-ell" cx="0" cy="0" rx="100" ry="60"/>
+      <polyline class="ray" id="lv-ray" points="-80,0 0,0 80,0"/>
+      <circle class="pt" cx="-80" cy="0" r="2.5"/>
+      <circle class="pt" cx="80" cy="0" r="2.5"/>
+      <circle class="p" id="lv-p" cx="0" cy="0" r="3.5"/>
+      <text x="-80" y="14" text-anchor="middle">C₁</text>
+      <text x="80" y="14" text-anchor="middle">C₂</text>
+      <text id="lv-pl" x="0" y="0">P</text>
+    </svg>
+    <div class="controls">
+      <label for="lv-b"><i>b</i></label>
+      <input type="range" id="lv-b" min="15" max="100" value="60" step="1">
+      <output id="lv-out" for="lv-b"></output>
+    </div>
+    <figcaption id="fig2-cap"><b>Fig. 2.</b> Drag <i>b</i>. The foci stay where the directrices put them, so the major axis follows from Eq. (3), and the path from one focus to <i>P</i> to the other always has length 2<i>a</i>.</figcaption>
+  </figure>
+
+  <p>The vector equation of the ellipse, about its centre and in its own plane, is</p>
+
+  <div class="eq" id="eq4">
+    <math display="block">
+      <mover><mi>r</mi><mo>→</mo></mover><mo>=</mo>
+      <mi>a</mi><mi>cos</mi><mo>&#x2061;</mo><mi>θ</mi><mspace width="0.3em"/><mover><mi>a</mi><mo>^</mo></mover>
+      <mo>+</mo>
+      <mi>b</mi><mi>sin</mi><mo>&#x2061;</mo><mi>θ</mi><mspace width="0.3em"/><mover><mi>b</mi><mo>^</mo></mover>
+      <mo>+</mo>
+      <mover><mi>O</mi><mo>→</mo></mover>
+    </math>
+    <span class="eqn">(4)</span>
+  </div>
+
+  <p class="quiet"><em>Prototype: the rest of the article is left out.</em></p>
+
+  <footer class="foot">
+    <svg class="sign" viewBox="0 0 3300 1330" role="img" aria-label="Rajnoor, signed">
+      <path id="NameR1" pathLength="1" d="M 331.53035,91.608771 C 347.47417,103.56664 288.55823,408.09111 257.49132,529.25856 183.2262,818.89528 168.23938,811.36938 45.247748,1083.7275 49.462888,849.18488 -18.546111,418.57786 476.31621,126.15991 564.01032,74.339401 646.25354,93.021051 667.17129,155.77429 766.15428,452.72327 263.37579,676.18141 211.5305,699.22378 365.48065,858.56898 361.88803,857.57798 507.57824,1027.794"/>
+      <path id="NameA" pathLength="1" transform="translate(100, 0)" d="M 889.80967,706.80568 C 606.46162,674.18501 483.14503,1036.3332 716.59506,1041.601 c 220.48116,4.935 166.5316,-258.63792 162.36199,-329.45362 -10.39907,79.7748 -40.29906,204.053 21.72666,322.05642"/>
+      <path id="NameJ" pathLength="1" transform="translate(200, 0)" d="m 1130.823,749.81328 c 6.1834,77.6658 36.2744,510.26312 -61.2643,521.41602 -68.3046,-0.7757 -130.28746,-64.6781 -105.84503,-145.0397"/>
+      <path id="NameJdot" pathLength="1" transform="translate(200, -200)" d="m 1131.9447,598.09524 c -12.1168,-1.96662 -42.2398,46.10065 -5.1512,34.56275 7.0194,-2.1774 18.5289,-11.04631 13.9543,-20.77087 -13.5622,-28.80332 -33.7518,15.94367 -22.4192,16.65247 13.1471,0.8236 23.4033,-24.37209 9.4106,-21.18591 -7.9805,1.81976 -10.8483,22.43731 2.3065,15.72661 10.9482,-5.58702 3.0215,-15.65637 -3.3445,-9.38617 -4.9743,4.89739 3.5828,6.0084 4.2594,6.0978"/>
+      <path id="NameN" pathLength="1" transform="translate(300, 0)" d="m 1339.5464,743.35438 c 18.1644,167.8314 -1.914,163.991 -61.8861,323.33622 7.656,-30.0417 88.7348,-348.11292 199.081,-332.34872 88.0905,12.5742 11.6296,311.13372 4.9367,337.27312"/>
+      <path id="NameO1" pathLength="1" transform="translate(400, 0)" d="m 1825.7981,798.01278 c -247.4076,17.7236 -296.8522,330.50262 -59.1367,248.23452 173.6072,-60.11352 205.5654,-349.86582 -27.8064,-229.84802"/>
+      <path id="NameO2" pathLength="1" transform="translate(450, 0)" d="m 2144.0917,818.69918 c -282.6349,121.1144 -114.709,280.03812 -3.7047,229.90272 182.9873,-82.61262 151.7911,-338.89872 -11.0104,-257.49792"/>
+      <path id="NameR2" pathLength="1" transform="translate(575, 0)" d="m 2423.6227,775.70548 c -19.5468,154.2781 -29.4144,149.5209 -73.8067,297.77002 13.4944,-32.8997 151.9701,-369.88102 265.2235,-356.57512"/>
+    </svg>
+    <p class="colophon">
+      <button type="button" id="surface">Switch to blackboard</button>
+      <span>Hand-written HTML and CSS</span>
+      <a href="https://github.com/Rajnoor-Brar">Source</a>
+    </p>
+  </footer>
+
+</main>
+</div>
+
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <filter id="chalk" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/>
+  </filter>
+</svg>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('surface');
+  function current() {
+    return root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }
+  function label() { btn.textContent = current() === 'dark' ? 'Switch to paper' : 'Switch to blackboard'; }
+  btn.addEventListener('click', function () {
+    var next = current() === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('rj_surface', next); } catch (e) {}
+    label();
+  });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', label);
+  label();
+})();
+
+/* Live figure: c is fixed, b is the reader's, a follows. */
+(function () {
+  var c = 80, th = 62 * Math.PI / 180;
+  var slider = document.getElementById('lv-b'), out = document.getElementById('lv-out');
+  var ell = document.getElementById('lv-ell'), ray = document.getElementById('lv-ray');
+  var p = document.getElementById('lv-p'), pl = document.getElementById('lv-pl');
+  function draw() {
+    var b = +slider.value, a = Math.sqrt(b * b + c * c);
+    var x = a * Math.cos(th), y = -b * Math.sin(th);
+    ell.setAttribute('rx', a); ell.setAttribute('ry', b);
+    ray.setAttribute('points', (-c) + ',0 ' + x + ',' + y + ' ' + c + ',0');
+    p.setAttribute('cx', x); p.setAttribute('cy', y);
+    pl.setAttribute('x', x + 7); pl.setAttribute('y', y - 6);
+    var d1 = Math.hypot(x + c, y), d2 = Math.hypot(x - c, y);
+    out.textContent = 'c = ' + c + ',  b = ' + b + ',  a = ' + a.toFixed(1) +
+      '.   C₁P + C₂P = ' + d1.toFixed(1) + ' + ' + d2.toFixed(1) + ' = ' + (d1 + d2).toFixed(1);
+  }
+  slider.addEventListener('input', draw);
+  draw();
+})();
+</script>
+</body>
+</html>

@@ -4,14 +4,37 @@
     {
       "name": "hugo",
       "runtimeExecutable": "hugo",
-      "runtimeArgs": ["server", "--port", "1314", "--disableFastRender"],
+      "runtimeArgs": [
+        "server",
+        "--port",
+        "1314",
+        "--disableFastRender"
+      ],
       "port": 1314
     },
     {
       "name": "aman",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8099", "--directory", "/tmp"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8099",
+        "--directory",
+        "/tmp"
+      ],
       "port": 8099
+    },
+    {
+      "name": "redesign-proto",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8097",
+        "--directory",
+        "/Users/rajnoor/Github/Rajnoor"
+      ],
+      "port": 8097
     }
   ]
 }
