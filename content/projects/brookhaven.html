@@ -1,0 +1,156 @@
+---
+layout: default
+title: "Brookhaven"
+longTitle: "Brookhaven"
+subtitle: "Jet photoproduction with Pythia 8 and Sherpa 3, from HERA to the Electron-Ion Collider"
+author: "Rajnoor Brar"
+description: "Pythia 8 and Sherpa 3 scanned against ZEUS inclusive-jet photoproduction data, then carried to the EIC's beam settings: what the validation shows, and what it does not yet."
+active_nav: "projects"
+pageScript: "/js/projectScript.js"
+pageStyle: "/css/projectstyle.css"
+---
+
+<div class="abstract">
+  <div class="title">Abstract</div>
+  <p>
+    In photoproduction, the electron radiates an almost-real photon that strikes the proton, either
+    as a whole (<em>direct</em>) or through the quarks and gluons it fluctuates into
+    (<em>resolved</em>). Before trusting event generators at the future Electron-Ion Collider (EIC),
+    I tested them where data exist: ZEUS's inclusive-jet measurement at HERA. Pythia 8 was scanned
+    over 96 configurations, Sherpa 3 over 56, at a million events each, and every curve was scored
+    against the data. The scan found the setting that matters most for Pythia, and it showed that
+    Sherpa's samples were too noisy to rank. The EIC Pythia curves so far still run with that
+    setting off. This
+    page says which results stand and which need a rerun. The study runs on
+    <a href="/projects/heimdall/">Heimdall</a> and was presented at IIT Mandi in November 2026.
+  </p>
+</div>
+
+<h2 id="question">The question</h2>
+<p>
+  At photon virtualities $Q^2 &lt; 1\ \mathrm{GeV}^2$ the exchanged photon is effectively real, and
+  jets from its collisions with the proton probe two structures at once: the proton's parton
+  distributions (PDFs) and the photon's. HERA measured this precisely. The EIC will measure it again
+  at lower energies, $\sqrt{s}$ = 51–141 GeV against HERA's 318 GeV, with eight planned beam
+  settings. A prediction there is only as good as the generator's description of HERA. So the plan
+  is to validate at HERA first, then predict at the EIC.
+</p>
+
+<h2 id="setup">The setup</h2>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th></th><th>Validation at HERA</th><th>Predictions for the EIC</th></tr></thead>
+    <tbody>
+      <tr><td>Beams</td><td>$e^+p$, 27.5 × 920 GeV ($\sqrt{s}$ = 318 GeV)</td><td>$e^-p$, 5–18 GeV on 130 or 275 GeV, eight settings</td></tr>
+      <tr><td>Photoproduction cuts</td><td>$Q^2 &lt; 1\ \mathrm{GeV}^2$, $0.2 &lt; y &lt; 0.85$</td><td>the same</td></tr>
+      <tr><td>Jets</td><td>$k_T$, $R = 1$, $E_T &gt; 17$ GeV, $-1 &lt; \eta &lt; 2.5$</td><td>$k_T$, anti-$k_T$, SISCone; $E_T &gt; 5$ GeV, $|\eta| &lt; 3.5$</td></tr>
+      <tr><td>Analysis</td><td>Rivet's <code>ZEUS_2012_I1116258</code></td><td><code>photo_eic</code>, my own Rivet analysis</td></tr>
+      <tr><td>Reference</td><td>ZEUS 2012 data (12 distributions)</td><td>none yet</td></tr>
+      <tr><td>Generators</td><td colspan="2">Pythia 8.318 (LO + shower, multiparton interactions); Sherpa 3.0.5 (NLO, MC@NLO); $10^6$ events per point</td></tr>
+    </tbody>
+  </table>
+</div>
+<p>
+  <code>photo_eic</code> extends the ZEUS analysis to arbitrary beams. Its cuts are analysis
+  options (an inelasticity or $W$ window, the $Q^2$ limit, the jet $E_T$ thresholds, the $\eta$
+  acceptance and the jet radius), so one plugin serves all eight EIC settings, where before there
+  was one copy per energy. It also books anti-$k_T$ and SISCone jets and charged-particle spectra.
+</p>
+
+<h2 id="pythia">Validating Pythia 8 against ZEUS</h2>
+<p>
+  The Pythia scan crossed four proton PDFs, the multiparton-interaction scale
+  $p_{T0}^{\mathrm{ref}}$ from 3.0 to 4.0 GeV, and two switches on the lepton: its QED shower and its
+  PDF. That makes 96 points, each compared with ZEUS on 12 distributions, 288 comparisons in all.
+  Every comparison was scored on several metrics (statistical compatibility, normalisation, shape,
+  trend, local defects), combined into one loss per point. Points were ranked by that loss, and
+  each setting was judged by its <em>marginal</em>: how a point with that value does relative to
+  otherwise identical points.
+</p>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Finding</th><th>Evidence</th></tr></thead>
+    <tbody>
+      <tr><td><strong>The lepton PDF must be on.</strong> It is the decisive switch.</td><td>about 22&nbsp;% lower loss with it on, far outside the errors</td></tr>
+      <tr><td>The best configuration is MSTW 2008 LO, $p_{T0}^{\mathrm{ref}}$ = 3.8 GeV, lepton PDF on, QED shower off.</td><td class="num">loss 0.80, runner-up 0.90</td></tr>
+      <tr><td>$p_{T0}^{\mathrm{ref}}$ is only loosely constrained: a flat valley, not a sharp optimum.</td><td>3.2–3.8 GeV all within 2 standard errors</td></tr>
+      <tr><td>LO proton PDFs do better than NLO ones, as expected for a leading-order generator tuned with LO PDFs.</td><td>NNPDF 2.3 LO ≈ MSTW 2008 LO; NNPDF 2.3 NLO 15&nbsp;% worse</td></tr>
+      <tr><td><strong>Best is not good.</strong> Even the best point overshoots the data.</td><td>median over the 12 distributions: 13&nbsp;% above ZEUS, $\chi^2/\mathrm{ndf} \approx 4.7$</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+  The lepton-PDF result has a clean mechanism. In Pythia, the photon for <em>direct</em> processes
+  comes through the lepton's PDF. Switch it off and the direct contribution is exactly zero: the
+  predicted yield falls from 1.13 to 0.80 of the data, and the spectrum drifts lower with
+  $E_T$, where direct processes weigh more.
+</p>
+
+{{< fig src="/resources/Brookhaven/zeus_ptref_lpdfon_d01.png,/resources/Brookhaven/zeus_ptref_lpdfoff_d01.png" alt="Jet cross-section with the lepton PDF on: curves at or slightly above the ZEUS points,Jet cross-section with the lepton PDF off: curves below the ZEUS points and falling with E_T" caption="The inclusive-jet $E_T$ spectrum against ZEUS 2012, MSTW 2008 LO, one curve per $p_{T0}^{ref}$. Top: lepton PDF on. Bottom: off, with no direct photon, so 20–60 % below the data. Jets with −1 < η < 2.5 (the plot legend prints the inequality reversed)." size="large,large" >}}
+
+<h2 id="sherpa">Sherpa: why its rankings do not count</h2>
+<p>
+  Sherpa 3 was run at next-to-leading order with weighted events, across eight PDFs and the
+  $\Delta R$ of its generation-level jet finder. The weights were so uneven that a million events
+  carried the statistical power of about <strong>22</strong>. Bin errors were about 16&nbsp;% of the
+  yield, against under 1&nbsp;% for Pythia. Loss differences between neighbouring points were smaller
+  than that noise, so a rerun would reorder them.
+</p>
+
+{{< fig src="/resources/Brookhaven/zeus_pythia_pdfs_d01.png,/resources/Brookhaven/zeus_sherpa_pdfs_d01.png" alt="Pythia 8 PDF curves: smooth and tightly grouped around the ZEUS data,Sherpa 3 PDF curves: jagged with large error bars and one PDF set spiking off the scale" caption="The same distribution, one curve per proton PDF. Top: Pythia 8 at its best settings. Bottom: Sherpa 3 at ΔR = 0.8. One PDF set (MSHT 20 QCD+QED LO) breaks outright, and the rest scatter by more than their error bars." size="large,large" >}}
+
+<div class="callout">
+  <div class="callout__title">Not a finding</div>
+  <p>
+    The talk picked $\Delta R = 0.8$ and three PDFs for Sherpa from the marginals. That choice does
+    not survive a closer look. The $\Delta R$ preference is non-monotonic (0.2 good, 0.4 worse,
+    0.8 best, 1.6 good, 3.2 worse), which is what noise looks like. And $\Delta R$ is a
+    generation-level cut, which should be chosen loose enough not to matter, not ranked against
+    data. Sherpa here also ran only the resolved photon, with no multiparton interactions, so it is
+    not like-for-like with Pythia.
+  </p>
+</div>
+
+<h2 id="eic">Towards the EIC</h2>
+<p>
+  The EIC runs so far are Pythia 8 over 11 proton PDFs at all eight beam settings (88 points), and
+  Sherpa 3 over the electron's polarisation (unpolarised, 65, 70, 75&nbsp;%) at all eight settings.
+  The cross-section falls steeply with collision energy, and the reach in jet $E_T$ shrinks from
+  about 38 GeV at 18 × 275 to about 20 GeV at 5 × 130.
+</p>
+
+{{< fig src="/resources/Brookhaven/eic_pythia_energies_d01.png" alt="Pythia 8 inclusive-jet E_T spectra at the eight EIC beam settings with the highest energy on top" caption="Pythia 8, MSTW 2008 LO: the inclusive-jet $E_T$ spectrum at the eight EIC beam settings, |η| < 3.5. Resolved photon only. See the note below." size="large" >}}
+
+<div class="callout">
+  <div class="callout__title">Read with care</div>
+  <p>
+    These EIC curves were generated with Pythia's lepton PDF <em>off</em>, so they contain no
+    direct photoproduction. At HERA, that is the setting the validation rules out: it removes
+    about 30&nbsp;% of the cross-section. They show how the resolved part scales with beam energy,
+    not the full EIC prediction. The Sherpa polarisation runs should show no effect at all: a
+    polarised electron on an unpolarised proton, through photon exchange, does not change this
+    cross-section. Their integrated jet yields differ from the unpolarised runs by 10–30&nbsp;%, more than
+    their quoted errors allow, so they are best read as a sign that the weighted-sample errors
+    are underestimated.
+  </p>
+</div>
+
+<h2 id="next">What's next</h2>
+<ul class="ticks">
+  <li>Rerun the EIC Pythia sweep with the configuration the validation chose: lepton PDF on, $p_{T0}^{\mathrm{ref}}$ around 3.2–3.8 GeV.</li>
+  <li>Regenerate Sherpa with unweighted events, add the direct component and multiparton interactions, then repeat the ZEUS comparison before ranking anything.</li>
+  <li>Choose Sherpa's generation-level jet cut by showing the result does not depend on it.</li>
+  <li>Treat polarisation as a null test, and check the bin-error model of weighted samples with a seed sweep.</li>
+  <li>Fix two small bugs: the reversed $\eta$ range in the ZEUS plot legend, and the charged-particle $\eta$ histogram, which is binned in the lab frame while the jet $\eta$ histograms use the ZEUS convention.</li>
+</ul>
+
+<div class="callout">
+  <div class="callout__title">Links</div>
+  <p>
+    <a href="https://github.com/Rajnoor-Brar/Brookhaven" target="_blank" rel="noopener noreferrer"><i class="bi bi-github" aria-hidden="true"></i> Rajnoor-Brar/Brookhaven</a> — configurations, cards and the <code>photo_eic</code> analysis ·
+    <a href="/projects/heimdall/">Heimdall</a> — the framework it runs on ·
+    ZEUS data: <a href="https://doi.org/10.17182/hepdata.62400.v1" target="_blank" rel="noopener noreferrer">HEPData record</a>
+  </p>
+</div>

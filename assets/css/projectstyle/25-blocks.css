@@ -1,0 +1,104 @@
+/* ── Article blocks: data tables, callouts, inline diagrams ─────────────────
+   Used by the Heimdall and Brookhaven pages; any project page may use them.
+   Bare `td` borders/padding come from 20-article.css; this adds the table frame. */
+
+.article .table-wrap {
+    overflow-x: auto;
+    margin-block: 1.25em;
+}
+
+.article table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--my-font-ui);
+    font-size: 0.8em;
+    text-align: left;
+    hyphens: manual;
+}
+
+.article th {
+    font-weight: 600;
+    color: var(--my-gray-3);
+    padding: 0.45em 8px;
+    border-bottom: 2px solid var(--my-border-color);
+    vertical-align: bottom;
+}
+
+.article td {
+    padding-block: 0.35em;
+    vertical-align: top;
+}
+
+/* .katex is 0.8em site-wide; inside an already-smaller table that compounds. */
+.article table .katex { font-size: 1em; }
+
+.article th.num,
+.article td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.article table caption {
+    caption-side: bottom;
+    text-align: center;
+    color: var(--my-gray-1);
+    font-size: 1.05em;
+    padding-top: 0.5em;
+}
+
+/* A caveat or verdict set apart from the running text. */
+.article .callout {
+    text-align: left;
+    background: var(--abstract-bg);
+    border-left: 3px solid var(--my-theme-accent);
+    border-radius: var(--radius-sm);
+    padding: 0.9em 1.2em;
+    margin-block: 1.25em;
+}
+.article .callout > :last-child { margin-bottom: 0; }
+.article .callout__title {
+    font-family: var(--my-font-ui);
+    font-size: 0.75em;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--my-gray-2);
+    margin-bottom: 0.35em;
+}
+
+/* Inline SVG diagram drawn with var(--my-*) strokes, so it follows the theme. */
+.article .diagram {
+    margin: 1.5em auto;
+    max-width: 760px;
+}
+.article .diagram svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+/* On phones the diagram keeps a legible size and scrolls inside its own box. */
+@media (max-width: 576px) {
+    .article .diagram { overflow-x: auto; }
+    .article .diagram svg { min-width: 600px; }
+}
+.article .diagram figcaption {
+    text-align: center;
+    color: var(--my-gray-1);
+    font-size: 0.9em;
+    margin-top: 0.4em;
+}
+
+/* Lists inside an article are unstyled by 20-article.css; .article ul.ticks
+   restores a marker for the lists that read better with one. */
+.article ul.ticks > li {
+    position: relative;
+    padding-left: 1.2em;
+    margin-bottom: 0.35em;
+}
+.article ul.ticks > li::before {
+    content: "–";
+    position: absolute;
+    left: 0;
+    color: var(--my-gray-1);
+}

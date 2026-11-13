@@ -23,6 +23,28 @@ groups:
     weight: 20
 
 projects:
+  - slug: heimdall
+    path: /projects/heimdall
+    show: true
+    weight: 10
+    group: simulations
+    tags: ["Python", "C++", "HEP", "Monte Carlo"]
+    cardImage: "/resources/Heimdall/card_light.svg"
+    cardImage_light: "/resources/Heimdall/card_light.svg"
+    cardImage_dark: "/resources/Heimdall/card_dark.svg"
+    cardTitle: "Heimdall"
+    cardText: "A runner for Monte Carlo studies in particle physics: generators, Rivet and plots as supervised processes, chained by a TOML"
+
+  - slug: brookhaven
+    path: /projects/brookhaven
+    show: true
+    weight: 20
+    group: simulations
+    tags: ["C++", "HEP", "Monte Carlo", "Rivet"]
+    cardImage: "/resources/Brookhaven/card.png"
+    cardTitle: "Brookhaven"
+    cardText: "Jet photoproduction with Pythia 8 and Sherpa 3, tested against ZEUS data at HERA before predicting for the Electron-Ion Collider"
+
   - slug: ellipsoidal-channel
     path: /projects/Ellipsoidal_Channel
     show: true

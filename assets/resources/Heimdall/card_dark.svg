@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Heimdall: the runner supervises a chain of tools, each its own process">
+  <!-- Colours are the site's dark tokens: my-white #111, my-black #fff, my-gray-1 #ccc, my-theme-accent #6B9EFF.
+       card_light.svg is this file with the light tokens. -->
+  <rect width="800" height="600" fill="#111111"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" text-anchor="middle">
+
+    <!-- the errand file -->
+    <g transform="translate(64 70)">
+      <path d="M0 0 H62 L84 22 V108 H0 Z" fill="none" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M62 0 V22 H84" fill="none" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M14 44 H66 M14 62 H58 M14 80 H70" stroke="#cccccc" stroke-width="3" stroke-linecap="round"/>
+      <text x="42" y="132" font-size="22" fill="#cccccc">.toml</text>
+    </g>
+    <path d="M168 124 H226" stroke="#ffffff" stroke-width="3"/>
+    <path d="M222 114 L238 124 L222 134" fill="none" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+
+    <!-- the runner -->
+    <rect x="250" y="88" width="460" height="72" rx="36" fill="none" stroke="#6B9EFF" stroke-width="3.5"/>
+    <text x="480" y="135" font-size="32" fill="#6B9EFF">heimdall run</text>
+
+    <!-- supervision -->
+    <path d="M150 300 V228 H700 V300 M425 228 V300 M480 160 V228" fill="none" stroke="#cccccc" stroke-width="2.5" stroke-dasharray="7 7"/>
+
+    <!-- the chain -->
+    <rect x="70"  y="300" width="160" height="84" rx="12" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <text x="150" y="352" font-size="28" fill="#ffffff">pythia</text>
+    <rect x="345" y="300" width="160" height="84" rx="12" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <text x="425" y="352" font-size="28" fill="#ffffff">rivet</text>
+    <rect x="620" y="300" width="160" height="84" rx="12" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <text x="700" y="352" font-size="28" fill="#ffffff">plot</text>
+
+    <!-- FIFO: a double line -->
+    <path d="M230 335 H330 M230 349 H330" stroke="#ffffff" stroke-width="3"/>
+    <path d="M326 328 L342 342 L326 356" fill="none" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+    <text x="284" y="318" font-size="18" fill="#cccccc">FIFO</text>
+    <path d="M505 342 H604" stroke="#ffffff" stroke-width="3"/>
+    <path d="M600 332 L616 342 L600 352" fill="none" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+
+    <!-- products -->
+    <text x="150" y="430" font-size="20" fill="#cccccc">events</text>
+    <text x="425" y="430" font-size="20" fill="#cccccc">.yoda</text>
+    <text x="700" y="430" font-size="20" fill="#cccccc">pages</text>
+
+    <!-- the rule that makes reruns safe -->
+    <text x="400" y="530" font-size="24" fill="#ffffff">.partial <tspan fill="#6B9EFF">→</tspan> .complete</text>
+  </g>
+</svg>

@@ -54,7 +54,20 @@
 
 {{- $currentProject := . -}}
 {{- if $isChapter -}}{{- $currentProject = .Parent -}}{{- end -}}
-{{- $sortedEntries := sort (where site.Data.projects.projects "show" true) "weight" -}}
+{{- /* Gallery order, as layouts/projects/list.html draws it: groups in data order,
+       weight within a group, then the "Other" entries whose group is not listed. */ -}}
+{{- $visible := where site.Data.projects.projects "show" true -}}
+{{- $sortedEntries := slice -}}
+{{- $knownSlugs := slice -}}
+{{- range $g := site.Data.projects.groups -}}
+  {{- $knownSlugs = $knownSlugs | append $g.slug -}}
+  {{- range sort (where $visible "group" $g.slug) "weight" -}}
+    {{- $sortedEntries = $sortedEntries | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- range sort $visible "weight" -}}
+  {{- if not (in $knownSlugs .group) -}}{{- $sortedEntries = $sortedEntries | append . -}}{{- end -}}
+{{- end -}}
 {{- $projIdx := -1 -}}
 {{- range $i, $entry := $sortedEntries -}}
   {{- with site.GetPage $entry.path -}}

@@ -1,0 +1,254 @@
+---
+layout: default
+title: "Heimdall"
+longTitle: "Heimdall"
+subtitle: "A runner for Monte Carlo studies in particle physics"
+author: "Rajnoor Brar"
+description: "Generators, Rivet and plots as supervised processes, chained by a TOML: sweeps, identity-based reruns, and curves scored against data."
+active_nav: "projects"
+pageScript: "/js/projectScript.js"
+pageStyle: "/css/projectstyle.css"
+---
+
+<div class="abstract">
+  <div class="title">In short</div>
+  <p>
+    Heimdall runs Monte Carlo studies in high-energy physics. A TOML file names a chain of tools
+    (an event generator, Rivet, your own programs, the plotter) and the settings to sweep. Heimdall
+    plans every point, runs each tool as its own supervised process, refuses to call a truncated
+    result complete, reruns only what changed, and scores the resulting curves against measured
+    data. It is the third design of a framework I started for my own studies. It is open source and
+    still in active development.
+  </p>
+</div>
+
+<h2 id="problem">The problem</h2>
+<p>
+  A phenomenology study tends to look the same every time. You generate events with Pythia, Sherpa
+  or Herwig, analyse them with Rivet, compare the histograms with a published measurement, and
+  repeat for every PDF set, beam energy and tuning parameter worth trying. Done by hand, this
+  becomes a pile of shell scripts and copied cards. A sixteen-point sweep dies at point nine on a
+  typo. A generator that crashes mid-stream leaves a histogram that looks complete. Two weeks
+  later, nobody can say which card made which curve.
+</p>
+<p>
+  The first version was exactly that pile: four scripts around <code>Pythia → FIFO → rivet</code> and
+  a ten-thousand-line C++ utility layer. The second was a Python orchestrator around one in-process
+  C++ event loop. Heimdall is the third. It kept what the first two learned and rebuilt everything
+  around a single idea.
+</p>
+
+<h2 id="model">The model: tools are processes, chained by a TOML</h2>
+<p>
+  <strong>The runner decides; the tools do the physics.</strong> No tool runs inside another, the
+  runner links no physics library, and no tool ever reads the TOML. Physics stays in each tool's
+  native card (a Pythia <code>.cmnd</code>, a Sherpa YAML). A swept setting is rendered as an
+  override into that point's card, and each tool merges it by its own rule.
+</p>
+
+<figure class="diagram" aria-labelledby="hd-diagram-cap">
+  <svg viewBox="0 0 760 300" role="img" aria-label="A run: load, expand, plan, run each point, plot. Inside a point: the generator writes into a FIFO that Rivet reads, the event counts are checked, the histogram is converted, and .complete is written last." style="font-family: var(--my-font-code);">
+    <defs>
+      <marker id="hd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" style="fill: var(--my-black);"/>
+      </marker>
+    </defs>
+    <g style="stroke: var(--my-black); fill: none; stroke-width: 1.6;">
+      <!-- the run, in phases -->
+      <rect x="25"  y="22" width="110" height="36" rx="18"/>
+      <rect x="175" y="22" width="110" height="36" rx="18"/>
+      <rect x="325" y="22" width="110" height="36" rx="18"/>
+      <rect x="475" y="22" width="110" height="36" rx="18" style="stroke: var(--my-theme-accent); stroke-width: 2.2;"/>
+      <rect x="625" y="22" width="110" height="36" rx="18"/>
+      <path d="M135 40 H171 M285 40 H321 M435 40 H471 M585 40 H621" marker-end="url(#hd-arrow)"/>
+      <!-- one point -->
+      <path d="M530 58 V118" style="stroke: var(--my-theme-accent); stroke-dasharray: 5 5;"/>
+      <rect x="15" y="118" width="730" height="160" rx="14" style="stroke: var(--my-gray-1); stroke-dasharray: 6 6;"/>
+      <rect x="40"  y="168" width="104" height="44" rx="8"/>
+      <rect x="196" y="168" width="104" height="44" rx="8"/>
+      <rect x="338" y="168" width="112" height="44" rx="8"/>
+      <rect x="488" y="168" width="104" height="44" rx="8"/>
+      <rect x="628" y="168" width="100" height="44" rx="8" style="stroke: var(--my-theme-accent); stroke-width: 2.2;"/>
+      <path d="M144 185 H190 M144 195 H190"/>
+      <path d="M186 180 L194 190 L186 200"/>
+      <path d="M300 190 H334 M450 190 H484 M592 190 H624" marker-end="url(#hd-arrow)"/>
+    </g>
+    <g style="fill: var(--my-black); font-size: 15px;" text-anchor="middle">
+      <text x="80"  y="45">load</text>
+      <text x="230" y="45">expand</text>
+      <text x="380" y="45">plan</text>
+      <text x="530" y="45" style="fill: var(--my-theme-accent);">run</text>
+      <text x="680" y="45">plot</text>
+      <text x="92"  y="195">pythia</text>
+      <text x="248" y="195">rivet</text>
+      <text x="394" y="195">count</text>
+      <text x="540" y="195">yd2rt</text>
+      <text x="678" y="195" style="fill: var(--my-theme-accent);">.complete</text>
+    </g>
+    <g style="fill: var(--my-gray-1); font-size: 11.5px;" text-anchor="middle">
+      <text x="80"  y="76">errand + cards</text>
+      <text x="230" y="76">sweep → points</text>
+      <text x="380" y="76">every check first</text>
+      <text x="680" y="76">pages + numbers</text>
+      <text x="64"  y="140" text-anchor="start">each point, in its own folder</text>
+      <text x="167" y="172">FIFO</text>
+      <text x="92"  y="236">own process</text>
+      <text x="92"  y="251">group</text>
+      <text x="248" y="236">reads the</text>
+      <text x="248" y="251">stream</text>
+      <text x="394" y="236">rivet's = the</text>
+      <text x="394" y="251">generator's</text>
+      <text x="540" y="236">.yoda → .root</text>
+      <text x="678" y="236">written last</text>
+    </g>
+  </svg>
+  <figcaption id="hd-diagram-cap">One run. Nothing executes until the plan has passed every check; inside a point, products keep a <code>.partial</code> name until their checks pass.</figcaption>
+</figure>
+
+<p>
+  A study lives in its own <em>work dir</em>, usually its own git repository. An <em>errand</em> file
+  declares the tools, the quantities that can vary, and named configurations that pick which ones
+  do. This one is abridged from <a href="/projects/brookhaven/">Brookhaven</a>, the photoproduction
+  study that runs on Heimdall:
+</p>
+<pre class="language-toml"><code class="language-toml">[errand]
+name   = "photoproduction"
+events = 1_000_000
+# an inner list runs together, joined by a FIFO
+chain  = [["@generator", "rivet"], "yd2rt"]
+
+# a quantity whose values are whole tools
+[quantities.generator]
+points = [
+  { tag = "py8", value = "pythia" },
+  { tag = "sh3", value = "sherpa" },
+]
+
+# E_e x E_p in GeV: eight EIC beam settings
+[quantities.energies]
+points = [
+  { tag = "18x275", value = [18, 275] },
+  { tag = "5x130",  value = [5, 130] },
+  # … six more
+]
+
+[cfgs.generator_energies]
+vary = ["generator", "energies"]   # 2 x 8 = 16 points
+</code></pre>
+<p>
+  <code>heimdall run eic/photoproduction generator_energies</code> expands that into sixteen points.
+  For each one it writes a finished card and command line (seeds are numbers, paths are absolute,
+  <code>threads = 0</code> is already a count), and <code>--plan</code> prints exactly what would run
+  before anything does.
+</p>
+
+<h2 id="failure">What can go wrong, and what it does about it</h2>
+<p>
+  A chain joined by FIFOs fails in two ways a single process never does, and Heimdall handles both
+  by construction rather than by retry.
+</p>
+<ul class="ticks">
+  <li>
+    <strong>Deadlock at open.</strong> A FIFO blocks until both ends are open. If the writer dies before
+    opening its end, the reader waits for ever and never gets a SIGPIPE. So every tool runs in its
+    own process group. The first nonzero exit is taken as the cause, and the rest of the group gets
+    SIGTERM, then SIGKILL. A tool that stays silent past its <code>stall_after</code> counts as failed.
+    A death by SIGPIPE is treated as a consequence, never the cause.
+  </li>
+  <li>
+    <strong>A partial result that looks complete.</strong> If the generator crashes mid-stream, Rivet
+    simply sees end-of-file and exits 0. So the consumer's event count is checked against the
+    producer's, every product keeps a <code>.partial</code> name until its checks pass, and
+    <code>.complete</code> is written last. A failed point leaves its products under partial names,
+    the rest of the run goes on, and the next run resumes exactly there.
+  </li>
+  <li>
+    <strong>Refuse early, and say what to do.</strong> Every check runs before any process starts,
+    and every refusal names the file, the key, and a fix. A swept quantity that no tool consumes, a
+    Rivet option that is not declared, or a card that sets one key twice is an error at plan time,
+    not a silent no-op discovered from the plots.
+  </li>
+</ul>
+
+<h2 id="identity">Reruns by identity, not by folder</h2>
+<p>
+  Each point has an identity, a hash of what actually decides its result: the resolved cards and
+  command lines, each executable's own hash, the event count and the seed rule. Folder names and
+  plot settings are deliberately left out, so moving a study reruns nothing and restyling a page
+  only redraws it. Rerunning an unchanged study does nothing; changing one setting reruns exactly
+  the points it touches, and <code>--why</code> shows the difference. An opt-in points library pools
+  generation across studies, so two errands that ask for the same physics run it once. Because the
+  identity is load-bearing, a golden-file test pins it: an accidental change shows up as a failing
+  test, not as a silent full rerun.
+</p>
+
+<h2 id="scoring">Scoring curves against data</h2>
+<p>
+  When a sweep has reference data, every drawn page (one observable at one point) is compared with
+  it on eleven metrics, grouped into categories: statistical compatibility, normalisation, shape,
+  trend across the axis, local defects (spikes and holes), and integrity. Each metric is hinged
+  between a <em>good</em> and a <em>bad</em> threshold that belongs to the metric itself, so a
+  curve's loss never changes because other curves were added to the pool. Category costs are
+  combined by root mean square, so one bad category shows instead of being averaged away. Points
+  are then ranked, and <em>marginals</em> ask which value of each swept setting is best on average:
+  each point is compared only with points identical to it in every other setting, using trimmed
+  means.
+</p>
+
+{{< fig src="/resources/Brookhaven/zeus_ptref_lpdfon_d01.png" alt="Pythia 8 jet cross-section against ZEUS 2012 data, six curves for the MPI scale and a ratio panel" caption="A page Heimdall drew for Brookhaven: Pythia 8's inclusive-jet cross-section at six values of the MPI scale, against ZEUS 2012 (jets with −1 < η < 2.5; the legend's inequality is printed reversed)." size="large" >}}
+
+<p>
+  Every summary prints how its own numbers were made: thresholds, weights, gates, tie rule, and one
+  real row worked through by hand. The engine is opinionated, and the open questions are written
+  down with it. One of them: with gates off, the default, a broken point's noise can make a real
+  effect read as indistinguishable in the marginals. That is a known open issue, not a hidden one.
+</p>
+
+<h2 id="refused">What it refuses to do</h2>
+<p>
+  The design documents record each principle with what it <em>buys</em> and what it
+  <em>costs</em>. For example, running every tool as a separate process costs about 10&nbsp;% of the
+  old in-process throughput end to end (measured), in exchange for any program in any language
+  joining a chain just by being an executable. They also list what is refused outright:
+</p>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Refused</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>A general DAG or workflow engine</td><td>A chain is a sequence of groups; the connection rules only check it.</td></tr>
+      <tr><td>Physics in the TOML</td><td>It lives in each tool's native card, the card on disk is the card that ran, and there is no cross-generator dialect to re-verify on every release.</td></tr>
+      <tr><td>Inferring connections, units, data maps, or which tool a setting is for</td><td>A wrong guess looks plausible. The previous version drew ZEUS data over the wrong observable this way.</td></tr>
+      <tr><td>Silently ignoring a key a tool cannot honour</td><td>It is an error, with the file and line.</td></tr>
+      <tr><td>CMake</td><td><code>make &lt;path&gt;.exe</code> is the whole build interface.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 id="stack">The stack underneath</h2>
+<p>
+  Heimdall also builds the software it runs on: ROOT, Pythia 8, Herwig 7, Sherpa 3, Whizard,
+  MadGraph5, Rivet, YODA, Delphes, FastJet, HepMC3, LHAPDF and Geant4. They are built from source
+  or taken from conda, as toolkits described in plain TOML files, with patches kept beside the
+  recipes, a container image for clusters, and <code>heimdall doctor</code> to check what the
+  installed stack can actually do. Pages are drawn by a small ROOT program (<code>Paint</code>, C++)
+  or by matplotlib.
+</p>
+
+<h2 id="status">Status</h2>
+<p>
+  Heimdall is research software in active development, not a release. The current design dates
+  from late September 2026, and it moved into its own repository in October. It is about 35,000
+  lines of Python with roughly 2,400 test cases and a C++ plotting app. Its reference docs are
+  generated from the code, and <code>heimdall docs</code> opens all of it as one searchable page.
+  Still to do: continuous integration (today the full-stack workflow is started by hand), and
+  moving every study to the newest configuration format. The plan for both is tracked in the open,
+  issue by issue, in the repository.
+</p>
+
+<div class="callout">
+  <div class="callout__title">Links</div>
+  <p>
+    <a href="https://github.com/Rajnoor-Brar/Heimdall" target="_blank" rel="noopener noreferrer"><i class="bi bi-github" aria-hidden="true"></i> Rajnoor-Brar/Heimdall</a> — source, docs and issue log ·
+    <a href="/projects/brookhaven/">Brookhaven</a> — the study that runs on it
+  </p>
+</div>

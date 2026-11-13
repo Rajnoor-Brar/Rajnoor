@@ -24,7 +24,8 @@
 {{- $asset := resources.Get (strings.TrimPrefix "/" $src) -}}
 {{- $isRaster := false -}}
 {{- with $asset -}}
-  {{- $isRaster = and (eq .MediaType.MainType "image") (not (in (slice "svg+xml" "gif") .MediaType.SubType)) -}}
+  {{- /* Hugo reports SVG's SubType as "svg"; "svg+xml" is kept for older versions. */ -}}
+  {{- $isRaster = and (eq .MediaType.MainType "image") (not (in (slice "svg" "svg+xml" "gif") .MediaType.SubType)) -}}
 {{- end -}}
 {{- if $isRaster -}}
   {{- /* Keep only candidate widths narrower than the source; never upscale. */ -}}
